@@ -1,0 +1,1009 @@
+###############################################################################
+##                         - - -    Tables   - - -                           ##
+###############################################################################
+#                                                                             #
+#           Tables:                                                           #
+#               General:                                                      #
+#                   - household_information                                   #
+#                   - members_properties                                      #
+#                   - house_specifications                                    #
+#                                                                             #
+#               Expenditures:                                                 #
+#                   - food                                                    #
+#                   - cigaret                                                 #
+#                   - cloth                                                   #
+#                   - home                                                    #
+#                   - furniture                                               #
+#                   - medical                                                 #
+#                   - transportation                                          #
+#                   - communication                                           #
+#                   - entertainment                                           #
+#                   - education                                               #
+#                   - hotel                                                   #
+#                   - other                                                   #
+#                   - durable                                                 #
+#                   - investment                                              #
+#                                                                             #
+#               Incomes:                                                      #
+#                   - employment_income                                       #
+#                   - self_employed_income                                    #
+#                   - other_income                                            #
+#                   - subsidy                                                 #
+#                                                                             #
+#                   old tables:                                               #
+#                       - public_employment_income                            #
+#                       - private_employment_income                           #
+#                                                                             #
+#_____________________________________________________________________________#
+
+
+tables:
+    household_information: 1388
+    members_properties: 1363
+    house_specifications: 1363
+
+    food: 1363
+    cigaret: 1383
+    cloth: 1363
+    home: 1363
+    furniture: 1363
+    medical: 1363
+    transportation: 1363
+    communication: 1363
+    entertainment: 1363
+    education: 1363
+    hotel: 1363
+    other: 1363
+    durable: 1363
+    investment: 1363
+
+    employment_income: 1363
+    self_employed_income: 1363
+    other_income: 1363
+    subsidy: 1363
+    public_employment_income: 1363
+    private_employment_income: 1363
+
+
+###############################################################################
+##                         - - -    General   - - -                          ##
+###############################################################################
+
+
+household_information:
+    file_code:
+        1363: null
+        1388: "Data"
+
+    property:
+        missings: "pass"
+
+    columns:
+        Address: &household_information_Address
+            new_name: "ID"
+            type: "unsigned"
+        ADDRESS: *household_information_Address
+
+        Fasl:
+            new_name: "Season"
+            type: "category"
+            categories: 
+                1: "Spring"
+                2: "Summer"
+                3: "Autumn"
+                4: "Winter"
+
+        weight:
+            new_name: "Weight"
+            type: "unsigned"
+
+
+members_properties:
+    file_code:
+        1363: "P1"
+
+    items:
+        member_number: &member_number
+            new_name: "ID"
+            type: "unsigned"     
+
+        member_relationship: &member_relationship
+            new_name: "Relationship"
+            type: "category"
+            categories:
+                1: "Head"
+                2: "Spouse"
+                3: "Child"
+                4: "Child-in-Law"
+                5: "Grand-Child"
+                6: "Parent"
+                7: "Sister/Brother"
+                8: "Other_Family"
+                9: "Non-Family"
+
+        marrital_state: &members_marrital_state
+            new_name: "Marrital_State"
+            type: "category"
+            categories: 
+                1: "Married"
+                2: "Widowed"
+                3: "Divorced"
+                4: "Bachelor"
+
+        members_activity_state: &members_activity_state
+            new_name: "Activity_State"
+            type: "category"
+            categories: 
+                1: "Employed"
+                2: "Unemployed"
+                3: "Income_without_Work"
+                4: "Student"
+                5: "Housekeeper"
+                6: "Other"
+
+    columns:
+        Address: &property_Address
+            1363:
+                new_name: "ID"
+                type: "unsigned"
+        ADDRESS: *property_Address
+
+        COL01: *member_number
+        DYCOL01: *member_number
+
+        DYCOL03: &property_DYCOL03
+            1363:
+                new_name: "Relationship"
+                type: "category"
+                categories:
+                    1: "Head"
+                    2: "Spouse"
+                    3: "Child"
+                    4: "Child-in-Law"
+                    5: "Grand-Child"
+                    6: "Parent"
+                    7: "Sister/Brother"
+                    8: "Other_Family"
+                    9: "Non-Family"
+        COL03: *property_DYCOL03
+
+        DYCOL04: &property_DYCOL04
+            1363:
+                new_name: "Sex"
+                type: "category"
+                categories:
+                    1: "Male"
+                    2: "Female"
+        COL04: *property_DYCOL04
+
+        DYCOL05: &property_DYCOL05
+            1363:
+                new_name: "Age"
+                type: "unsigned"
+        COL05: *property_DYCOL05
+
+        DYCOL06:
+            1384: &property_DYCOL06_1384
+                new_name: "Literate"
+                type: "boolean"
+                true_condition: 1
+        COL06:
+            1363: &property_COL06_1363
+                new_name: "Member_Weeks"
+                type: "unsigned"
+            1364: *members_marrital_state
+            1366: *property_COL06_1363
+            1369: *property_DYCOL06_1384
+
+        DYCOL07: 
+            1384: &property_DYCOL07_1384
+                new_name: "Student"
+                type: "boolean"
+                true_condition: 1
+        COL07:
+            1363: *members_marrital_state
+            1364: &property_COL07_1364
+                new_name: "Nationality"
+                type: "unsigned"
+            1366: &property_COL07_1366
+                new_name: "Literacy_Status"
+                type: "unsigned"
+            1369: *property_DYCOL07_1384
+
+        DYCOL08:
+            1384: &property_DYCOL08_1384
+                new_name: "Education_Level"
+            1393:
+                new_name: "Education_Level"
+                type: "category"
+                categories:
+                    11: "Primary"
+                    21: "Secondary"
+                    31: "Tertiary"
+                    41: "Pre_University"
+                    51: "College"
+                    52: "Bachelors"
+                    53: "Masters"
+                    61: "PhD"
+                    71: "Unofficial"
+            1397:
+                new_name: "Education_Level"
+                type: "category"
+                categories:
+                    1: "Primary"
+                    2: "Secondary"
+                    3: "Tertiary"
+                    4: "Pre_University"
+                    5: "College"
+                    6: "Bachelors"
+                    7: "Masters"
+                    8: "PhD"
+                    9: "Unofficial"
+        COL08: 
+            1363: *property_COL07_1364
+            1364: *property_COL06_1363
+            1366: &property_COL08_1366
+                new_name: "Education_Level"
+            1369: *property_DYCOL08_1384
+
+        DYCOL09: 
+            1384: *members_activity_state
+        COL09:
+            1363: *property_COL07_1366
+            1366: *members_activity_state
+
+        DYCOL10: &property_DYCOL10
+            1384: *members_marrital_state
+        COL10:
+            1363: *property_COL08_1366
+            1366: &property_COL10_1366
+                new_name: "Job_Code"
+            1369: *members_marrital_state
+
+        COL11:
+            1363: *members_activity_state
+            1366: &property_COL11_1366
+                new_name: "Work_Place"
+                type: "unsigned"
+            1369: null
+
+        COL12:
+            1363: *property_COL10_1366
+            1366: &property_COL12_1366
+                new_name: "Work_Type"
+                type: "unsigned"
+            1369: null
+
+        COL13:
+            1363: *property_COL11_1366
+            1366: &property_COL13_1366
+                new_name: "Employed_Weeks"
+                type: "unsigned"
+            1369: null
+
+        COL14:
+            1363: *property_COL12_1366
+            1366: null
+
+        COL15:
+            1363: *property_COL13_1366
+            1366: null
+
+
+house_specifications:
+    file_code:
+        1363: "P2"
+
+
+######################################################################
+##                   - - -    Expenditure   - - -                   ##
+######################################################################
+
+
+EXPENDITURE_ITEMS:
+
+
+    # # # Provision Method
+
+    expenditure_provision_method_dase: &expenditure_provision_method_dase
+        new_name: "Provision_Method"
+        type: "category"
+    
+    expenditure_provision_method_1: &expenditure_provision_method_1
+        <<: *expenditure_provision_method_dase
+        categories: 
+            1: "Purchase_Subsidised_Price"
+            2: "Purchase_Free_Price"
+            3: "Home_Production"
+            4: "Instead_of_Public_Service"
+            5: "Instead_of_Private_Service"
+            6: "Agricultural_Work"
+            7: "Non_Agricultural_Work"
+            8: "Donation"
+
+    expenditure_provision_method_2: &expenditure_provision_method_2
+        <<: *expenditure_provision_method_dase
+        categories: 
+            2: "Purchase"
+            3: "Home_Production"
+            4: "Instead_of_Public_Service"
+            5: "Instead_of_Private_Service"
+            6: "Agricultural_Work"
+            7: "Non_Agricultural_Work"
+            8: "Donation"
+
+    expenditure_provision_method_3: &expenditure_provision_method_3
+        <<: *expenditure_provision_method_dase
+        categories: 
+            1: "Purchase"
+            2: "Home_Production"
+            3: "Instead_of_Public_Service"
+            4: "Instead_of_Private_Service"
+            5: "Agricultural_Work"
+            6: "Non_Agricultural_Work"
+            7: "Donation"
+
+    expenditure_provision_method_4: &expenditure_provision_method_4
+        <<: *expenditure_provision_method_dase
+        categories: 
+            1: "Purchase"
+            2: "Home_Production"
+            3: "Instead_of_Public_Service"
+            4: "Instead_of_Private_Service"
+            5: "Agricultural_Work"
+            6: "Non_Agricultural_Work"
+            7: "Donation"
+            8: "Instead_of_Cooperative_Service"
+
+    expenditure_provision_method_5: &expenditure_provision_method_5
+        <<: *expenditure_provision_method_dase
+        categories: 
+            1: "Purchase"
+            2: "Home_Production"
+            3: "Instead_of_Public_Service"
+            4: "Instead_of_Cooperative_Service"
+            5: "Instead_of_Private_Service"
+            6: "Agricultural_Work"
+            7: "Non_Agricultural_Work"
+            8: "Donation"
+
+    expenditure_provision_method: &expenditure_provision_method
+            1363: *expenditure_provision_method_1
+            1369: *expenditure_provision_method_2
+            1374: *expenditure_provision_method_3
+            1379: *expenditure_provision_method_4
+            1383: *expenditure_provision_method_5
+
+
+    # # # Price System
+
+    expenditure_price_system: &expenditure_price_system
+        new_name: "Price_System"
+        type: "category"
+        categories: 
+            0: "Free_Price"
+            1: "Subsidised_Price"
+
+
+    # # # Grams
+
+    expenditure_grams: &expenditure_grams
+        new_name: "Grams"
+        type: "float"
+
+
+    # # # Kilos
+
+    expenditure_kilos: &expenditure_kilos
+        new_name: "Kilos"
+        type: "float"
+
+
+    # # # Price
+
+    expenditure_price: &expenditure_price
+        new_name: "Price"
+        type: "float"
+
+
+    # # # Expenditure Amount
+
+    expenditure_amount: &expenditure_amount
+        new_name: "Expenditure"
+        type: "float"
+
+
+    # # # Base Items
+
+    expenditure_base_columns: &expenditure_base_columns
+        Address: &expenditure_income_Address
+            new_name: "ID"
+            type: "unsigned"
+        ADDRESS: *expenditure_income_Address
+
+        COL1: &expenditure_code
+            new_name: "Code"
+            type: "unsigned"
+        DYCOL01: *expenditure_code
+
+
+    # # # Common Items
+
+    expenditure_common_columns: &expenditure_common_columns
+        <<: *expenditure_base_columns
+
+        COL3: *expenditure_provision_method
+        DYCOL02: *expenditure_provision_method
+
+        COL4: *expenditure_amount
+        DYCOL03: *expenditure_amount
+
+
+food:
+    file_code:
+        1363: "P3S01"
+    
+    columns:
+        <<: *expenditure_base_columns
+
+        COL3: *expenditure_provision_method
+        COL4:
+            1363: null
+            1369: *expenditure_price_system
+            1374: null
+            1383: *expenditure_grams
+        COL4_5:
+            1363: *expenditure_kilos
+            1369: null
+            1374: *expenditure_kilos
+            1383: null
+        COL5_6:
+            1363: null
+            1369: *expenditure_kilos
+            1374: null
+        COL5:
+            1383: *expenditure_kilos
+        COL6:
+            1363: *expenditure_amount
+            1369: null
+            1374: *expenditure_price
+        COL7:
+            1363: null
+            1369: *expenditure_price
+            1370: null
+            1372: *expenditure_price
+            1374: *expenditure_amount
+        COL8:
+            1363: null
+            1369: *expenditure_amount
+            1374: null
+
+        DYCOL02: *expenditure_provision_method
+        DYCOL03: *expenditure_grams
+        DYCOL04: *expenditure_kilos
+        DYCOL05: *expenditure_price
+        DYCOL06: *expenditure_amount
+        DYCOL07: "drop"
+
+
+cigaret:
+    1363: null
+    1383:
+        file_code: "P3S02"
+        columns:
+            <<: *expenditure_common_columns
+
+
+cloth:
+    file_code:
+        1363: "P3S02"
+        1383: "P3S03"
+
+    columns:
+        <<: *expenditure_common_columns
+
+
+home:
+    file_code:
+        1363: "P3S03"
+        1383: "P3S04"
+
+    columns:
+        <<: *expenditure_base_columns
+
+furniture:
+    file_code:
+        1363: "P3S04"
+        1383: "P3S05"
+
+    columns:
+        <<: *expenditure_common_columns
+
+
+medical:
+    file_code:
+        1363: "P3S05"
+        1383: "P3S06"
+
+    columns:
+        <<: *expenditure_common_columns
+
+
+transportation:
+    file_code:
+        1363: "P3S06"
+        1383: "P3S07"
+
+    columns:
+        <<: *expenditure_common_columns
+
+
+communication:
+    1363: null
+    1383:
+        file_code: "P3S08"
+
+        columns:
+            <<: *expenditure_common_columns
+
+
+entertainment:
+    file_code:
+        1363: "P3S07"
+        1383: "P3S09"
+
+    columns:
+        <<: *expenditure_common_columns
+
+
+education:
+    file_code:
+        1363: null
+        1383: "P3S10"
+
+    columns:
+        <<: *expenditure_common_columns
+
+
+hotel:
+    file_code:
+        1363: null
+        1383: "P3S11"
+
+    columns:
+        <<: *expenditure_common_columns
+
+
+other:
+    file_code:
+        1363: "P3S08"
+        1383: "P3S12"
+
+    columns:
+        <<: *expenditure_common_columns
+
+
+durable:
+    file_code:
+        1363: "P3S09"
+        1383: "P3S13"
+
+    columns:
+        <<: *expenditure_base_columns
+
+
+investment:
+    file_code:
+        1363: null
+        1366: "P3S10"
+        1375: null
+        1378: "P3S10"
+        1383: "P3S14"
+
+    columns:
+        <<: *expenditure_base_columns
+
+
+######################################################################
+##                     - - -    Incomes   - - -                     ##
+######################################################################
+
+
+INCOME_ITEMS:
+
+
+    # # # Member Number
+
+    income_member_number: &income_member_number
+        new_name: "Member_Number"
+        type: "unsigned"
+
+    income_job_code: &income_job_code
+        new_name: "Job_Code"
+        type: "string"
+    
+    income_activity_status: &income_activity_status
+        new_name: "Activity_Status"
+        type: "unsigned"
+
+    income_workplace_activity: &income_workplace_activity
+        new_name: "Workplace_Activity"
+        type: "string"
+
+    income_sector_base: &income_sector_base
+        new_name: "Sector"
+        type: "category"
+    income_sector_1: &income_sector_1
+        <<: *income_sector_base
+        categories:
+            1: "Public"
+            2: "Private"
+    income_sector_2: &income_sector_2
+        <<: *income_sector_base
+        categories:
+            1: "Public"
+            2: "Cooperative"
+            3: "Private"
+
+    income_working_hours_per_day: &income_working_hours_per_day
+        new_name: "Working_Hours_per_Day"
+        type: "unsigned"
+
+    income_working_day_per_week: &income_working_day_per_week
+        new_name: "Working_Day_per_Week"
+        type: "unsigned"
+
+    income_monthly_gross: &income_monthly_gross
+        new_name: "Monthly_Gross_Income"
+        type: "float"
+
+    income_yearly_gross: &income_yearly_gross
+        new_name: "Yearly_Gross_Income"
+        type: "float"
+
+    income_monthly_continuous: &income_monthly_continuous
+        new_name: "Monthly_Continuous_Income"
+        type: "float"
+
+    income_yearly_continuous: &income_yearly_continuous
+        new_name: "Yearly_Continuous_Income"
+        type: "float"
+
+    income_monthly_temporary: &income_monthly_temporary
+        new_name: "Monthly_Temporary_Income"
+        type: "float"
+
+    income_yearly_temporary: &income_yearly_temporary
+        new_name: "Yearly_Temporary_Income"
+        type: "float"
+
+    income_monthly_net: &income_monthly_net
+        new_name: "Monthly_Net_Income"
+        type: "float"
+
+    income_yearly_net: &income_yearly_net
+        new_name: "Yearly_Net_Income"
+        type: "float"
+
+    income_currently_in_this_job: &income_currently_in_this_job
+        new_name: "Currently_in_This_Job"
+        type: "boolean"
+        true_condition: 1
+
+    # # # Base Items
+
+    income_base_columns: &income_base_columns
+        Address: &employment_income_Address
+            new_name: "ID"
+            type: "unsigned"
+        ADDRESS: *employment_income_Address
+
+        COL01: *income_member_number
+        DYCOL01: *income_member_number
+        Dycol01: *income_member_number
+
+
+employment_income:
+    1363: null
+    1369:
+        file_code: "P4S1"
+        columns:
+            1369:
+                <<: *income_base_columns
+                COL02: *income_job_code
+                COL03: *income_workplace_activity
+                COL04: *income_sector_1
+                COL06: *income_yearly_gross
+                COL08: *income_yearly_continuous
+                COL10: *income_yearly_temporary
+                COL12: *income_yearly_net
+
+            1370:
+                <<: *income_base_columns
+                COL02: *income_job_code
+                COL03: *income_workplace_activity
+                COL04: *income_sector_1
+                COL05: *income_monthly_gross
+                COL06: *income_yearly_gross
+                COL07: *income_monthly_continuous
+                COL08: *income_yearly_continuous
+                COL09: *income_monthly_temporary
+                COL10: *income_yearly_temporary
+                COL11: *income_monthly_net
+                COL12: *income_yearly_net
+
+            1374:
+                <<: *income_base_columns
+                COL02: *income_activity_status
+                COL03: *income_job_code
+                COL04: *income_workplace_activity
+                COL05:
+                    1374: *income_sector_1
+                    1376: *income_sector_2
+                COL06: *income_monthly_gross
+                COL07: *income_yearly_gross
+                COL08: *income_monthly_continuous
+                COL09: *income_yearly_continuous
+                COL10: *income_monthly_temporary
+                COL11: *income_yearly_temporary
+                COL12: *income_monthly_net
+                COL13: *income_yearly_net
+
+    1384:
+        file_code: "P4S01"
+        columns:
+            <<: *income_base_columns
+            DYCOL02: *income_activity_status
+            DYCOL03: *income_job_code
+            DYCOL04: *income_workplace_activity
+            DYCOL05: *income_sector_2
+            DYCOL06: *income_working_hours_per_day
+            DYCOL07: *income_working_day_per_week
+            DYCOL08: *income_monthly_gross
+            DYCOL09: *income_yearly_gross
+            DYCOL10: *income_monthly_continuous
+            DYCOL11: *income_yearly_continuous
+            DYCOL12: *income_monthly_temporary
+            DYCOL13: *income_yearly_temporary
+            DYCOL14: *income_monthly_net
+            DYCOL15: *income_yearly_net
+
+
+old_employment_income:
+    file_code:
+        1363: null
+        1369: "P4S1"
+        1384: "P4S01"
+
+    columns:
+        <<: *income_base_columns
+
+        COL02:
+            1369: *income_job_code
+            1374: *income_activity_status
+        DYCOL02:
+            1384: *income_activity_status
+
+        COL03:
+            1369: *income_workplace_activity
+            1374: *income_job_code
+        DYCOL03:
+            1384: *income_job_code
+
+        COL04:
+            1369: *income_sector_1
+            1374: *income_workplace_activity
+        DYCOL04:
+            1384: *income_workplace_activity
+
+        COL05:
+            1369: null
+            1370: *income_monthly_gross
+            1374: *income_sector_1
+            1376: *income_sector_2
+        DYCOL05:
+            1384: *income_sector_2
+
+        DYCOL06:
+            1384: *income_working_hours_per_day
+
+        DYCOL07:
+            1384: *income_working_day_per_week
+
+        COL06:
+            1369: *income_yearly_gross
+            1374: *income_monthly_gross
+        DYCOL08:
+            1384: *income_monthly_gross
+
+        COL07:
+            1369: null
+            1370: *income_monthly_continuous
+            1374: *income_yearly_gross
+        DYCOL09:
+            1384: *income_yearly_gross
+
+        COL08:
+            1369: *income_yearly_continuous
+            1374: *income_monthly_continuous
+        DYCOL10:
+            1384: *income_monthly_continuous
+
+        COL09:
+            1369: null
+            1370: *income_monthly_temporary
+            1374: *income_yearly_continuous
+        DYCOL11:
+            1384: *income_yearly_continuous
+
+        COL10:
+            1369: *income_yearly_temporary
+            1374: *income_monthly_temporary
+        DYCOL12:
+            1384: *income_monthly_temporary
+
+        COL11:
+            1369: null
+            1370: *income_monthly_net
+            1374: *income_yearly_temporary
+        DYCOL13:
+            1384: *income_yearly_temporary
+
+        COL12:
+            1369: *income_yearly_net
+            1374: *income_monthly_net
+        DYCOL14:
+            1384: *income_monthly_net
+
+        COL13:
+            1369: null
+            1374: *income_yearly_net
+        DYCOL15:
+            1384: *income_yearly_net
+
+
+self_employed_income:
+    file_code:
+        1363: null
+        1369: "P4S2"
+        1384: "P4S02"
+
+    property:
+        missings: pass
+
+    columns:
+        <<: *income_base_columns
+
+        COL10:
+            1363: *income_yearly_net
+
+        COL12:
+            1363: null
+            1369: *income_yearly_net
+
+        COL13:
+            1363: null
+            1374: *income_yearly_net
+        DYCOL15:
+            1384: *income_yearly_net
+
+
+other_income:
+    file_code:
+        1363: null
+        1369: "P4S3"
+        1384: "P4S03"
+
+
+    columns:
+        <<: *income_base_columns
+
+        COL03: &income_retirement
+            new_name: "Retirement"
+            type: "float"
+        DYCOL03: *income_retirement
+
+        COL04: &income_rent
+            new_name: "Rent"
+            type: "float"
+        DYCOL04: *income_rent
+
+        COL05: &income_interest
+            new_name: "Interest"
+            type: "float"
+        DYCOL05: *income_interest
+
+        COL06: &income_aid
+            new_name: "Aid"
+            type: "float"
+        DYCOL06: *income_aid
+
+        COL07: &income_home_production
+            new_name: "Home_Production"
+            type: "float"
+        DYCOL07: *income_home_production
+
+        COL08: &income_transfer
+            new_name: "Transfer"
+            type: "float"
+        DYCOL08: *income_transfer
+
+
+subsidy:
+    file_code:
+        1363: null
+        1390: "P4S04"
+
+
+    columns:
+        <<: *income_base_columns
+
+        DYCOL03: &income_number_of_individuals_who_received_subsidy
+            new_name: "Number_of_Individuals"
+            type: "float"
+        Dycol03: *income_number_of_individuals_who_received_subsidy
+
+        DYCOL04: &income_number_of_subsidy_payments
+            new_name: "Number_of_Payments"
+            type: "float"
+        Dycol04: *income_number_of_subsidy_payments
+
+        DYCOL05: &income_total_subsidy
+            new_name: "Subsidy"
+            type: "float"
+        Dycol05: *income_total_subsidy
+
+
+# # # # # # # # # # - - - Old income tables - - - # # # # # # # # # #
+
+
+public_employment_income: &public_employment_income
+    
+    1363:
+        urban:
+            file_code: P4S1
+            columns:
+                <<: *income_base_columns
+                COL01: *income_member_number
+                COL02: *income_job_code
+                COL03: *income_currently_in_this_job
+                COL05: *income_yearly_gross
+                COL07: *income_yearly_continuous
+                COL09: *income_yearly_temporary
+                COL11: *income_yearly_net
+        rural:
+            file_code: P4S1
+            columns:
+                <<: *income_base_columns
+                COL01: *income_member_number
+                COL02: *income_job_code
+                COL03: *income_currently_in_this_job
+                COL05: *income_yearly_continuous
+                COL07: *income_yearly_temporary
+                COL09: *income_yearly_net
+    1369: null
+
+private_employment_income:
+    <<: *public_employment_income
+    file_code:
+        1363: P4S2
+        1369: null
+
+
+agricultural_self_employed_income:
+    file_code:
+        1363: P4S3
+        1369: null
+
+
+non_agricultural_self_employed_income:
+    file_code:
+        1363: P4S4
+        1369: null
+
+
+old_other_income:
+    file_code:
+        1363: P4S5
+        1369: null
+

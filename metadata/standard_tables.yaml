@@ -1,0 +1,35 @@
+
+
+food:
+  columns:
+    Price_System:
+      1363:
+        type: 'categorical'
+        categories:
+          Free_Price: "Provision_Method=='Purchase_Free_Price'"
+          Subsidised_Price: "Provision_Method=='Purchase_Subsidised_Price'"
+      1369: null
+    Provision_Method:
+      1363:
+        type: 'categorical'
+        categories:
+          Purchase_Free_Price: Purchase
+          Purchase_Subsidised_Price: Purchase
+      1369: null
+    Amount:
+      1363:
+        type: 'numerical'
+        calculation: "1 Kilos"
+      1383:
+        type: 'numerical'
+        calculation: "0.001 Grams + 1 Kilos"
+        
+  order:
+    - Year
+    - ID
+    - Code
+    - Provision_Method
+    - Price_System
+    - Amount
+    - Price
+    - Expenditure

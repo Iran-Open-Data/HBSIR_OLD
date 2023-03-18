@@ -1,0 +1,17 @@
+
+# Main Directories
+local_directory: "Data"
+online_directory: "https://s3.ir-tbz-sh1.arvanstorage.ir/sdac/HBSIR"
+
+# Years
+first_year: 1363
+last_year: 1400
+
+# Folder Names
+archive_files: '1_archive_files'
+unpacked_data: '2_unpacked_data'
+extracted_data: '3_extracted_data'
+processed_data: 'processed_data'
+
+# Map
+default_map: humandata
