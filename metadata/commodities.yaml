@@ -1,0 +1,393 @@
+
+###############################################################################
+##                    - - -    Tables Code Range   - - -                     ##
+###############################################################################
+
+tables:
+  food:
+    - 1383: [11000, 19999]
+
+
+###############################################################################
+##                 - - -    Original Classification   - - -                  ##
+###############################################################################
+
+ORIGINAL_1383:
+
+  # # # # # # # # # # # #
+  food_and_non_alcoholic_beverages:
+    level: 0
+    code: [10_000, 20_000]
+
+  # # # # # #
+  food:
+    level: 1
+    code: [11_000, 12_000]
+
+  # # #
+  cereals_and_cereal_products:
+    level: 2
+    code: [11_100, 11_200]
+
+  cereals:
+    level: 3
+    code: [11_110, 11_130]
+
+  bread_and_bakery_products:
+    level: 3
+    code: [11_140, 11_160]
+
+  flour_noodle_and_similar_pasta_products:
+    level: 3
+    code: [11_160, 11_170]
+
+  cake_and_biscuit:
+    level: 3
+    code: [11_170, 11_180]
+
+  # # #
+  meat:
+    level: 2
+    code: [11_200, 11_400]
+
+  red_meat:
+    level: 3
+    code: [11_210, 11_230]
+
+  poultry:
+    level: 3
+    code: [11_230, 11_240]
+
+  ready_to_cook_meat:
+    level: 3
+    code: [11_240, 11_250]
+
+  # # #
+  sea_food:
+    level: 2
+    code: [11_300, 11_400]
+
+  # # #
+  milk_other_dairy_product_excluding_butter_and_eggs:
+    level: 2
+    code: [11_400, 11_500]
+
+  milk:
+    level: 3
+    code: [11_410, 11_420]
+
+  other_dairy_product_excluding_butter:
+    level: 3
+    code: [11_420, 11_440]
+
+  eggs:
+    level: 3
+    code: [11_440, 11_450]
+
+  # # #
+  oils_fats_and_butter:
+    level: 2
+    code: [11_500, 11_600]
+
+  animal_oils_and_fats_excluding_butter:
+    level: 3
+    code: [11_510, 11_520]
+
+  butter:
+    level: 3
+    code: [11_520, 11_530]
+
+  vegetable_oils:
+    level: 3
+    code: [11_530, 11_540]
+
+  # # #
+  fruits_and_nuts:
+    level: 2
+    code: [11_600, 11_700]
+
+
+
+original:
+  food:
+    level: 1
+    code_history:
+      1363:
+        1:
+          duration: 2
+          code:
+            - [11100, 11199]
+            - [11300, 11399]
+            - [11400, 11499]
+            - [12100, 12199]
+            - [12200, 12199]
+            - [12300, 12199]
+            - [12400, 12199]
+            - [13100, 13199]
+            - [13200, 13299]
+            - [13300, 13399]
+            - [13400, 13499]
+            - [15100, 15199]
+            - [15200, 15299]
+            - [15300, 15399]
+            - [15400, 15499]
+            - [15500, 15599]
+            - [15600, 15699]
+            - [15700, 15799]
+            - [16100, 16199]
+            - [16200, 16299]
+            - [17200, 17299]
+            - [17300, 17399]
+            - [18100, 18199]
+            - [18200, 18299]
+            - [19100, 19199]
+            - [19200, 19299]
+            - [19300, 19399]
+            - [19400, 19499]
+            - [19500, 19599]
+            - [19600, 19699]
+
+        2:
+          duration: 30
+          code:
+            - [11200, 11299]
+            - [14100, 14199]
+            - [14200, 14299]
+            - [16300, 16399]
+            - [17100, 17199]
+            - [17400, 17499]
+      1369:
+          duration: 30
+          code:
+            - [11000, 19999]
+      1384:
+        code: [11000, 11999]
+
+
+  cereals_and_cereal_products:
+    level: 2
+    code_history:
+      1363:
+        1:
+          duration: 2
+          code:
+            - [11100, 11199]
+            - [11300, 11999]
+        2:
+          duration: 30
+          code:
+            - [11200, 11299]
+      1369:
+        duration: 30
+        code: [11000, 11999]
+      1384:
+        code: [11100, 11199]
+
+  cereals:
+    level: 3
+    code_history:
+      1363:
+        code: [11200, 11299]
+      1384:
+        code: [11110, 11129]
+
+  flour_and_noodle:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code:
+          - [11100, 11199]
+      1369:
+        duration: 30
+        code:
+          - [11100, 11199]
+
+
+  bread:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code:
+          - [11300, 11399]
+      1369:
+        duration: 30
+        code:
+          - [11300, 11399]
+
+  biscuit:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code:
+          - [11400, 11499]
+      1369:
+        duration: 30
+        code:
+          - [11400, 11499]
+
+
+  meat:
+    level: 1
+    code_history:
+      1363:
+        duration: 2
+        code: [12000, 12999]
+      1369:
+        duration: 30
+        code: [12000, 12999]
+      1383:
+        code: [11200, 11399]
+        
+  red_meat:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code:
+          - [12100, 12199]
+          - [12200, 12299]
+      1369:
+        duration: 30
+        code:
+          - [12100, 12199]
+          - [12200, 12299]
+      1383:
+        code:
+          - [11210, 11219]
+          - [11220, 11229]
+
+  poultry:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code: [12300, 12399]
+      1369:
+        duration: 30
+        code: [12300, 12399]
+      1383:
+        code: [11230, 11239]
+
+  ready_to_cook_meat:
+    level: 2
+    code_history:
+      1363: null
+      1383:
+        code: [11240, 11249]
+
+  sea_food:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code: [12400, 12499]
+      1369:
+        duration: 30
+        code: [12400, 12499]
+      1383:
+        code:
+          - [11310, 11319]
+          - [11320, 11329]
+
+
+  dairy_products_and_egg:
+    level: 1
+    code_history:
+      1363:
+        duration: 2
+        code: [13000, 13999]
+      1369:
+        duration: 30
+        code: [13000, 13999]
+      1383:
+        code: [11400, 11499]
+
+  milk:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code: [13100, 13199]
+      1369:
+        duration: 30
+        code: [13100, 13199]
+      1383:
+        code: [11410, 11419]
+
+  milk_products:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code:
+          - [13200, 13299]
+          - [13300, 13399]
+      1369:
+        duration: 30
+        code:
+          - [13200, 13299]
+          - [13300, 13399]
+      1383:
+        code:
+          - [11420, 11429]
+          - [11430, 11439]
+          - [11520, 11529]      # butter
+
+  milk_products_excluding_butter:
+    level: 2
+    code_history:
+      1363: null
+      1383:
+        code:
+          - [11420, 11429]
+          - [11430, 11439]
+
+  egg:
+    level: 2
+    code_history:
+      1363:
+        duration: 2
+        code: [13400, 13499]
+      1369:
+        duration: 30
+        code: [13400, 13499]
+      1383:
+        code: [11440, 11449]
+
+
+  cigaret:
+    level: 0
+    code_history:
+      1363:
+        duration: 2
+        code:
+          - [19700, 19799]
+
+
+
+###############################################################################
+##          _ _ _   Classification of Individual Consumption   _ _ _         ##
+##                     According to Purpose (COICOP) 2018                    ##
+###############################################################################
+#                                                                             #
+#       COICOP is a classification system developed by the United Nations     #
+#   Statistics Division to categorize individual consumption expenditures     #
+#   and household expenditures based on their purpose. It is widely used as   #
+#   a standard for collecting and analyzing data on household expenditure,    #
+#   providing insights into consumption patterns and changes over time.       #
+#   The system includes 12 major groups and provides a more detailed          #
+#   breakdown of subcategories within each group.                             #
+#                                                                             #
+###############################################################################
+
+coicop:
+  '01':
+    level: 0
+    description: "Food and Non-Alcoholic Beverages "
+    code_history:
+      1384:
+        code: [10000, 19999]
+

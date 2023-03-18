@@ -33,6 +33,9 @@
 #                   old tables:                                               #
 #                       - public_employment_income                            #
 #                       - private_employment_income                           #
+#                       - agricultural_self_employed_income                   #
+#                       - non_agricultural_self_employed_income               #
+#                       - old_other_income                                    #
 #                                                                             #
 #_____________________________________________________________________________#
 

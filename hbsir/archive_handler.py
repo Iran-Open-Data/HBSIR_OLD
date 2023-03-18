@@ -16,9 +16,10 @@ from . import metadata, utils
 
 defaults = metadata.Defaults()
 
-
 def download_year_files_in_range(
-    from_year: int | None = None, to_year: int | None = None, replace: bool = False
+        from_year: int | None = None,
+        to_year: int | None = None,
+        replace: bool = False
 ) -> None:
     """
     Downloads compressed household census files for all years within a

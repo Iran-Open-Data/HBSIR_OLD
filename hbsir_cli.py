@@ -4,7 +4,7 @@ docstring
 
 import click
 
-from heis.archive_handler import (
+from hbsir.archive_handler import (
     download_year_files_in_range,
     unpack_yearly_data_archives,
     extract_data_from_access_files,
