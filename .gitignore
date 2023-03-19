@@ -1,2 +1,12 @@
 __pycache__/
 dist/
+.venv/
+.vscode/
+
+*draft*
+
+Data/*
+7-Zip/*
+temp/*
+
+settings.yaml
