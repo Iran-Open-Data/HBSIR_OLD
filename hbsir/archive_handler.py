@@ -63,13 +63,13 @@ def setup(
 
     Examples
     --------
-    To set up all available files:
+    To set up all available files:    
     >>> setup()
 
-    To set up files for the year 1393:
+    To set up files for the year 1393:    
     >>> setup(1393)
 
-    To set up files for the years 1370 to 1380, inclusive:
+    To set up files for the years 1370 to 1380, inclusive:    
     >>> setup(1370, 1380)
     """
     download(from_year, to_year, replace)
@@ -106,13 +106,13 @@ def download(
 
     Examples
     --------
-    To download all available files:
+    To download all available files:    
     >>> download()
 
-    To download files for the year 1393:
+    To download files for the year 1393:    
     >>> download(1393)
 
-    To download files for the years 1370 to 1380, inclusively:
+    To download files for the years 1370 to 1380, inclusively:    
     >>> download(1370, 1380)
     """
     from_year, to_year = utils.build_year_interval(from_year, to_year)
@@ -221,10 +221,10 @@ def unpack(
 
     Examples
     --------
-    To unpack all available archives:
+    To unpack all available archives:    
     >>> unpack()
 
-    To unpack archives from 1393 to 1400:
+    To unpack archives from 1393 to 1400:    
     >>> unpack(1393, 1400)
     """
     from_year, to_year = utils.build_year_interval(
@@ -305,10 +305,10 @@ def extract_tables(
 
     Examples
     --------
-    To extract tables from all available census files:
+    To extract tables from all available census files:    
     >>> extract_tables()
 
-    To extract tables from all available census files from 1393 to 1400:
+    To extract tables from all available census files from 1393 to 1400:    
     >>> extract_tables(from_year=1393, to_year=1400)
     """
     from_year, to_year = utils.build_year_interval(from_year, to_year)
