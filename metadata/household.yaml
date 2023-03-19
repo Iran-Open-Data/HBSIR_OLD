@@ -15,11 +15,19 @@ Urban-Rural:
 
   names:
     1363:
-      0: "rural"
-      1: "urban"
+      0: "Rural"
+      1: "Urban"
     1387:
-      1: "urban"
-      2: "rural"
+      1: "Urban"
+      2: "Rural"
+
+  farsi_names:
+    1363:
+      0: "روستایی"
+      1: "شهری"
+    1387:
+      1: "روستایی"
+      2: "شهری"
 
 
 Province:
