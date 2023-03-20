@@ -51,11 +51,22 @@ def load_table(
         _description_
     """
     from_year, to_year = utils.build_year_interval(from_year, to_year)
+
+    if add_year is None:
+        add_year = to_year - from_year > 1
+
     table_list = []
     for year in range(from_year, to_year):
-        table_list.append(_get_parquet(table_name, year))
-    table = pd.concat(table_list)
-    return table
+        table = _get_parquet(table_name, year)
+        if add_year:
+            table["Year"] = year
+        table_list.append(table)
+    concat_table = pd.concat(table_list)
+
+    if standard:
+        concat_table = imply_table_schema(concat_table, table_name, year)
+
+    return concat_table
 
 
 def _get_parquet(table_name: str, year: int, download: bool = True) -> pd.DataFrame:
