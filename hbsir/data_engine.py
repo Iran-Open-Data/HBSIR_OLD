@@ -52,7 +52,6 @@ def load_table(
         _description_
     """
     from_year, to_year = utils.build_year_interval(from_year, to_year)
-
     if add_year is None:
         add_year = to_year - from_year > 1
 
