@@ -90,6 +90,100 @@ def _download_parquet(table_name: str, year: int) -> None:
     utils.download_file(url=file_url, path=local_path, show_progress_bar=True)
 
 
+def imply_table_schema(table, table_name, year):
+    """_summary_
+
+    Parameters
+    ----------
+    table : _type_
+        _description_
+    table_name : _type_
+        _description_
+    year : _type_
+        _description_
+
+    Returns
+    -------
+    pd.DataFrame
+        _description_
+    """
+    table_schema = metadata_obj.schema[table_name]
+    instructions = table_schema["columns"]
+    column_order = table_schema["order"]
+
+    for name, instruction in instructions.items():
+        instruction = metadata.get_metadata_version(instruction, year)
+        table = _apply_column_instruction(table, name, instruction)
+
+    table = _order_columns_by_schema(table, column_order)
+    return table
+
+
+def _apply_column_instruction(table, name, instruction):
+    if instruction is None:
+        pass
+    elif instruction["type"] == "categorical":
+        table = _apply_categorical_instruction(table, name, instruction)
+    elif instruction["type"] == "numerical":
+        table = _apply_numerical_instruction(table, name, instruction)
+
+    return table
+
+
+def _apply_categorical_instruction(table, column_name, instruction):
+    categories = instruction["categories"]
+
+    if column_name not in table.columns:
+        table[column_name] = None
+
+    # TODO chack column type and behave accordingly not just changing the type
+    table[column_name] = table[column_name].astype(str)
+
+    for category, condition in categories.items():
+        if isinstance(condition, str):
+            filt = table[column_name] == condition
+        elif isinstance(condition, list):
+            filt = table[column_name].isin(condition)
+        elif isinstance(condition, dict):
+            filt = pd.Series(False, index=table.index)
+            for other_column, value in condition.items():
+                filt = filt | (table[other_column] == value)
+        table.loc[filt, column_name] = category
+
+    return table
+
+
+def _apply_numerical_instruction(table, column_name, instruction):
+    expr = instruction["expression"]
+    pandas_expr = _parse_expression(expr)
+    table[column_name] = pd.eval(pandas_expr)
+    return table
+
+
+def _parse_expression(expression, table_name="table"):
+    expr = sympy.simplify(expression)
+    terms = []
+
+    if len(expr.args) == 0:
+        _, var = expr.as_coeff_Mul()
+        return f"{table_name}['{var}']"
+
+    if (len(expr.args) == 2) and (len(expr.args[1].args) == 0):
+        coeff, var = expr.as_coeff_Mul()
+        return f"{table_name}['{var}'] * {coeff}"
+
+    for term in expr.args:
+        coeff, var = term.as_coeff_Mul()
+        terms.append(f"{table_name}['{var}'].fillna(0) * {coeff}")
+    return " + ".join(terms)
+
+
+def _order_columns_by_schema(table, column_order):
+    new_columns = [
+        column for column in column_order if column in table.columns]
+    return table[new_columns]
+
+
 def add_attribute(
     table: pd.DataFrame,
     year: int,
