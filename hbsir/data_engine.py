@@ -20,12 +20,17 @@ def _check_attribute(attribute: _Attributes | list[_Attributes]):
         attribute = [attribute]
     for atr in attribute:
         if not atr in available_attribute:
-            raise KeyError(f"{atr} is not in attributes.\n"
+            raise KeyError(
+                f"{atr} is not in attributes.\n"
                 f"Available attributes: {available_attribute}")
 
 
 def load_table(
-    table_name: str, from_year=None, to_year=None, standard=True
+    table_name: str,
+    from_year=None,
+    to_year=None,
+    standard=True,
+    add_year: bool | None = None,
 ) -> pd.DataFrame:
     """_summary_
 
@@ -60,7 +65,8 @@ def _get_parquet(table_name: str, year: int, download: bool = True) -> pd.DataFr
     except FileNotFoundError as exc:
         if download:
             _download_parquet(table_name, year)
-            table = pd.read_parquet(defaults.processed_data.joinpath(file_name))
+            table = pd.read_parquet(
+                defaults.processed_data.joinpath(file_name))
         else:
             raise exc
     return table
@@ -74,8 +80,11 @@ def _download_parquet(table_name: str, year: int) -> None:
 
 
 def add_attribute(
-    table: pd.DataFrame, year: int, attribute: _Attributes | list[_Attributes],
-    id_column_name="ID", attribute_text = "names"
+    table: pd.DataFrame,
+    year: int,
+    attribute: _Attributes | list[_Attributes],
+    id_column_name="ID",
+    attribute_text="names",
 ) -> pd.DataFrame:
     """_summary_
 
@@ -104,17 +113,23 @@ def add_attribute(
 
     for atr in attribute_list:
         attribute_column = get_household_attribute(
-            _input=table, year=year, attribute=atr,
-            id_column_name=id_column_name, attribute_text=attribute_text
-            )
+            _input=table,
+            year=year,
+            attribute=atr,
+            id_column_name=id_column_name,
+            attribute_text=attribute_text,
+        )
         table[atr] = attribute_column
     return table
 
 
 def get_household_attribute(
-        _input: pd.DataFrame | pd.Series, year: int, attribute: _Attributes,
-        id_column_name="ID", attribute_text = "names"
-        ) -> pd.Series:
+    _input: pd.DataFrame | pd.Series,
+    year: int,
+    attribute: _Attributes,
+    id_column_name="ID",
+    attribute_text="names",
+) -> pd.Series:
     """_summary_
 
     Parameters
@@ -140,9 +155,11 @@ def get_household_attribute(
 
 
 def _get_attribute_by_id(
-        household_id_column: pd.Series, year: int, attribute: _Attributes,
-        attribute_text = "names"
-        ) -> pd.Series:
+    household_id_column: pd.Series,
+    year: int,
+    attribute: _Attributes,
+    attribute_text="names",
+) -> pd.Series:
     attr_dict = metadata_obj.household[attribute]
     text = metadata.get_metadata_version(attr_dict[attribute_text], year)
     attr_codes = _get_attribute_code(household_id_column, year, attribute)
@@ -150,9 +167,12 @@ def _get_attribute_by_id(
 
 
 def _get_attribute_code(
-        household_id_column: pd.Series, year: int, attribute: _Attributes,
-        ) -> pd.Series:
-    id_length = metadata.get_metadata_version(metadata_obj.household["ID_Length"], year)
+    household_id_column: pd.Series,
+    year: int,
+    attribute: _Attributes,
+) -> pd.Series:
+    id_length = metadata.get_metadata_version(
+        metadata_obj.household["ID_Length"], year)
     attr_dict = metadata_obj.household[attribute]
     position = metadata.get_metadata_version(attr_dict["position"], year)
     start, end = position["start"], position["end"]
