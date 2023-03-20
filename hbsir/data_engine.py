@@ -4,6 +4,7 @@ Main file for ordinary use
 
 from typing import Literal, get_args
 
+import sympy
 import pandas as pd
 
 from . import metadata, utils
@@ -284,3 +285,93 @@ def _get_attribute_code(
     attr_codes = household_id_column % pow(10, (id_length - start))
     attr_codes = attr_codes // pow(10, (id_length - end))
     return attr_codes
+
+
+def add_classification(
+    table: pd.DataFrame,
+    classification: str,
+    level: int,
+    year: int,
+    code_column_name: str = "Code",
+    new_column_name: str | None = None
+):
+    """_summary_
+
+    Parameters
+    ----------
+    table : pd.DataFrame
+        _description_
+    year : int
+        _description_
+    level : int
+        _description_
+    code_column_name : str, optional
+        _description_, by default "Code"
+    """
+    table = table.copy()
+    code_classification = get_code_classification(
+        table, classification=classification, level=level,
+        year=year, code_column_name=code_column_name)
+    if new_column_name is None:
+        new_column_name = f"{classification} - {level}"
+    table[new_column_name] = code_classification
+    return table
+
+
+def get_code_classification(
+    _input: pd.DataFrame | pd.Series,
+    classification: str,
+    level: int,
+    year: int,
+    code_column_name="Code",
+) -> pd.Series:
+    """_summary_
+
+    Parameters
+    ----------
+    _input : pd.DataFrame | pd.Series
+        _description_
+    year : int
+        _description_
+    level : int
+        _description_
+    code_column_name : str, optional
+        _description_, by default "Code"
+    attribute_text : str, optional
+        _description_, by default "names"
+
+    Returns
+    -------
+    pd.Series
+        _description_
+    """
+    if isinstance(_input, pd.DataFrame):
+        _input = _input[code_column_name].copy()
+    if not isinstance(_input, pd.Series):
+        raise ValueError
+    return _get_classification_by_code(_input, classification, level, year)
+
+
+def _get_classification_by_code(
+    commodity_code_column: pd.Series,
+    classification: str,
+    level: int,
+    year: int,
+) -> pd.Series:
+    translator = _build_classification_translator(classification, level, year)
+    return commodity_code_column.map(translator)
+
+
+def _build_classification_translator(classification: str, level: int, year: int):
+    commodity_codes = metadata_obj.commodities[classification]
+
+    commodity_codes = metadata.get_metadata_version(commodity_codes, year)
+    selected_items = {name: info for name, info
+                      in commodity_codes.items() if info['level'] == level}
+
+    translator = {}
+    for name, info in selected_items.items():
+        start, end = info['code']
+        for code in range(start, end):
+            translator[code] = name
+    return translator
