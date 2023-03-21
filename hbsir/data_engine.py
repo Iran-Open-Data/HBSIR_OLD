@@ -290,32 +290,74 @@ def _get_attribute_code(
 
 def add_classification(
     table: pd.DataFrame,
-    classification: str,
-    level: int,
-    year: int,
+    classification: str = "original",
+    level: int | List[int] | None = None,
+    year: int | None = None,
     code_column_name: str = "Code",
-    new_column_name: str | None = None
-):
+    year_column_name: str = "Year",
+    new_column_name: str | List[str] | None = None,
+) -> pd.DataFrame:
     """_summary_
 
     Parameters
     ----------
     table : pd.DataFrame
         _description_
-    year : int
-        _description_
-    level : int
-        _description_
+    classification : str, optional
+        _description_, by default "original"
+    level : int | None, optional
+        _description_, by default None
+    year : int | None, optional
+        _description_, by default None
     code_column_name : str, optional
         _description_, by default "Code"
+    year_column_name : str, optional
+        _description_, by default "Year"
+    new_column_name : str | None, optional
+        _description_, by default None
+
+    Returns
+    -------
+    pd.DataFrame
+        _description_
+
+    Raises
+    ------
+    TypeError
+        _description_
     """
     table = table.copy()
-    code_classification = get_code_classification(
-        table, classification=classification, level=level,
-        year=year, code_column_name=code_column_name)
+
+    if level is None:
+        levels = metadata_obj.commodities[classification]["default_levels"]
+    elif isinstance(level, int):
+        levels = [level]
+    elif isinstance(level, list):
+        levels = level
+    else:
+        raise TypeError
+
     if new_column_name is None:
-        new_column_name = f"{classification} - {level}"
-    table[new_column_name] = code_classification
+        column_names = [f"{classification}-{_level}" for _level in levels]
+    elif isinstance(new_column_name, str):
+        column_names = [new_column_name]
+
+    assert len(levels) == len(column_names)
+
+    level_and_name = zip(levels, column_names)
+
+    for lvl, column_name in level_and_name:
+        classification_column = get_code_classification(
+            table,
+            classification=classification,
+            level=lvl,
+            year=year,
+            code_column_name=code_column_name,
+            year_column_name=year_column_name,
+        )
+        table[column_name] = classification_column
+
+    table = table.drop(columns="__Year__")
     return table
 
 
@@ -323,8 +365,9 @@ def get_code_classification(
     _input: pd.DataFrame | pd.Series,
     classification: str,
     level: int,
-    year: int,
-    code_column_name="Code",
+    year: int | None = None,
+    code_column_name: str = "Code",
+    year_column_name: str = "Year",
 ) -> pd.Series:
     """_summary_
 
@@ -346,11 +389,38 @@ def get_code_classification(
     pd.Series
         _description_
     """
-    if isinstance(_input, pd.DataFrame):
-        _input = _input[code_column_name].copy()
-    if not isinstance(_input, pd.Series):
+    if isinstance(_input, pd.Series):
+        if year is None:
+            raise TypeError(
+                "Since the input is a Pandas series, the 'year' variable must "
+                "be specified. Please provide a year value in the format YYYY."
+            )
+        return _get_classification_by_code(_input, classification, level, year)
+    if not isinstance(_input, pd.DataFrame):
         raise ValueError
-    return _get_classification_by_code(_input, classification, level, year)
+
+    if year is not None:
+        years = [year]
+        _input["__Year__"] = year
+    elif year_column_name in _input.columns:
+        years = _input[year_column_name].unique()
+        _input["__Year__"] = _input[year_column_name]
+    else:
+        raise TypeError(
+            "DataFrame does not have a 'year' column. Please provide the "
+            "'year' column or specify a value for the 'year' variable."
+        )
+
+    classification_column = pd.Series(None, dtype="object", index=_input.index)
+    for _year in years:
+        filt = _input["__Year__"] == _year
+        code_series = _input.loc[filt, code_column_name]
+        classification = _get_classification_by_code(
+            code_series, classification, level, _year
+        )
+        classification_column.loc[filt] = classification
+
+    return classification_column
 
 
 def _get_classification_by_code(
