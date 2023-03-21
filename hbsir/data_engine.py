@@ -2,7 +2,7 @@
 Main file for ordinary use
 """
 
-from typing import Literal, get_args
+from typing import Literal, List, get_args
 
 import sympy
 import pandas as pd
@@ -15,15 +15,17 @@ metadata_obj = metadata.Metadata()
 _Attributes = Literal["Urban-Rural", "Province", "Region"]
 
 
-def _check_attribute(attribute: _Attributes | list[_Attributes]):
-    available_attribute = get_args(_Attributes)
+def _check_attribute(attribute: _Attributes | List[_Attributes]) -> None:
+    available_attributes = get_args(_Attributes)
     if not isinstance(attribute, list):
         attribute = [attribute]
     for atr in attribute:
-        if not atr in available_attribute:
+        if not atr in available_attributes:
+            available_attributes_str = ', '.join(str(x) for x in available_attributes)
             raise KeyError(
-                f"{atr} is not in attributes.\n"
-                f"Available attributes: {available_attribute}")
+                f"Invalid attribute: {atr}. This attribute is not supported.\n"
+                f"Available attributes: {available_attributes_str}"
+            )
 
 
 def load_table(
