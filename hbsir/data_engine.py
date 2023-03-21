@@ -361,16 +361,28 @@ def _get_classification_by_code(
     return commodity_code_column.map(translator)
 
 
-def _build_classification_translator(classification: str, level: int, year: int):
-    commodity_codes = metadata_obj.commodities[classification]
+def _build_classification_translator(
+    classification: str, level: int, year: int, attribute: str = "name"
+) -> dict:
+    commodity_codes = metadata_obj.commodities[classification]["items"]
 
     commodity_codes = metadata.get_metadata_version(commodity_codes, year)
-    selected_items = {name: info for name, info
-                      in commodity_codes.items() if info['level'] == level}
+    selected_items = {
+        name: info for name, info in commodity_codes.items() if info["level"] == level
+    }
 
     translator = {}
-    for name, info in selected_items.items():
-        start, end = info['code']
-        for code in range(start, end):
-            translator[code] = name
+    if attribute == "name":
+        for name, info in selected_items.items():
+            start, end = info["code"]
+            for code in range(start, end):
+                translator[code] = name
+    elif attribute == "table":
+        pass
+    else:
+        for info in selected_items.values():
+            start, end = info["code"]
+            for code in range(start, end):
+                translator[code] = info[attribute]
+
     return translator
