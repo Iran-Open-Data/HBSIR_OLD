@@ -240,10 +240,9 @@ def _unpack_yearly_data_archive(year: int, replace: bool = True):
     file_path = defaults.archive_files.joinpath(f"{year}.rar")
     year_directory = defaults.unpacked_data.joinpath(str(year))
     if year_directory.exists():
-        if replace:
+        if not replace:
             return
-        else:
-            shutil.rmtree(year_directory)
+        shutil.rmtree(year_directory)
     year_directory.mkdir(parents=True)
     _unpack_archive_with_7zip(file_path, year_directory)
     _unpack_archives_recursive(year_directory)
