@@ -62,11 +62,10 @@ def load_table(
         table = _get_parquet(table_name, year)
         if add_year:
             table["Year"] = year
+        if standard:
+            table = imply_table_schema(table, table_name, year)
         table_list.append(table)
     concat_table = pd.concat(table_list)
-
-    if standard:
-        concat_table = imply_table_schema(concat_table, table_name, year)
 
     return concat_table
 
