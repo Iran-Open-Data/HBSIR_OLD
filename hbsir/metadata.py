@@ -75,7 +75,7 @@ class Defaults:
     last_year = settings["last_year"]
 
 
-def get_latest_version_year(metadata_dict: dict, year: int) -> int | None:
+def get_latest_version_year(metadata_dict: dict, year: int) -> int | bool:
     """
     Retrieve the most recent available version of metadata that matches or
     precedes the given year, provided that the metadata is versioned.
@@ -94,13 +94,15 @@ def get_latest_version_year(metadata_dict: dict, year: int) -> int | None:
 
     """
     if not isinstance(metadata_dict, dict):
-        return None
+        return False
+    if "versions" in metadata_dict:
+        return True
     version_list = list(metadata_dict.keys())
     for element in version_list:
         if not isinstance(element, int):
-            return None
+            return False
         if (element < 1300) or (element > 1500):
-            return None
+            return False
 
     selected_version = 0
     for version in version_list:
@@ -128,7 +130,43 @@ def get_metadata_version(metadata_dict: dict, year: int) -> dict:
 
     """
     selected_version = get_latest_version_year(metadata_dict, year)
+    if selected_version is True:
+        selected_version = get_latest_version_year(metadata_dict["versions"], year)
+        metadata_version = {key: value for key, value in metadata_dict.items() if key != "versions"}
+        for key, value in metadata_dict["versions"][selected_version].items():
+            metadata_version[key] = value
 
-    if selected_version is None:
-        return metadata_dict
-    return metadata_dict[selected_version]
+    elif selected_version is False:
+        metadata_version =  metadata_dict
+
+    else:
+        metadata_version = metadata_dict[selected_version]
+
+    return metadata_version
+
+
+def get_categories(metadata_dict: dict) -> list:
+    """_summary_
+
+    Parameters
+    ----------
+    metadata_dict : dict
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+    if "categories" not in metadata_dict:
+        categories_list = [metadata_dict]
+    else:
+        categories_number = list(metadata_dict["categories"].keys())
+        categories_number.sort()
+        categories_list = [metadata_dict["categories"][number] for number in categories_number]
+        shared_infos = [key for key in metadata_dict.keys() if key != "categories"]
+        for category in categories_list:
+            for info in shared_infos:
+                if info not in category.keys():
+                    category[info] = metadata_dict[info]
+    return categories_list

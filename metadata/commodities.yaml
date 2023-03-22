@@ -5,14 +5,141 @@
 
 tables:
   food:
-    - 1383: [10_000, 20_000]
+    {start: 10_000, end: 20_000}
   tobacco:
-    - ????: [20_000, 30_000]
+    - ????: {start: 20_000, end: 30_000}
 
 
 ###############################################################################
 ##                 - - -    Original Classification   - - -                  ##
 ###############################################################################
+
+
+################### - Original Classification Before 1383 - ###################
+
+
+ORIGINAL1363:
+  items: &ORIGINAL1363
+
+
+    #                        ######## LEVEL 1 ########                        #
+    food_beverages_and_tobacco:
+      level: 1
+      farsi_name: "مواد خوراکی، نوشیدنی‌ها و دخانیات"
+      categories:
+        1:
+          duration: 30
+          code:
+            - {start: 11_200, end: 11_300}
+            - {start: 14_000, end: 15_000}
+            - {start: 16_300, end: 16_400}
+            - {start: 17_100, end: 17_200}
+            - {start: 17_400, end: 17_500}
+            - {start: 18_000, end: 19_000}
+        2:
+          duration: 2
+          code:
+            - {start: 11_100, end: 11_200}
+            - {start: 11_300, end: 11_500}
+            - {start: 12_000, end: 14_000}
+            - {start: 15_000, end: 16_000}
+            - {start: 16_100, end: 16_300}
+            - {start: 17_200, end: 17_400}
+            - {start: 19_000, end: 20_000}
+        3:
+          drop: True
+          code:
+            - 18888
+            - 19993
+            - {start: 911_00, end: 912_00}
+
+    #                            #### LEVEL 2 ####                            #
+    cereals_and_cereal_products:
+      level: 2
+      farsi_name: "غلات و فرآورده‌های آن"
+      categories:
+        1:
+          duration: 30
+          code:
+            - {start: 11_200, end: 11_300}
+        2:
+          duration: 2
+          code:
+            - {start: 11_100, end: 11_200}
+            - {start: 11_300, end: 11_500}
+
+    #                            #### LEVEL 2 ####                            #
+    meat_and_sea_foods:
+      level: 2
+      duration: 2
+      farsi_name: "گوشت"
+      code: {start: 12_000, end: 13_000}
+
+    #                            #### LEVEL 2 ####                            #
+    milk_other_dairy_product_and_eggs:
+      level: 2
+      duration: 2
+      farsi_name: "شیر و فرآورده‌های آن (به جز کره) و تخم پرندگان"
+      code: {start: 13_000, end: 14_000}
+
+    #                            #### LEVEL 2 ####                            #
+    oils_and_fats:
+      level: 2
+      duration: 30
+      farsi_name: "روغن‌ها و چربی‌ها"
+      code: {start: 14_000, end: 15_000}
+
+    #                            #### LEVEL 2 ####                            #
+    fruits_and_vegetables:
+      level: 2
+      duration: 2
+      farsi_name: "میوه‌ها و سبزیجات"
+      code: {start: 15_000, end: 16_000}
+
+    #                            #### LEVEL 2 ####                            #
+    nuts_and_pulses:
+      level: 2
+      farsi_name: "خشکبار، آجیل و حبوبات"
+      categories:
+        1:
+          duration: 30
+          code: {start: 16_300, end: 16_400}
+        2:
+          duration: 2
+          code: {start: 16_100, end: 16_300}
+
+    #                            #### LEVEL 2 ####                            #
+    sugar_confectionery_and_desserts_tea_coffee_and_cocoa_drinks:
+      level: 2
+      categories:
+        1:
+          duration: 30
+          code:
+            - {start: 17_100, end: 17_200}
+            - {start: 17_400, end: 17_500}
+        2:
+          duration: 2
+          code:
+            - {start: 17_200, end: 17_400}
+
+    #                            #### LEVEL 2 ####                            #
+    spices_condiments_and_other_food_products:
+      level: 2
+      duration: 30
+      farsi_name: "ادویه‌ها، چاشنی‌ها و سایر ترکیبات خوراکی"
+      code: {start: 18_000, end: 19_000}
+
+    #                            #### LEVEL 2 ####                            #
+    soft_drinks_prepared_foods_and_tobacco:
+      level: 2
+      duration: 2
+      farsi_name: "نوشابه‌ها، غذاهای آماده و دخانیات"
+      code: {start: 19_000, end: 20_000}
+
+
+
+################### - Original Classification After 1383 - ####################
+
 
 ORIGINAL1383:
 
@@ -25,564 +152,307 @@ ORIGINAL1383:
     food_and_non_alcoholic_beverages:
       level: 0
       farsi_name: "مواد خوراکی و نوشیدنی‌های غیر الکلی"
-      code: [10_000, 20_000]
+      code: {start: 10_000, end: 20_000}
 
 
     #                        ######## LEVEL 1 ########                        #
     food:
       level: 1
       farsi_name: "مواد خوراکی"
-      code: [11_000, 12_000]
+      code: {start: 11_000, end: 12_000}
 
     #                            #### LEVEL 2 ####                            #
     cereals_and_cereal_products:
       level: 2
       farsi_name: "غلات و فرآورده‌های آن"
-      code: [11_100, 11_200]
+      code: {start: 11_100, end: 11_200}
 
     #                              ## LEVEL 3 ##                              #
     cereals:
       level: 3
-      code: [11_110, 11_130]
+      code: {start: 11_110, end: 11_130}
 
     #                              ## LEVEL 3 ##                              #
     bread_and_bakery_products:
       level: 3
-      code: [11_140, 11_160]
+      code: {start: 11_140, end: 11_160}
 
     #                              ## LEVEL 3 ##                              #
     flour_noodle_and_similar_pasta_products:
       level: 3
-      code: [11_160, 11_170]
+      code: {start: 11_160, end: 11_170}
 
     #                              ## LEVEL 3 ##                              #
     cake_and_biscuit:
       level: 3
-      code: [11_170, 11_180]
+      code: {start: 11_170, end: 11_180}
 
     #                            #### LEVEL 2 ####                            #
     meat:
       level: 2
       farsi_name: "گوشت"
-      code: [11_200, 11_400]
+      code: {start: 11_200, end: 11_400}
 
     #                              ## LEVEL 3 ##                              #
     red_meat:
       level: 3
-      code: [11_210, 11_230]
+      code: {start: 11_210, end: 11_230}
 
     #                              ## LEVEL 3 ##                              #
     poultry:
       level: 3
-      code: [11_230, 11_240]
+      code: {start: 11_230, end: 11_240}
 
     #                              ## LEVEL 3 ##                              #
     ready_to_cook_meat:
       level: 3
-      code: [11_240, 11_250]
+      code: {start: 11_240, end: 11_250}
 
     #                            #### LEVEL 2 ####                            #
     fish_and_other_sea_foods:
       level: 2
       farsi_name: "ماهی، میگو و فرآورده‌های آن‌ها"
-      code: [11_300, 11_400]
+      code: {start: 11_300, end: 11_400}
 
     #                              ## LEVEL 3 ##                              #
     _fish_and_other_sea_foods:
       level: 3
       farsi_name: "ماهی، میگو و فرآورده‌های آن‌ها"
-      code: [11_310, 11_330]
+      code: {start: 11_310, end: 11_330}
 
     #                            #### LEVEL 2 ####                            #
     milk_other_dairy_product_excluding_butter_and_eggs:
       level: 2
       farsi_name: "شیر و فرآورده‌های آن (به جز کره) و تخم پرندگان"
-      code: [11_400, 11_500]
+      code: {start: 11_400, end: 11_500}
 
     #                              ## LEVEL 3 ##                              #
     milk:
       level: 3
-      code: [11_410, 11_420]
+      code: {start: 11_410, end: 11_420}
 
     #                              ## LEVEL 3 ##                              #
     other_dairy_product_excluding_butter:
       level: 3
-      code: [11_420, 11_440]
+      code: {start: 11_420, end: 11_440}
 
     #                              ## LEVEL 3 ##                              #
     eggs:
       level: 3
-      code: [11_440, 11_450]
+      code: {start: 11_440, end: 11_450}
 
     #                            #### LEVEL 2 ####                            #
     oils_fats_and_butter:
       level: 2
       farsi_name: "روغن‌ها، چربی‌ها و کره"
-      code: [11_500, 11_600]
+      code: {start: 11_500, end: 11_600}
 
     #                              ## LEVEL 3 ##                              #
     animal_oils_and_fats_excluding_butter:
       level: 3
-      code: [11_510, 11_520]
+      code: {start: 11_510, end: 11_520}
 
     #                              ## LEVEL 3 ##                              #
     butter:
       level: 3
-      code: [11_520, 11_530]
+      code: {start: 11_520, end: 11_530}
 
     #                              ## LEVEL 3 ##                              #
     vegetable_oils:
       level: 3
-      code: [11_530, 11_540]
+      code: {start: 11_530, end: 11_540}
 
     #                            #### LEVEL 2 ####                            #
     fruits_and_nuts:
       level: 2
       farsi_name: "میوه‌ها و خشکبار"
-      code: [11_600, 11_700]
+      code: {start: 11_600, end: 11_700}
 
     #                              ## LEVEL 3 ##                              #
     tree_fruits:
       level: 3
-      code: [11_610, 11_640]
+      code: {start: 11_610, end: 11_640}
 
     #                              ## LEVEL 3 ##                              #
     cucurbit_fruits:
       level: 3
-      code: [11_640, 11_650]
+      code: {start: 11_640, end: 11_650}
 
     #                              ## LEVEL 3 ##                              #
     nuts:
       level: 3
-      code: [11_650, 11_670]
+      code: {start: 11_650, end: 11_670}
 
     #                            #### LEVEL 2 ####                            #
     vegetables_and_pulses:
       level: 2
       farsi_name: "سبزی‌ها و حبوبات"
-      code: [11_700, 11_800]
+      code: {start: 11_700, end: 11_800}
 
     #                              ## LEVEL 3 ##                              #
     leafy_or_stem_vegetables:
       level: 3
-      code: [11_710, 11_720]
+      code: {start: 11_710, end: 11_720}
 
     #                              ## LEVEL 3 ##                              #
     fruit_bearing_vegetables:
       level: 3
-      code: [11_720, 11_730]
+      code: {start: 11_720, end: 11_730}
 
     #                              ## LEVEL 3 ##                              #
     root_vegetables:
       level: 3
-      code: [11_730, 11_740]
+      code: {start: 11_730, end: 11_740}
 
     #                              ## LEVEL 3 ##                              #
     other_vegetables:
       level: 3
-      code: [11_740, 11_750]
+      code: {start: 11_740, end: 11_750}
 
     #                              ## LEVEL 3 ##                              #
     prepared_vegetables:
       level: 3
-      code: [11_750, 11_760]
+      code: {start: 11_750, end: 11_760}
 
     #                              ## LEVEL 3 ##                              #
     pulses:
       level: 3
-      code: [11_760, 11_770]
+      code: {start: 11_760, end: 11_770}
 
     #                            #### LEVEL 2 ####                            #
     sugar_confectionery_and_desserts:
       level: 2
       farsi_name: "قند و شکر، مرباها و شیرینی‌ها"
-      code: [11_800, 11_900]
+      code: {start: 11_800, end: 11_900}
 
     #                              ## LEVEL 3 ##                              #
     sugar:
       level: 3
-      code: [11_810, 11_820]
+      code: {start: 11_810, end: 11_820}
 
     #                              ## LEVEL 3 ##                              #
     confectionery_and_desserts:
       level: 3
-      code: [11_820, 11_850]
+      code: {start: 11_820, end: 11_850}
 
     #                            #### LEVEL 2 ####                            #
     spices_condiments_and_other_food_products:
       level: 2
       farsi_name: "ادویه‌ها، چاشنی‌ها و سایر ترکیبات خوراکی"
-      code: [11_900, 12_000]
+      code: {start: 11_900, end: 12_000}
 
     #                              ## LEVEL 3 ##                              #
     spices:
       level: 3
-      code: [11_910, 11_920]
+      code: {start: 11_910, end: 11_920}
 
     #                              ## LEVEL 3 ##                              #
     condiments_and_other_food_products:
       level: 3
-      code: [11_920, 11_950]
+      code: {start: 11_920, end: 11_950}
 
 
     #                        ######## LEVEL 1 ########                        #
     non_alcoholic_beverages:
       level: 1
       farsi_name: "نوشیدنی‌های غیر الکلی"
-      code: [12_000, 13_000]
+      code: {start: 12_000, end: 13_000}
 
     #                            #### LEVEL 2 ####                            #
     tea_coffee_and_cocoa_drinks:
       level: 2
       farsi_name: "چای، قهوه و کاکائو"
-      code: [12_100, 12_200]
+      code: {start: 12_100, end: 12_200}
 
     #                              ## LEVEL 3 ##                              #
     _tea_coffee_and_cocoa_drinks:
       level: 3
       farsi_name: "چای، قهوه و کاکائو"
-      code: [12_110, 12_120]
+      code: {start: 12_110, end: 12_120}
 
     #                            #### LEVEL 2 ####                            #
     soft_drinks:
       level: 2
       farsi_name: "نوشابه‌ها"
-      code: [12_200, 12_300]
+      code: {start: 12_200, end: 12_300}
 
     #                              ## LEVEL 3 ##                              #
     _soft_drinks:
       level: 3
       farsi_name: "نوشابه‌ها"
-      code: [12_210, 12_220]
+      code: {start: 12_210, end: 12_220}
 
 
     #                ################ LEVEL 0 ################                #
     alcoholic_beverages_tobacco_and_norcotics:
       level: 0
       farsi_name: "نوشیدنی‌های الکلی، تنباکو و مواد مخدر"
-      code: [20_000, 30_000]
+      code: {start: 20_000, end: 30_000}
 
 
     #                        ######## LEVEL 1 ########                        #
     alcoholic_beverages:
       level: 1
       farsi_name: "نوشیدنی‌های الکلی"
-      code: [21_000, 22_000]
+      code: {start: 21_000, end: 22_000}
 
     #                            #### LEVEL 2 ####                            #
     _alcoholic_beverages:
       level: 2
       farsi_name: "نوشیدنی‌های الکلی"
-      code: [21_100, 21_200]
+      code: {start: 21_100, end: 21_200}
 
     #                              ## LEVEL 3 ##                              #
     __alcoholic_beverages:
       level: 3
       farsi_name: "نوشیدنی‌های الکلی"
-      code: [21_110, 21_120]
+      code: {start: 21_110, end: 21_120}
 
 
     #                        ######## LEVEL 1 ########                        #
     tobacco:
       level: 1
       farsi_name: "تنباکو"
-      code: [22_000, 23_000]
+      code: {start: 22_000, end: 23_000}
 
     #                            #### LEVEL 2 ####                            #
     _tobacco:
       level: 2
       farsi_name: "تنباکو"
-      code: [22_100, 22_200]
+      code: {start: 22_100, end: 22_200}
 
     #                              ## LEVEL 3 ##                              #
     __tobacco:
       level: 3
       farsi_name: "تنباکو"
-      code: [22_110, 22_120]
+      code: {start: 22_110, end: 22_120}
 
 
     #                        ######## LEVEL 1 ########                        #
     norcotics:
       level: 1
       farsi_name: "مواد مخدر"
-      code: [22_100, 22_200]
+      code: {start: 22_100, end: 22_200}
 
     #                            #### LEVEL 2 ####                            #
     _norcotics:
       level: 2
       farsi_name: "مواد مخدر"
-      code: [22_100, 22_200]
+      code: {start: 22_100, end: 22_200}
 
     #                              ## LEVEL 3 ##                              #
     __norcotics:
       level: 3
       farsi_name: "مواد مخدر"
-      code: [23_110, 23_120]
+      code: {start: 23_110, end: 23_120}
 
 
 original:
-  default_levels: [1, 2]
+  default_levels: [2, 3]
+
   items:
+    1363: *ORIGINAL1363
     1383: *ORIGINAL1383
-
-
-__original:
-  food:
-    level: 1
-    code_history:
-      1363:
-        1:
-          duration: 2
-          code:
-            - [11100, 11199]
-            - [11300, 11399]
-            - [11400, 11499]
-            - [12100, 12199]
-            - [12200, 12199]
-            - [12300, 12199]
-            - [12400, 12199]
-            - [13100, 13199]
-            - [13200, 13299]
-            - [13300, 13399]
-            - [13400, 13499]
-            - [15100, 15199]
-            - [15200, 15299]
-            - [15300, 15399]
-            - [15400, 15499]
-            - [15500, 15599]
-            - [15600, 15699]
-            - [15700, 15799]
-            - [16100, 16199]
-            - [16200, 16299]
-            - [17200, 17299]
-            - [17300, 17399]
-            - [18100, 18199]
-            - [18200, 18299]
-            - [19100, 19199]
-            - [19200, 19299]
-            - [19300, 19399]
-            - [19400, 19499]
-            - [19500, 19599]
-            - [19600, 19699]
-
-        2:
-          duration: 30
-          code:
-            - [11200, 11299]
-            - [14100, 14199]
-            - [14200, 14299]
-            - [16300, 16399]
-            - [17100, 17199]
-            - [17400, 17499]
-      1369:
-          duration: 30
-          code:
-            - [11000, 19999]
-      1384:
-        code: [11000, 11999]
-
-
-  cereals_and_cereal_products:
-    level: 2
-    code_history:
-      1363:
-        1:
-          duration: 2
-          code:
-            - [11100, 11199]
-            - [11300, 11999]
-        2:
-          duration: 30
-          code:
-            - [11200, 11299]
-      1369:
-        duration: 30
-        code: [11000, 11999]
-      1384:
-        code: [11100, 11199]
-
-  cereals:
-    level: 3
-    code_history:
-      1363:
-        code: [11200, 11299]
-      1384:
-        code: [11110, 11129]
-
-  flour_and_noodle:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code:
-          - [11100, 11199]
-      1369:
-        duration: 30
-        code:
-          - [11100, 11199]
-
-
-  bread:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code:
-          - [11300, 11399]
-      1369:
-        duration: 30
-        code:
-          - [11300, 11399]
-
-  biscuit:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code:
-          - [11400, 11499]
-      1369:
-        duration: 30
-        code:
-          - [11400, 11499]
-
-
-  meat:
-    level: 1
-    code_history:
-      1363:
-        duration: 2
-        code: [12000, 12999]
-      1369:
-        duration: 30
-        code: [12000, 12999]
-      1383:
-        code: [11200, 11399]
-        
-  red_meat:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code:
-          - [12100, 12199]
-          - [12200, 12299]
-      1369:
-        duration: 30
-        code:
-          - [12100, 12199]
-          - [12200, 12299]
-      1383:
-        code:
-          - [11210, 11219]
-          - [11220, 11229]
-
-  poultry:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code: [12300, 12399]
-      1369:
-        duration: 30
-        code: [12300, 12399]
-      1383:
-        code: [11230, 11239]
-
-  ready_to_cook_meat:
-    level: 2
-    code_history:
-      1363: null
-      1383:
-        code: [11240, 11249]
-
-  sea_food:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code: [12400, 12499]
-      1369:
-        duration: 30
-        code: [12400, 12499]
-      1383:
-        code:
-          - [11310, 11319]
-          - [11320, 11329]
-
-
-  dairy_products_and_egg:
-    level: 1
-    code_history:
-      1363:
-        duration: 2
-        code: [13000, 13999]
-      1369:
-        duration: 30
-        code: [13000, 13999]
-      1383:
-        code: [11400, 11499]
-
-  milk:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code: [13100, 13199]
-      1369:
-        duration: 30
-        code: [13100, 13199]
-      1383:
-        code: [11410, 11419]
-
-  milk_products:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code:
-          - [13200, 13299]
-          - [13300, 13399]
-      1369:
-        duration: 30
-        code:
-          - [13200, 13299]
-          - [13300, 13399]
-      1383:
-        code:
-          - [11420, 11429]
-          - [11430, 11439]
-          - [11520, 11529]      # butter
-
-  milk_products_excluding_butter:
-    level: 2
-    code_history:
-      1363: null
-      1383:
-        code:
-          - [11420, 11429]
-          - [11430, 11439]
-
-  egg:
-    level: 2
-    code_history:
-      1363:
-        duration: 2
-        code: [13400, 13499]
-      1369:
-        duration: 30
-        code: [13400, 13499]
-      1383:
-        code: [11440, 11449]
-
-
-  cigaret:
-    level: 0
-    code_history:
-      1363:
-        duration: 2
-        code:
-          - [19700, 19799]
 
 
 
