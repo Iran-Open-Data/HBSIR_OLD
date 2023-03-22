@@ -51,6 +51,7 @@ def download_file(
         unit_scale=True,
         disable=not show_progress_bar,
     )
+    Path(path.parent).mkdir(parents=True, exist_ok=True)
     with open(path, mode="wb") as file:
         for chunk in response.iter_content(chunk_size=4096):
             download_bar.update(len(chunk))
