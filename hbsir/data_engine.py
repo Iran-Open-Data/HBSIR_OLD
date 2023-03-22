@@ -21,7 +21,7 @@ def _check_attribute(attribute: _Attributes | List[_Attributes]) -> None:
         attribute = [attribute]
     for atr in attribute:
         if not atr in available_attributes:
-            available_attributes_str = ', '.join(str(x) for x in available_attributes)
+            available_attributes_str = ", ".join(str(x) for x in available_attributes)
             raise KeyError(
                 f"Invalid attribute: {atr}. This attribute is not supported.\n"
                 f"Available attributes: {available_attributes_str}"
@@ -77,8 +77,7 @@ def _get_parquet(table_name: str, year: int, download: bool = True) -> pd.DataFr
     except FileNotFoundError as exc:
         if download:
             _download_parquet(table_name, year)
-            table = pd.read_parquet(
-                defaults.processed_data.joinpath(file_name))
+            table = pd.read_parquet(defaults.processed_data.joinpath(file_name))
         else:
             raise exc
     return table
@@ -180,8 +179,7 @@ def _parse_expression(expression, table_name="table"):
 
 
 def _order_columns_by_schema(table, column_order):
-    new_columns = [
-        column for column in column_order if column in table.columns]
+    new_columns = [column for column in column_order if column in table.columns]
     return table[new_columns]
 
 
@@ -277,8 +275,7 @@ def _get_attribute_code(
     year: int,
     attribute: _Attributes,
 ) -> pd.Series:
-    id_length = metadata.get_metadata_version(
-        metadata_obj.household["ID_Length"], year)
+    id_length = metadata.get_metadata_version(metadata_obj.household["ID_Length"], year)
     attr_dict = metadata_obj.household[attribute]
     position = metadata.get_metadata_version(attr_dict["position"], year)
     start, end = position["start"], position["end"]
@@ -415,7 +412,10 @@ def get_code_classification(
         filt = _input["__Year__"] == _year
         code_series = _input.loc[filt, code_column_name]
         classification = _get_classification_by_code(
-            code_series, classification, level, _year
+            commodity_code_column=code_series,
+            classification=classification,
+            level=level,
+            year=_year,
         )
         classification_column.loc[filt] = classification
 
