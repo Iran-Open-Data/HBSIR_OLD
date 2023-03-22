@@ -428,32 +428,55 @@ def _get_classification_by_code(
     level: int,
     year: int,
 ) -> pd.Series:
-    translator = _build_classification_translator(classification, level, year)
+    translator = _build_translator(
+        classification=classification, level=level, year=year
+    )
     return commodity_code_column.map(translator)
 
 
-def _build_classification_translator(
-    classification: str, level: int, year: int, attribute: str = "name"
+def _build_translator(
+    classification: str,
+    level: int,
+    year: int,
+    attribute: str = "name",
+    default_value: str | None = None,
 ) -> dict:
     commodity_codes = metadata_obj.commodities[classification]["items"]
-
     commodity_codes = metadata.get_metadata_version(commodity_codes, year)
     selected_items = {
         name: info for name, info in commodity_codes.items() if info["level"] == level
     }
-
     translator = {}
     if attribute == "name":
         for name, info in selected_items.items():
-            start, end = info["code"]
-            for code in range(start, end):
-                translator[code] = name
-    elif attribute == "table":
-        pass
+            categories = metadata.get_categories(info)
+            for category_info in categories:
+                code_range = _get_code_range(category_info["code"])
+                for code in code_range:
+                    translator[code] = name
     else:
         for info in selected_items.values():
-            start, end = info["code"]
-            for code in range(start, end):
-                translator[code] = info[attribute]
+            categories = metadata.get_categories(info)
+            for category_info in categories:
+                code_range = _get_code_range(category_info["code"])
+                for code in code_range:
+                    try:
+                        attribute_value = category_info[attribute]
+                    except KeyError:
+                        attribute_value = default_value
+                    translator[code] = attribute_value
 
     return translator
+
+
+def _get_code_range(code_range_info):
+    if isinstance(code_range_info, int):
+        code_range = [code_range_info]
+    elif isinstance(code_range_info, dict):
+        code_range = list(range(code_range_info["start"], code_range_info["end"]))
+    elif isinstance(code_range_info, list):
+        code_range = []
+        for element in code_range_info:
+            code_range.extend(_get_code_range(element))
+
+    return code_range
