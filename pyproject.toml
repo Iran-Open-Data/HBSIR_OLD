@@ -15,6 +15,7 @@ pyodbc = "^4.0.35"
 requests = "^2.28.2"
 tqdm = "^4.65.0"
 sympy = "^1.11.1"
+fastparquet = "^2023.2.0"
 
 [build-system]
 requires = ["poetry-core"]
