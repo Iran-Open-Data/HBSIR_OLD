@@ -1,5 +1,5 @@
 """
-docs
+Metadata module
 """
 
 from dataclasses import dataclass
