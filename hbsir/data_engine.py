@@ -109,6 +109,8 @@ def imply_table_schema(table, table_name, year):
     pd.DataFrame
         _description_
     """
+    table = table.copy()
+
     table_schema = metadata_obj.schema[table_name]
     instructions = table_schema["columns"]
     column_order = table_schema["order"]
@@ -437,6 +439,7 @@ def get_code_classification(
     if not isinstance(_input, pd.DataFrame):
         raise ValueError
 
+    _input = _input.copy()
     if year is not None:
         years = [year]
         _input["__Year__"] = year
