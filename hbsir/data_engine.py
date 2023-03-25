@@ -267,7 +267,9 @@ def _get_attribute_by_id(
     attr_dict = metadata_obj.household[attribute]
     text = metadata.get_metadata_version(attr_dict[attribute_text], year)
     attr_codes = _get_attribute_code(household_id_column, year, attribute)
-    return attr_codes.map(text)
+    attr_codes = attr_codes.map(text)
+    attr_codes = attr_codes.astype("category")
+    return attr_codes
 
 
 def _get_attribute_code(
