@@ -1,5 +1,5 @@
 """
-docs
+Utility functions
 """
 
 import subprocess
@@ -24,9 +24,9 @@ def download_file(
 
     :param url: The URL to download the file from.
     :param path: The local path to save the downloaded file to. If None, a
-    temporary directory is used.
+        temporary directory is used.
     :param show_progress_bar: Whether to display a progress bar during the
-    download.
+        download.
     :param timeout: The timeout for the download request, in seconds.
     :returns: The local path of the downloaded file.
 
@@ -130,11 +130,11 @@ def build_year_interval(from_year: int | None, to_year: int | None) -> tuple[int
     Returns a tuple of two integers representing a range of years.
 
     :param from_year: An integer representing the starting year of the range.
-    If `None`, the default starting year is used.
+        If `None`, the default starting year is used.
     :type from_year: int or None
 
     :param to_year: An integer representing the ending year of the range. If
-    `None`, the default ending year + 1 is used.
+        `None`, the default ending year + 1 is used.
     :type to_year: int or None
 
     :return: A tuple representing the range of years.
@@ -143,6 +143,7 @@ def build_year_interval(from_year: int | None, to_year: int | None) -> tuple[int
     :raises: ValueError if `from_year` is greater than `to_year`.
 
     Example:
+
     >>> build_year_interval()
     (1363, 1401)
 

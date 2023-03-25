@@ -1,5 +1,6 @@
 """
-docs
+The purpose of the archive handler module is to allow downloading and storing
+raw data more easily.
 """
 
 import shutil
@@ -46,7 +47,7 @@ def setup(
     download : A function that downloads household census data archive files.
     unpack : A function that unpacks household census data archive files.
     extract_tables : A function that extracts tables from a census MS Access file and saves them
-    as CSV files
+        as CSV files
 
     Notes
     -----
@@ -64,12 +65,15 @@ def setup(
     Examples
     --------
     To set up all available files:    
+
     >>> setup()
 
     To set up files for the year 1393:    
+
     >>> setup(1393)
 
     To set up files for the years 1370 to 1380, inclusive:    
+
     >>> setup(1370, 1380)
     """
     download(from_year, to_year, replace)
@@ -102,17 +106,20 @@ def download(
     See Also
     --------
     setup : A function that downloads, unpacks and extracts all tables from household census data
-    archive files and save them as CSV.
+        archive files and save them as CSV.
 
     Examples
     --------
     To download all available files:    
+
     >>> download()
 
     To download files for the year 1393:    
+
     >>> download(1393)
 
     To download files for the years 1370 to 1380, inclusively:    
+
     >>> download(1370, 1380)
     """
     from_year, to_year = utils.build_year_interval(from_year, to_year)
@@ -210,7 +217,7 @@ def unpack(
     See Also
     --------
     setup : A function that downloads, unpacks and extracts all tables from household census data
-    archive files and save them as CSV.
+        archive files and save them as CSV.
 
     Notes
     -----
@@ -222,9 +229,11 @@ def unpack(
     Examples
     --------
     To unpack all available archives:    
+
     >>> unpack()
 
     To unpack archives from 1393 to 1400:    
+
     >>> unpack(1393, 1400)
     """
     from_year, to_year = utils.build_year_interval(
@@ -300,14 +309,16 @@ def extract_tables(
     See Also
     --------
     setup : A function that downloads, unpacks and extracts all tables from household census data
-    archive files and save them as CSV.
+        archive files and save them as CSV.
 
     Examples
     --------
     To extract tables from all available census files:    
+
     >>> extract_tables()
 
     To extract tables from all available census files from 1393 to 1400:    
+
     >>> extract_tables(from_year=1393, to_year=1400)
     """
     from_year, to_year = utils.build_year_interval(from_year, to_year)

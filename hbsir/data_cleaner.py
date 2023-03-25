@@ -1,6 +1,5 @@
 """
-docstring
-
+Module for cleaning raw data into proper format
 """
 
 from pathlib import Path
