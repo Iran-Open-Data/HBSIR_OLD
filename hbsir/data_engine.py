@@ -185,9 +185,10 @@ def _order_columns_by_schema(table, column_order):
 
 def add_attribute(
     table: pd.DataFrame,
-    year: int,
     attribute: _Attributes | List[_Attributes] = get_args(_Attributes),
+    year: int | List[int] | None = None,
     id_column_name="ID",
+    year_column_name: str = "Year",
     attribute_text="names",
 ) -> pd.DataFrame:
     """_summary_
@@ -208,11 +209,11 @@ def add_attribute(
     pd.DataFrame
         _description_
     """
-    _check_attribute(attribute)
     if not isinstance(attribute, Union[list, tuple]):
         attribute_list = [attribute]
     else:
         attribute_list = attribute
+
     table = table.copy()
 
     for atr in attribute_list:
@@ -221,6 +222,7 @@ def add_attribute(
             year=year,
             attribute=atr,
             id_column_name=id_column_name,
+            year_column_name=year_column_name,
             attribute_text=attribute_text,
         )
         table[atr] = attribute_column
@@ -229,9 +231,10 @@ def add_attribute(
 
 def get_household_attribute(
     _input: pd.DataFrame | pd.Series,
-    year: int,
     attribute: _Attributes,
+    year: int | List[int] | None = None,
     id_column_name="ID",
+    year_column_name: str = "Year",
     attribute_text="names",
 ) -> pd.Series:
     """_summary_
@@ -251,11 +254,42 @@ def get_household_attribute(
         _description_
     """
     _check_attribute(attribute)
-    if isinstance(_input, pd.DataFrame):
-        _input = _input[id_column_name].copy()
-    if not isinstance(_input, pd.Series):
+    if isinstance(_input, pd.Series):
+        if year is None:
+            raise TypeError(
+                "Since the input is a Pandas series, the 'year' variable must "
+                "be specified. Please provide a year value in the format YYYY."
+            )
+        return _get_attribute_by_id(_input, year, attribute, attribute_text)
+    if not isinstance(_input, pd.DataFrame):
         raise ValueError
-    return _get_attribute_by_id(_input, year, attribute, attribute_text)
+
+    _input = _input.copy()
+    if year is not None:
+        years = [year]
+        _input["__Year__"] = year
+    elif year_column_name in _input.columns:
+        years = _input[year_column_name].unique()
+        _input["__Year__"] = _input[year_column_name]
+    else:
+        raise TypeError(
+            "DataFrame does not have a 'year' column. Please provide the "
+            "'year' column or specify a value for the 'year' variable."
+        )
+
+    attribute_column = pd.Series(None, dtype="object", index=_input.index)
+    for _year in years:
+        filt = _input["__Year__"] == _year
+        id_series = _input.loc[filt, id_column_name]
+        attribute_series = _get_attribute_by_id(
+            household_id_column=id_series,
+            attribute=attribute,
+            attribute_text=attribute_text,
+            year=_year,
+        )
+        attribute_column.loc[filt] = attribute_series
+
+    return attribute_column
 
 
 def _get_attribute_by_id(
