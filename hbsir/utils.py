@@ -2,6 +2,7 @@
 Utility functions
 """
 
+from typing import List, Tuple
 import subprocess
 from pathlib import Path
 import platform
@@ -130,7 +131,7 @@ def build_year_interval(
     to_year: int | None,
     earliest_year: int | None = None,
     latest_year: int | None = None,
-) -> tuple[int, int]:
+) -> Tuple[int, int]:
     """
     Returns a tuple of two integers representing a range of years.
 

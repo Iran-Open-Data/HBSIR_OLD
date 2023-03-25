@@ -3,6 +3,7 @@ Module for cleaning raw data into proper format
 """
 
 from pathlib import Path
+from typing import Hashable, List
 
 from tqdm import tqdm
 import pandas as pd
@@ -61,8 +62,7 @@ def _build_file_path(table_name: str, year: int, is_urban: bool) -> Path:
     table_metadata = _get_table_metadata(table_name, year, is_urban)
     file_code = metadata.get_metadata_version(table_metadata["file_code"], year)
     file_name = f"{urban_rural}{year_string}{file_code}.csv"
-    file_path = Path(defaults.extracted_data).joinpath(
-        str(year)).joinpath(file_name)
+    file_path = defaults.extracted_data.joinpath(str(year), file_name)
     return file_path
 
 
@@ -104,11 +104,11 @@ def clean_table_with_metadata(table_name: str, year: int) -> pd.DataFrame:
         table_metadata = _get_table_metadata(table_name, year, is_urban)
         cleaned_table = _apply_metadata_to_table(table, table_metadata)
         cleaned_table_list.append(cleaned_table)
-    final_table = pd.concat( cleaned_table_list, ignore_index=True)
+    final_table = pd.concat(cleaned_table_list, ignore_index=True)
     return final_table
 
 
-def _apply_metadata_to_table(table, table_metadata):
+def _apply_metadata_to_table(table: pd.DataFrame, table_metadata: dict) -> pd.DataFrame:
     cleaned_table = pd.DataFrame()
     for column_name, column in table.items():
         column_metadata = _get_column_metadata(table_metadata, column_name)
@@ -119,7 +119,7 @@ def _apply_metadata_to_table(table, table_metadata):
     return cleaned_table
 
 
-def _get_column_metadata(table_metadata: str, column_name: str) -> dict:
+def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
     year = table_metadata["year"]
     columns_metadata = table_metadata["columns"]
     columns_metadata = metadata.get_metadata_version(columns_metadata, year)
@@ -194,9 +194,7 @@ def parquet_clean_data(
     .. seealso:: `utils.build_year_interval`, `clean_table_with_metadata`
 
     """
-    table_year = utils.create_table_year_product(
-        table_name, from_year, to_year
-    )
+    table_year = utils.create_table_year_product(table_name, from_year, to_year)
     pbar = tqdm(total=len(table_year), desc="Preparing ...", unit="Table")
     for _table_name, year in table_year:
         pbar.update()
