@@ -125,7 +125,12 @@ def extract_with_7zip(compressed_file_path: str, output_directory: str) -> None:
         )
 
 
-def build_year_interval(from_year: int | None, to_year: int | None) -> tuple[int, int]:
+def build_year_interval(
+    from_year: int | None,
+    to_year: int | None,
+    earliest_year: int | None = None,
+    latest_year: int | None = None,
+) -> tuple[int, int]:
     """
     Returns a tuple of two integers representing a range of years.
 
@@ -156,8 +161,13 @@ def build_year_interval(from_year: int | None, to_year: int | None) -> tuple[int
     >>> build_year_interval(1383, 1375)
     ValueError: `from_year` must be less than `to_year`.
     """
+    if earliest_year is None:
+        earliest_year = defaults.first_year
+    if latest_year is None:
+        latest_year = defaults.last_year
+
     if from_year is None and to_year is None:
-        return defaults.first_year, defaults.last_year + 1
+        return earliest_year, latest_year + 1
     if to_year is None:
         return from_year, from_year + 1
     if to_year < from_year:
