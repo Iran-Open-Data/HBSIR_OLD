@@ -15,6 +15,7 @@ from . import metadata
 
 
 defaults = metadata.Defaults()
+metadata_obj = metadata.Metadata()
 
 
 def download_file(
@@ -166,11 +167,85 @@ def build_year_interval(
     if latest_year is None:
         latest_year = defaults.last_year
 
-    if from_year is None and to_year is None:
-        return earliest_year, latest_year + 1
-    if to_year is None:
-        return from_year, from_year + 1
-    if to_year < from_year:
-        raise ValueError("`from_year` is greater than `to_year`")
+    if (from_year is not None) and (to_year is not None):
+        if to_year < from_year:
+            raise ValueError("`from_year` is greater than `to_year`")
+        _from_year, _to_year = from_year, to_year + 1
+    elif (from_year is not None) and (to_year is None):
+        _from_year, _to_year = from_year, from_year + 1
+    elif (from_year is None) and (to_year is not None):
+        raise KeyError
+    else:
+        _from_year, _to_year = earliest_year, latest_year + 1
 
-    return (from_year, to_year + 1)
+    return _from_year, _to_year
+
+
+def build_year_interval_for_table(
+    table_name: str, from_year: int | None = None, to_year: int | None = None
+):
+    """_summary_
+
+    Parameters
+    ----------
+    table_name : str
+        _description_
+    from_year : int | None, optional
+        _description_, by default None
+    to_year : int | None, optional
+        _description_, by default None
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+    availability_interval = metadata_obj.tables["yearly_table_availability"][table_name]
+    if isinstance(availability_interval, int):
+        earliest_year = availability_interval
+        latest_year = None
+    elif isinstance(availability_interval, list):
+        earliest_year, latest_year = availability_interval
+    else:
+        raise TypeError
+    from_year, to_year = build_year_interval(
+        from_year, to_year, earliest_year, latest_year
+    )
+    return from_year, to_year
+
+
+def create_table_year_product(
+    table_name: str | List[str],
+    from_year: int | None = None,
+    to_year: int | None = None,
+) -> List[Tuple[str, int]]:
+    """_summary_
+
+    Parameters
+    ----------
+    table_name : str | List[str]
+        _description_
+    from_year : int | None
+        _description_
+    to_year : int | None, optional
+        _description_, by default None
+
+    Returns
+    -------
+    List[tuple]
+        _description_
+    """
+    if isinstance(table_name, str):
+        table_names = [table_name]
+    else:
+        table_names = table_name
+
+    product_list = []
+    for _table_name in table_names:
+        _from_year, _to_year = build_year_interval_for_table(
+            _table_name, from_year, to_year
+        )
+        product_list.extend(
+            [(_table_name, year) for year in range(_from_year, _to_year)]
+        )
+    return product_list
