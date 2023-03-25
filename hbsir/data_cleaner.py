@@ -160,7 +160,7 @@ def _convert_empty_items_to_nan(column: pd.Series):
 
 
 def parquet_clean_data(
-    table_name: str,
+    table_name: str | List[str],
     from_year: int | None = None,
     to_year: int | None = None,
 ) -> None:
@@ -194,16 +194,17 @@ def parquet_clean_data(
     .. seealso:: `utils.build_year_interval`, `clean_table_with_metadata`
 
     """
-    from_year, to_year = utils.build_year_interval(from_year, to_year)
-    pbar = tqdm(total=(to_year - from_year),
-                desc="Preparing ...", unit="Table")
-    for year in range(from_year, to_year):
+    table_year = utils.create_table_year_product(
+        table_name, from_year, to_year
+    )
+    pbar = tqdm(total=len(table_year), desc="Preparing ...", unit="Table")
+    for _table_name, year in table_year:
         pbar.update()
-        pbar.desc = f"Table: {table_name}, Year: {year}"
-        table = clean_table_with_metadata(table_name, year)
+        pbar.desc = f"Table: {_table_name}, Year: {year}"
+        table = clean_table_with_metadata(_table_name, year)
         Path(defaults.processed_data).mkdir(exist_ok=True)
         table.to_parquet(
-            defaults.processed_data.joinpath(f"{year}_{table_name}.parquet"),
+            defaults.processed_data.joinpath(f"{year}_{_table_name}.parquet"),
             index=False,
         )
     pbar.close()
