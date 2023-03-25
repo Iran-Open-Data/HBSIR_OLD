@@ -2,7 +2,7 @@
 Main file for ordinary use
 """
 
-from typing import Literal, List, Union, get_args
+from typing import Literal, List, Tuple, Union, get_args
 
 import sympy
 import pandas as pd
@@ -77,7 +77,7 @@ def _get_parquet(table_name: str, year: int, download: bool = True) -> pd.DataFr
     try:
         table = pd.read_parquet(defaults.processed_data.joinpath(file_name))
     except FileNotFoundError as exc:
-        if download:
+        print(f"{defaults.processed_data.joinpath(file_name)} not found!")
             _download_parquet(table_name, year)
             table = pd.read_parquet(defaults.processed_data.joinpath(file_name))
         else:
@@ -152,6 +152,8 @@ def _apply_categorical_instruction(table, column_name, instruction):
             filt = pd.Series(False, index=table.index)
             for other_column, value in condition.items():
                 filt = filt | (table[other_column] == value)
+        else:
+            raise KeyError
         table.loc[filt, column_name] = category
 
     table[column_name] = table[column_name].astype("category")
@@ -190,8 +192,10 @@ def _order_columns_by_schema(table, column_order):
 
 def add_attribute(
     table: pd.DataFrame,
-    attribute: _Attributes | List[_Attributes] = get_args(_Attributes),
-    year: int | List[int] | None = None,
+    attribute: _Attributes
+    | List[_Attributes]
+    | Tuple[_Attributes] = get_args(_Attributes),
+    year: int | None = None,
     id_column_name="ID",
     year_column_name: str = "Year",
     attribute_text="names",
@@ -237,7 +241,7 @@ def add_attribute(
 def get_household_attribute(
     _input: pd.DataFrame | pd.Series,
     attribute: _Attributes,
-    year: int | List[int] | None = None,
+    year: int | None = None,
     id_column_name="ID",
     year_column_name: str = "Year",
     attribute_text="names",
@@ -275,6 +279,9 @@ def get_household_attribute(
         _input["__Year__"] = year
     elif year_column_name in _input.columns:
         years = _input[year_column_name].unique()
+        for _year in years:
+            if not isinstance(_year, int):
+                raise TypeError
         _input["__Year__"] = _input[year_column_name]
     elif "year" in _input.attrs:
         year = _input.attrs["year"]
@@ -399,7 +406,6 @@ def add_classification(
         )
         table[column_name] = classification_column
 
-    table = table.drop(columns="__Year__")
     return table
 
 
@@ -462,13 +468,13 @@ def get_code_classification(
     for _year in years:
         filt = _input["__Year__"] == _year
         code_series = _input.loc[filt, code_column_name]
-        classification = _get_classification_by_code(
+        classification_series = _get_classification_by_code(
             commodity_code_column=code_series,
             classification=classification,
             level=level,
             year=_year,
         )
-        classification_column.loc[filt] = classification
+        classification_column.loc[filt] = classification_series
 
     classification_column = classification_column.astype("category")
     return classification_column
