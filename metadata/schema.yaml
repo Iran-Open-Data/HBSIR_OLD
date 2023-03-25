@@ -36,3 +36,14 @@ food:
     - Amount
     - Price
     - Expenditure
+
+
+tobacco:
+  order:
+    - Year
+    - ID
+    - Code
+    - Provision_Method
+    - Amount
+    - Price
+    - Expenditure

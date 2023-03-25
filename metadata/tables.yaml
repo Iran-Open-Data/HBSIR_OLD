@@ -1,3 +1,5 @@
+
+
 ###############################################################################
 ##                         - - -    Tables   - - -                           ##
 ###############################################################################
@@ -40,7 +42,8 @@
 #_____________________________________________________________________________#
 
 
-tables:
+# The range of years during which the table is available
+yearly_table_availability:
     household_information:      1388
     members_properties:         1363
     house_specifications:       1363
@@ -401,6 +404,11 @@ EXPENDITURE_ITEMS:
         new_name: "Kilos"
         type: "float"
 
+    # # # Amount
+
+    expenditure_amount: &expenditure_amount
+        new_name: "Amount"
+        type: "float"
 
     # # # Price
 
@@ -409,9 +417,9 @@ EXPENDITURE_ITEMS:
         type: "float"
 
 
-    # # # Expenditure Amount
+    # # # Expenditure Value
 
-    expenditure_amount: &expenditure_amount
+    expenditure_value: &expenditure_value
         new_name: "Expenditure"
         type: "float"
 
@@ -438,8 +446,8 @@ EXPENDITURE_ITEMS:
         COL3: *expenditure_provision_method
         DYCOL02: *expenditure_provision_method
 
-        COL4: *expenditure_amount
-        DYCOL03: *expenditure_amount
+        COL4: *expenditure_value
+        DYCOL03: *expenditure_value
 
 
 food:
@@ -467,7 +475,7 @@ food:
         COL5:
             1383: *expenditure_kilos
         COL6:
-            1363: *expenditure_amount
+            1363: *expenditure_value
             1369: null
             1374: *expenditure_price
         COL7:
@@ -475,27 +483,37 @@ food:
             1369: *expenditure_price
             1370: null
             1372: *expenditure_price
-            1374: *expenditure_amount
+            1374: *expenditure_value
         COL8:
             1363: null
-            1369: *expenditure_amount
+            1369: *expenditure_value
             1374: null
 
         DYCOL02: *expenditure_provision_method
         DYCOL03: *expenditure_grams
         DYCOL04: *expenditure_kilos
         DYCOL05: *expenditure_price
-        DYCOL06: *expenditure_amount
-        DYCOL07: "drop"
+        DYCOL06: *expenditure_value
+        DYCOL07: drop
 
 
 tobacco:
-    1363: null
-    1383:
-        file_code: "P3S02"
-        columns:
-            <<: *expenditure_common_columns
+    file_code: "P3S02"
+    columns:
+        <<: *expenditure_base_columns
 
+        COL3: *expenditure_provision_method
+        COL4: drop
+        COL5: *expenditure_amount
+        COL6: *expenditure_price
+        COL7: *expenditure_value
+
+        DYCOL02: *expenditure_provision_method
+        DYCOL03: drop
+        DYCOL04: *expenditure_amount
+        DYCOL05: *expenditure_price
+        DYCOL06: *expenditure_value
+        DYCOL07: drop
 
 cloth:
     file_code:
