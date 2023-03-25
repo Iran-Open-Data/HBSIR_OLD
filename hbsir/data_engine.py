@@ -2,7 +2,7 @@
 Main file for ordinary use
 """
 
-from typing import Literal, List, get_args
+from typing import Literal, List, Union, get_args
 
 import sympy
 import pandas as pd
@@ -17,7 +17,7 @@ _Attributes = Literal["Urban-Rural", "Province", "Region"]
 
 def _check_attribute(attribute: _Attributes | List[_Attributes]) -> None:
     available_attributes = get_args(_Attributes)
-    if not isinstance(attribute, list):
+    if not isinstance(attribute, Union[list, tuple]):
         attribute = [attribute]
     for atr in attribute:
         if not atr in available_attributes:
@@ -186,7 +186,7 @@ def _order_columns_by_schema(table, column_order):
 def add_attribute(
     table: pd.DataFrame,
     year: int,
-    attribute: _Attributes | list[_Attributes],
+    attribute: _Attributes | List[_Attributes] = get_args(_Attributes),
     id_column_name="ID",
     attribute_text="names",
 ) -> pd.DataFrame:
@@ -209,7 +209,7 @@ def add_attribute(
         _description_
     """
     _check_attribute(attribute)
-    if not isinstance(attribute, list):
+    if not isinstance(attribute, Union[list, tuple]):
         attribute_list = [attribute]
     else:
         attribute_list = attribute
