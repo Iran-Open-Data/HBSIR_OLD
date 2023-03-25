@@ -63,12 +63,12 @@ yearly_table_availability:
     durable:                    1363
     investment:                 1363
 
-    employment_income:          1363
-    self_employed_income:       1363
-    other_income:               1363
-    subsidy:                    1363
-    public_employment_income:   1363
-    private_employment_income:  1363
+    employment_income:          1369
+    self_employed_income:       1369
+    other_income:               1369
+    subsidy:                    1390
+    public_employment_income:   {start: 1363, end: 1369}
+    private_employment_income:  {start: 1363, end: 1369}
 
 
 ###############################################################################
@@ -711,6 +711,48 @@ INCOME_ITEMS:
         type: "boolean"
         true_condition: 1
 
+    income_work_type: &income_work_type
+        new_name: "Work_Type"
+        type: "category"
+        categories:
+            1: "Employer"
+            2: "Independent_Worker"
+            3: "Family_Worker"
+
+    income_is_agricultural: &income_is_agricultural
+        new_name: "Is_Agricultural"
+        type: "boolean"
+        true_condition: 1
+
+    income_wages: &income_wages
+        new_name: "Wages"
+        type: "float"
+
+    income_cost_of_sales: &income_cost_of_sales
+        new_name: "Cost_of_Sales"
+        type: "float"
+
+    income_other_operating_costs: &income_other_operating_costs
+        new_name: "Other_Operating_Costs"
+        type: "float"
+
+    income_other_costs: &income_other_costs
+        new_name: "Other_Costs"
+        type: "float"
+
+    income_besiness_tax: &income_besiness_tax
+        new_name: "Besiness_Tax"
+        type: "float"
+
+    income_sales: &income_sales
+        new_name: "Sales"
+        type: "float"
+
+    income_profit: &income_profit
+        new_name: "Profit"
+        type: "float"
+
+
     # # # Base Items
 
     income_base_columns: &income_base_columns
@@ -790,99 +832,6 @@ employment_income:
             DYCOL15: *income_yearly_net
 
 
-old_employment_income:
-    file_code:
-        1363: null
-        1369: "P4S1"
-        1384: "P4S01"
-
-    columns:
-        <<: *income_base_columns
-
-        COL02:
-            1369: *income_job_code
-            1374: *income_activity_status
-        DYCOL02:
-            1384: *income_activity_status
-
-        COL03:
-            1369: *income_workplace_activity
-            1374: *income_job_code
-        DYCOL03:
-            1384: *income_job_code
-
-        COL04:
-            1369: *income_sector_1
-            1374: *income_workplace_activity
-        DYCOL04:
-            1384: *income_workplace_activity
-
-        COL05:
-            1369: null
-            1370: *income_monthly_gross
-            1374: *income_sector_1
-            1376: *income_sector_2
-        DYCOL05:
-            1384: *income_sector_2
-
-        DYCOL06:
-            1384: *income_working_hours_per_day
-
-        DYCOL07:
-            1384: *income_working_day_per_week
-
-        COL06:
-            1369: *income_yearly_gross
-            1374: *income_monthly_gross
-        DYCOL08:
-            1384: *income_monthly_gross
-
-        COL07:
-            1369: null
-            1370: *income_monthly_continuous
-            1374: *income_yearly_gross
-        DYCOL09:
-            1384: *income_yearly_gross
-
-        COL08:
-            1369: *income_yearly_continuous
-            1374: *income_monthly_continuous
-        DYCOL10:
-            1384: *income_monthly_continuous
-
-        COL09:
-            1369: null
-            1370: *income_monthly_temporary
-            1374: *income_yearly_continuous
-        DYCOL11:
-            1384: *income_yearly_continuous
-
-        COL10:
-            1369: *income_yearly_temporary
-            1374: *income_monthly_temporary
-        DYCOL12:
-            1384: *income_monthly_temporary
-
-        COL11:
-            1369: null
-            1370: *income_monthly_net
-            1374: *income_yearly_temporary
-        DYCOL13:
-            1384: *income_yearly_temporary
-
-        COL12:
-            1369: *income_yearly_net
-            1374: *income_monthly_net
-        DYCOL14:
-            1384: *income_monthly_net
-
-        COL13:
-            1369: null
-            1374: *income_yearly_net
-        DYCOL15:
-            1384: *income_yearly_net
-
-
 self_employed_income:
     file_code:
         1363: null
@@ -893,20 +842,22 @@ self_employed_income:
         missings: pass
 
     columns:
-        <<: *income_base_columns
-
-        COL10:
-            1363: *income_yearly_net
-
-        COL12:
-            1363: null
-            1369: *income_yearly_net
-
-        COL13:
-            1363: null
-            1374: *income_yearly_net
-        DYCOL15:
-            1384: *income_yearly_net
+        1384:
+            <<: *income_base_columns
+            DYCOL02: *income_activity_status
+            DYCOL03: *income_job_code
+            DYCOL04: *income_workplace_activity
+            DYCOL05: *income_work_type
+            DYCOL06: *income_is_agricultural
+            DYCOL07: *income_working_hours_per_day
+            DYCOL08: *income_working_day_per_week
+            DYCOL09: *income_wages
+            DYCOL10: *income_cost_of_sales
+            DYCOL11: *income_other_operating_costs
+            DYCOL12: *income_other_costs
+            DYCOL13: *income_besiness_tax
+            DYCOL14: *income_sales
+            DYCOL15: *income_profit
 
 
 other_income:
