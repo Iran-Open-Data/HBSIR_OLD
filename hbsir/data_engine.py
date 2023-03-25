@@ -154,6 +154,7 @@ def _apply_categorical_instruction(table, column_name, instruction):
                 filt = filt | (table[other_column] == value)
         table.loc[filt, column_name] = category
 
+    table[column_name] = table[column_name].astype("category")
     return table
 
 
@@ -297,6 +298,7 @@ def get_household_attribute(
         )
         attribute_column.loc[filt] = attribute_series
 
+    attribute_column = attribute_column.astype("category")
     return attribute_column
 
 
@@ -468,6 +470,7 @@ def get_code_classification(
         )
         classification_column.loc[filt] = classification
 
+    classification_column = classification_column.astype("category")
     return classification_column
 
 
@@ -480,7 +483,9 @@ def _get_classification_by_code(
     translator = _build_translator(
         classification=classification, level=level, year=year
     )
-    return commodity_code_column.map(translator)
+    classification_column = commodity_code_column.map(translator)
+    classification_column = classification_column.astype("category")
+    return classification_column
 
 
 def _build_translator(
