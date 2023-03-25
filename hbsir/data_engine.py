@@ -67,6 +67,8 @@ def load_table(
         table_list.append(table)
     concat_table = pd.concat(table_list)
 
+    if not add_year:
+        concat_table.attrs["year"] = from_year
     return concat_table
 
 
@@ -271,6 +273,10 @@ def get_household_attribute(
     elif year_column_name in _input.columns:
         years = _input[year_column_name].unique()
         _input["__Year__"] = _input[year_column_name]
+    elif "year" in _input.attrs:
+        year = _input.attrs["year"]
+        years = [year]
+        _input["__Year__"] = year
     else:
         raise TypeError(
             "DataFrame does not have a 'year' column. Please provide the "
@@ -437,6 +443,10 @@ def get_code_classification(
     elif year_column_name in _input.columns:
         years = _input[year_column_name].unique()
         _input["__Year__"] = _input[year_column_name]
+    elif "year" in _input.attrs:
+        year = _input.attrs["year"]
+        years = [year]
+        _input["__Year__"] = year
     else:
         raise TypeError(
             "DataFrame does not have a 'year' column. Please provide the "
