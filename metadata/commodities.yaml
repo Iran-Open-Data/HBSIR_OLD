@@ -432,13 +432,13 @@ ORIGINAL1383:
     norcotics:
       level: 1
       farsi_name: "مواد مخدر"
-      code: {start: 22_100, end: 22_200}
+      code: {start: 23_000, end: 24_000}
 
     #                            #### LEVEL 2 ####                            #
     _norcotics:
       level: 2
       farsi_name: "مواد مخدر"
-      code: {start: 22_100, end: 22_200}
+      code: {start: 23_100, end: 23_200}
 
     #                              ## LEVEL 3 ##                              #
     __norcotics:
