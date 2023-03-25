@@ -23,7 +23,7 @@ def _check_attribute(attribute: _Attributes | List[_Attributes]) -> None:
         if not atr in available_attributes:
             available_attributes_str = ", ".join(str(x) for x in available_attributes)
             raise KeyError(
-                f"Invalid attribute: {atr}. This attribute is not supported.\n"
+                f"Invalid attribute: {atr}. This attribute is not supported."
                 f"Available attributes: {available_attributes_str}"
             )
 
