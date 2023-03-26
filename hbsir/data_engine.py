@@ -81,14 +81,21 @@ def load_table(
     return concat_table
 
 
-def _get_parquet(table_name: str, year: int, download: bool = True) -> pd.DataFrame:
+def _get_parquet(
+    table_name: str, year: int, download: bool = True, save: bool = True
+) -> pd.DataFrame:
     file_name = f"{year}_{table_name}.parquet"
     try:
         table = pd.read_parquet(defaults.processed_data.joinpath(file_name))
     except FileNotFoundError as exc:
         print(f"{defaults.processed_data.joinpath(file_name)} not found!")
+        if download and save:
             _download_parquet(table_name, year)
             table = pd.read_parquet(defaults.processed_data.joinpath(file_name))
+        elif download:
+            table = pd.read_parquet(
+                f"{defaults.online_dir}/parquet_files/{year}_{table_name}.parquet"
+            )
         else:
             raise exc
     return table
