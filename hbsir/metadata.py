@@ -3,12 +3,12 @@ Metadata module
 """
 
 from dataclasses import dataclass
-import pathlib
+from pathlib import Path
 
 import yaml
 
 
-ROOT_DIRECTORY = pathlib.Path(__file__).parents[1]
+ROOT_DIRECTORY = Path(__file__).parents[1]
 
 
 def open_yaml(path):
@@ -64,15 +64,15 @@ class Defaults:
     online_dir = settings["online_directory"]
 
     # local directories
-    root_dir = ROOT_DIRECTORY
-    local_dir = root_dir.joinpath(settings["local_directory"])
-    archive_files = local_dir.joinpath(settings["archive_files"])
-    unpacked_data = local_dir.joinpath(settings["unpacked_data"])
-    extracted_data = local_dir.joinpath(settings["extracted_data"])
-    processed_data = local_dir.joinpath(settings["processed_data"])
+    root_dir: Path = ROOT_DIRECTORY
+    local_dir: Path = root_dir.joinpath(settings["local_directory"])
+    archive_files: Path = local_dir.joinpath(settings["archive_files"])
+    unpacked_data: Path = local_dir.joinpath(settings["unpacked_data"])
+    extracted_data: Path = local_dir.joinpath(settings["extracted_data"])
+    processed_data: Path = local_dir.joinpath(settings["processed_data"])
 
-    first_year = settings["first_year"]
-    last_year = settings["last_year"]
+    first_year: int = settings["first_year"]
+    last_year: int = settings["last_year"]
 
 
 def get_latest_version_year(metadata_dict: dict, year: int) -> int | bool:
