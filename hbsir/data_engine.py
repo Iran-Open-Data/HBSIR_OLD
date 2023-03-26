@@ -128,14 +128,17 @@ def imply_table_schema(table, table_name, year):
     table = table.copy()
 
     table_schema = metadata_obj.schema[table_name]
-    instructions = table_schema["columns"]
-    column_order = table_schema["order"]
 
-    for name, instruction in instructions.items():
-        instruction = metadata.get_metadata_version(instruction, year)
-        table = _apply_column_instruction(table, name, instruction)
+    if "columns" in table_schema:
+        instructions = table_schema["columns"]
 
-    table = _order_columns_by_schema(table, column_order)
+        for name, instruction in instructions.items():
+            instruction = metadata.get_metadata_version(instruction, year)
+            table = _apply_column_instruction(table, name, instruction)
+
+    if "order" in table_schema:
+        column_order = table_schema["order"]
+        table = _order_columns_by_schema(table, column_order)
     return table
 
 
