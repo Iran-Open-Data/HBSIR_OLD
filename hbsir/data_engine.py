@@ -29,7 +29,7 @@ def _check_attribute(attribute: _Attributes | List[_Attributes]) -> None:
 
 
 def load_table(
-    table_name: str,
+    table_name: str | List[str],
     from_year=None,
     to_year=None,
     standard=True,
@@ -53,17 +53,26 @@ def load_table(
     pd.DataFrame
         _description_
     """
-    from_year, to_year = utils.build_year_interval(from_year, to_year)
+    year_name = utils.create_table_year_product(
+        table_name=table_name, from_year=from_year, to_year=to_year
+    )
+
     if add_year is None:
-        add_year = to_year - from_year > 1
+        add_year = False
+        table_names = table_name if isinstance(table_name, list) else [table_name]
+        for _table_name in table_names:
+            _from_year, _to_year = utils.build_year_interval_for_table(
+                _table_name, from_year, to_year
+            )
+            add_year = add_year or (_to_year - _from_year > 1)
 
     table_list = []
-    for year in range(from_year, to_year):
-        table = _get_parquet(table_name, year)
+    for name, year in year_name:
+        table = _get_parquet(name, year)
         if add_year:
             table["Year"] = year
         if standard:
-            table = imply_table_schema(table, table_name, year)
+            table = imply_table_schema(table, name, year)
         table_list.append(table)
     concat_table = pd.concat(table_list)
 
