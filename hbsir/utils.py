@@ -2,7 +2,6 @@
 Utility functions
 """
 
-from typing import List, Tuple
 import subprocess
 from pathlib import Path
 import platform
@@ -16,6 +15,7 @@ from . import metadata
 
 defaults = metadata.Defaults()
 metadata_obj = metadata.Metadata()
+_Tables = metadata.Tables
 
 
 def download_file(
@@ -45,7 +45,11 @@ def download_file(
         file_name = path.name
 
     response = requests.get(url, timeout=10, stream=True)
-    file_size = int(response.headers.get("content-length"))
+    file_size = response.headers.get("content-length")
+    if file_size is not None:
+        file_size = int(file_size)
+    else:
+        raise FileNotFoundError
     download_bar = tqdm(
         desc=f"downloading {file_name}",
         total=file_size,
@@ -132,7 +136,7 @@ def build_year_interval(
     to_year: int | None,
     earliest_year: int | None = None,
     latest_year: int | None = None,
-) -> Tuple[int, int]:
+) -> tuple[int, int]:
     """
     Returns a tuple of two integers representing a range of years.
 
@@ -183,8 +187,8 @@ def build_year_interval(
 
 
 def build_year_interval_for_table(
-    table_name: str, from_year: int | None = None, to_year: int | None = None
-):
+    table_name: _Tables, from_year: int | None = None, to_year: int | None = None
+) -> tuple[int, int]:
     """_summary_
 
     Parameters
@@ -216,10 +220,10 @@ def build_year_interval_for_table(
 
 
 def create_table_year_product(
-    table_name: str | List[str],
+    table_name: _Tables | list[_Tables] | tuple[_Tables],
     from_year: int | None = None,
     to_year: int | None = None,
-) -> List[Tuple[str, int]]:
+) -> list[tuple[_Tables, int]]:
     """_summary_
 
     Parameters
@@ -237,12 +241,12 @@ def create_table_year_product(
         _description_
     """
     if isinstance(table_name, str):
-        table_names = [table_name]
+        table_list: list[_Tables] = [table_name]
     else:
-        table_names = table_name
+        table_list = [table for table in table_name]
 
     product_list = []
-    for _table_name in table_names:
+    for _table_name in table_list:
         _from_year, _to_year = build_year_interval_for_table(
             _table_name, from_year, to_year
         )
@@ -250,3 +254,22 @@ def create_table_year_product(
             [(_table_name, year) for year in range(_from_year, _to_year)]
         )
     return product_list
+
+
+def is_multi_year(
+    table_name: _Tables | list[_Tables] | tuple[_Tables],
+    from_year: int | None = None,
+    to_year: int | None = None,
+) -> bool:
+    if isinstance(table_name, str):
+        table_list: list[_Tables] = [table_name]
+    else:
+        table_list = [table for table in table_name]
+
+    for _table_name in table_list:
+        _from_year, _to_year = build_year_interval_for_table(
+            _table_name, from_year, to_year
+        )
+        if _to_year - _from_year > 1:
+            return True
+    return False
