@@ -37,7 +37,7 @@ def download_file(
         path = Path(path)
         file_name = path.name
     elif path is None:
-        temp_folder = defaults.root_dir.joinpath("temp")
+        temp_folder = defaults.pack_dir.joinpath("temp")
         temp_folder.mkdir(exist_ok=True)
         file_name = url.split("/")[-1]
         path = temp_folder.joinpath(file_name)
@@ -82,11 +82,11 @@ def download_7zip():
         show_progress_bar=True,
     )
     with ZipFile(file_path) as zip_file:
-        zip_file.extractall(defaults.root_dir)
+        zip_file.extractall(defaults.pack_dir)
     file_path.unlink()
 
     if platform.system() == "Linux":
-        defaults.root_dir.joinpath("7-Zip", "7zz").chmod(0o771)
+        defaults.pack_dir.joinpath("7-Zip", "7zz").chmod(0o771)
 
 
 def extract_with_7zip(compressed_file_path: str, output_directory: str) -> None:
@@ -116,7 +116,7 @@ def extract_with_7zip(compressed_file_path: str, output_directory: str) -> None:
             shell=True,
         )
     elif platform.system() == "Linux":
-        seven_zip_file_path = defaults.root_dir.joinpath("7-Zip", "7zz")
+        seven_zip_file_path = defaults.pack_dir.joinpath("7-Zip", "7zz")
         if not seven_zip_file_path.exists():
             download_7zip()
         subprocess.run(

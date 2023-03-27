@@ -120,12 +120,29 @@ def _apply_metadata_to_table(table: pd.DataFrame, table_metadata: dict) -> pd.Da
 
 
 def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
+    table_settings = _get_table_settings(table_metadata)
     year = table_metadata["year"]
     columns_metadata = table_metadata["columns"]
     columns_metadata = metadata.get_metadata_version(columns_metadata, year)
-    column_metadata = columns_metadata[column_name]
-    column_metadata = metadata.get_metadata_version(column_metadata, year)
+    try:
+        column_metadata = columns_metadata[column_name]
+    except KeyError:
+        column_metadata = table_settings["missings"]
+    else:
+        column_metadata = metadata.get_metadata_version(column_metadata, year)
     return column_metadata
+
+
+def _get_table_settings(table_metadata: dict) -> dict:
+    default_table_settings = metadata_obj.tables["default_table_settings"]
+    try:
+        table_settings = table_metadata["settings"]
+    except KeyError:
+        return default_table_settings
+    for key in default_table_settings:
+        if key not in table_settings:
+            table_settings[key] = default_table_settings[key]
+    return table_settings
 
 
 def _apply_metadata_to_column(column: pd.Series, column_metadata: dict) -> pd.Series:

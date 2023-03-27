@@ -5,6 +5,7 @@
 ###############################################################################
 #                                                                             #
 #           Tables:                                                           #
+#                                                                             #
 #               General:                                                      #
 #                   - household_information                                   #
 #                   - members_properties                                      #
@@ -32,12 +33,12 @@
 #                   - other_income                                            #
 #                   - subsidy                                                 #
 #                                                                             #
-#                   old tables:                                               #
-#                       - public_employment_income                            #
-#                       - private_employment_income                           #
-#                       - agricultural_self_employed_income                   #
-#                       - non_agricultural_self_employed_income               #
-#                       - old_other_income                                    #
+#               Old income tables:                                            #
+#                   - public_employment_income                                #
+#                   - private_employment_income                               #
+#                   - agricultural_self_employed_income                       #
+#                   - non_agricultural_self_employed_income                   #
+#                   - old_other_income                                        #
 #                                                                             #
 #_____________________________________________________________________________#
 
@@ -71,8 +72,12 @@ yearly_table_availability:
     private_employment_income:  {start: 1363, end: 1369}
 
 
+default_table_settings:
+    missings: error             # error, drop, keep
+
+
 ###############################################################################
-##                         - - -    General   - - -                          ##
+##                      - - -    General Tables   - - -                      ##
 ###############################################################################
 
 
@@ -81,8 +86,8 @@ household_information:
         1363: null
         1388: "Data"
 
-    property:
-        missings: "pass"
+    settings:
+        missings: drop
 
     columns:
         Address: &household_information_Address
@@ -302,7 +307,7 @@ house_specifications:
 
 
 ######################################################################
-##                   - - -    Expenditure   - - -                   ##
+##                - - -    Expenditure Tables   - - -               ##
 ######################################################################
 
 
@@ -521,8 +526,14 @@ cloth:
         1383: "P3S03"
 
     columns:
-        <<: *expenditure_common_columns
-
+        1363: *expenditure_common_columns
+        1369:
+            <<: *expenditure_base_columns
+            COL3: *expenditure_provision_method
+            COL4: *expenditure_price_system
+            COL5: *expenditure_amount
+            COL6: *expenditure_value
+        1374: *expenditure_common_columns
 
 home:
     file_code:
@@ -626,7 +637,7 @@ investment:
 
 
 ######################################################################
-##                     - - -    Incomes   - - -                     ##
+##                  - - -    Incomes Tables   - - -                 ##
 ######################################################################
 
 

@@ -180,7 +180,7 @@ def _unpack_archive_with_7zip(
             shell=True,
         )
     elif platform.system() == "Linux":
-        seven_zip_file_path = defaults.root_dir.joinpath("7-Zip", "7zz")
+        seven_zip_file_path = defaults.pack_dir.joinpath("7-Zip", "7zz")
         subprocess.run(
             [
                 seven_zip_file_path,
