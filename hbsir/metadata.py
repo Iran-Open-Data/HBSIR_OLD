@@ -8,7 +8,8 @@ from pathlib import Path
 import yaml
 
 
-ROOT_DIRECTORY = Path(__file__).parents[1]
+PACKAGE_DIRECTORY = Path(__file__).parent
+ROOT_DIRECTORT = Path().absolute()
 
 
 def open_yaml(path):
@@ -24,7 +25,7 @@ def open_yaml(path):
     :raises yaml.YAMLError: If there is an error parsing the YAML file.
 
     """
-    path = ROOT_DIRECTORY.joinpath(path)
+    path = PACKAGE_DIRECTORY.joinpath(path)
     with open(path, mode="r", encoding="utf8") as yaml_file:
         yaml_content = yaml.load(yaml_file, Loader=yaml.CLoader)
     return yaml_content
@@ -50,22 +51,29 @@ class Defaults:
     """
     This dataclass provides access to default values that are used in other
     parts of the project. It first attempts to load the settings from a local
-    `settings.yaml` file. If the file is not found, it loads the settings from
-    the sample file named `settings-sample.yaml`.
+    `hbsir-settings.yaml` file in the root directory. If the file is not found,
+    it loads the settings from the sample file named `settings-sample.yaml`
+    located in config folder in library directory.
 
     """
 
     try:
-        settings = open_yaml("settings.yaml")
+        settings = open_yaml(ROOT_DIRECTORT.joinpath("hbsir-settings.yaml"))
     except FileNotFoundError:
-        settings = open_yaml("settings-sample.yaml")
+        settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml"))
 
     # online directory
     online_dir = settings["online_directory"]
 
-    # local directories
-    root_dir: Path = ROOT_DIRECTORY
-    local_dir: Path = root_dir.joinpath(settings["local_directory"])
+    # local directory
+    pack_dir: Path = PACKAGE_DIRECTORY
+    root_dir: Path = ROOT_DIRECTORT
+    if Path(settings["local_directory"]).is_absolute():
+        local_dir = Path(settings["local_directory"])
+    elif settings["in_root"]:
+        local_dir: Path = root_dir.joinpath(settings["local_directory"])
+    else:
+        local_dir: Path = pack_dir.joinpath(settings["local_directory"])
     archive_files: Path = local_dir.joinpath(settings["archive_files"])
     unpacked_data: Path = local_dir.joinpath(settings["unpacked_data"])
     extracted_data: Path = local_dir.joinpath(settings["extracted_data"])

@@ -2,8 +2,15 @@
 name = "hbsir"
 version = "0.1.0"
 description = ""
-authors = ["TerseTears <tersetears@protonmail.com>"]
+authors = [
+    "Amin Alavian <m.amin.alavian@gmail.com>",
+    "TerseTears <tersetears@protonmail.com>"
+]
 readme = "README.md"
+repository = "https://github.com/Iran-Open-Data/HBSIR"
+packages = [
+    {include = "hbsir"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
