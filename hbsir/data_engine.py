@@ -2,7 +2,7 @@
 Main file for ordinary use
 """
 
-from typing import Literal, List, Tuple, Union, get_args
+from typing import get_args
 
 import sympy
 import pandas as pd
@@ -11,13 +11,13 @@ from . import metadata, utils
 
 defaults = metadata.Defaults()
 metadata_obj = metadata.Metadata()
+_Attributes = metadata.Attributes
+_Tables = metadata.Tables
 
-_Attributes = Literal["Urban-Rural", "Province", "Region"]
 
-
-def _check_attribute(attribute: _Attributes | List[_Attributes]) -> None:
+def _check_attribute(attribute: _Attributes | list[_Attributes]) -> None:
     available_attributes = get_args(_Attributes)
-    if not isinstance(attribute, Union[list, tuple]):
+    if not isinstance(attribute, (list, tuple)):
         attribute = [attribute]
     for atr in attribute:
         if not atr in available_attributes:
@@ -29,42 +29,26 @@ def _check_attribute(attribute: _Attributes | List[_Attributes]) -> None:
 
 
 def load_table(
-    table_name: str | List[str],
-    from_year=None,
-    to_year=None,
-    standard=True,
+    table_name: _Tables | list[_Tables] | tuple[_Tables],
+    from_year: int | None = None,
+    to_year: int | None = None,
+    standard: bool | None = None,
     add_year: bool | None = None,
 ) -> pd.DataFrame:
-    """_summary_
-
-    Parameters
-    ----------
-    table_name : str
-        _description_
-    from_year : _type_, optional
-        _description_, by default None
-    to_year : _type_, optional
-        _description_, by default None
-    standard : bool, optional
-        _description_, by default True
-
-    Returns
-    -------
-    pd.DataFrame
-        _description_
+    """docs
     """
     year_name = utils.create_table_year_product(
         table_name=table_name, from_year=from_year, to_year=to_year
     )
 
     if add_year is None:
-        add_year = False
-        table_names = table_name if isinstance(table_name, list) else [table_name]
-        for _table_name in table_names:
-            _from_year, _to_year = utils.build_year_interval_for_table(
-                _table_name, from_year, to_year
-            )
-            add_year = add_year or (_to_year - _from_year > 1)
+        add_year = utils.is_multi_year(table_name, from_year, to_year)
+
+    if standard is None:
+        if isinstance(table_name, str):
+            standard = table_name in metadata_obj.schema
+        else:
+            standard = False
 
     table_list = []
     for name, year in year_name:
@@ -88,7 +72,10 @@ def _get_parquet(
     try:
         table = pd.read_parquet(defaults.processed_data.joinpath(file_name))
     except FileNotFoundError as exc:
-        print(f"{defaults.processed_data.joinpath(file_name)} not found!")
+        print(
+            f"Table {table_name} for year {year} not found at expected location: \n"
+            f"{defaults.processed_data.joinpath(file_name)}"
+        )
         if download and save:
             _download_parquet(table_name, year)
             table = pd.read_parquet(defaults.processed_data.joinpath(file_name))
@@ -109,21 +96,7 @@ def _download_parquet(table_name: str, year: int) -> None:
 
 
 def imply_table_schema(table, table_name, year):
-    """_summary_
-
-    Parameters
-    ----------
-    table : _type_
-        _description_
-    table_name : _type_
-        _description_
-    year : _type_
-        _description_
-
-    Returns
-    -------
-    pd.DataFrame
-        _description_
+    """docs
     """
     table = table.copy()
 
@@ -159,7 +132,7 @@ def _apply_categorical_instruction(table, column_name, instruction):
     if column_name not in table.columns:
         table[column_name] = None
 
-    # TODO chack column type and behave accordingly not just changing the type
+    # chack column type and behave accordingly not just changing the type
     table[column_name] = table[column_name].astype(str)
 
     for category, condition in categories.items():
@@ -211,49 +184,33 @@ def _order_columns_by_schema(table, column_order):
 
 def add_attribute(
     table: pd.DataFrame,
-    attribute: _Attributes
-    | List[_Attributes]
-    | Tuple[_Attributes] = get_args(_Attributes),
+    attribute: _Attributes | list[_Attributes] | tuple[_Attributes] | None,
     year: int | None = None,
     id_column_name="ID",
     year_column_name: str = "Year",
     attribute_text="names",
 ) -> pd.DataFrame:
-    """_summary_
-
-    Parameters
-    ----------
-    table : pd.DataFrame
-        _description_
-    year : int
-        _description_
-    attribute : _Attributes | list[_Attributes]
-        _description_
-    id_column_name : str, optional
-        _description_, by default "ID"
-
-    Returns
-    -------
-    pd.DataFrame
-        _description_
+    """docs
     """
-    if not isinstance(attribute, Union[list, tuple]):
-        attribute_list = [attribute]
+    if attribute is None:
+        attribute_list = [attr for attr in get_args(_Attributes)]
+    elif isinstance(attribute, (list, tuple)):
+        attribute_list = [attr for attr in attribute]
     else:
-        attribute_list = attribute
+        attribute_list: list[_Attributes] = [attribute]
 
     table = table.copy()
 
-    for atr in attribute_list:
+    for _attribute in attribute_list:
         attribute_column = get_household_attribute(
             _input=table,
             year=year,
-            attribute=atr,
+            attribute=_attribute,
             id_column_name=id_column_name,
             year_column_name=year_column_name,
             attribute_text=attribute_text,
         )
-        table[atr] = attribute_column
+        table[_attribute] = attribute_column
     return table
 
 
@@ -265,21 +222,7 @@ def get_household_attribute(
     year_column_name: str = "Year",
     attribute_text="names",
 ) -> pd.Series:
-    """_summary_
-
-    Parameters
-    ----------
-    data : pd.DataFrame | pd.Series
-        _description_
-    year : int
-        _description_
-    attribute : _Attributes
-        _description_
-
-    Returns
-    -------
-    pd.Series
-        _description_
+    """docs
     """
     _check_attribute(attribute)
     if isinstance(_input, pd.Series):
@@ -293,18 +236,16 @@ def get_household_attribute(
         raise ValueError
 
     _input = _input.copy()
+    years: list[int] = []
     if year is not None:
         years = [year]
         _input["__Year__"] = year
     elif year_column_name in _input.columns:
-        years = _input[year_column_name].unique()
-        for _year in years:
-            if not isinstance(_year, int):
-                raise TypeError
+        years = [int(_year) for _year in _input[year_column_name].unique()]
         _input["__Year__"] = _input[year_column_name]
     elif "year" in _input.attrs:
-        year = _input.attrs["year"]
-        years = [year]
+        assert isinstance(_input.attrs["year"], int)
+        years.append(_input.attrs["year"])
         _input["__Year__"] = year
     else:
         raise TypeError(
@@ -359,40 +300,13 @@ def _get_attribute_code(
 def add_classification(
     table: pd.DataFrame,
     classification: str = "original",
-    level: int | List[int] | None = None,
+    level: int | list[int] | None = None,
     year: int | None = None,
     code_column_name: str = "Code",
     year_column_name: str = "Year",
-    new_column_name: str | List[str] | None = None,
+    new_column_name: str | list[str] | None = None,
 ) -> pd.DataFrame:
-    """_summary_
-
-    Parameters
-    ----------
-    table : pd.DataFrame
-        _description_
-    classification : str, optional
-        _description_, by default "original"
-    level : int | None, optional
-        _description_, by default None
-    year : int | None, optional
-        _description_, by default None
-    code_column_name : str, optional
-        _description_, by default "Code"
-    year_column_name : str, optional
-        _description_, by default "Year"
-    new_column_name : str | None, optional
-        _description_, by default None
-
-    Returns
-    -------
-    pd.DataFrame
-        _description_
-
-    Raises
-    ------
-    TypeError
-        _description_
+    """docs
     """
     table = table.copy()
 
@@ -409,16 +323,18 @@ def add_classification(
         column_names = [f"{classification}-{_level}" for _level in levels]
     elif isinstance(new_column_name, str):
         column_names = [new_column_name]
+    else:
+        column_names = new_column_name
 
     assert len(levels) == len(column_names)
 
     level_and_name = zip(levels, column_names)
 
-    for lvl, column_name in level_and_name:
+    for _level, column_name in level_and_name:
         classification_column = get_code_classification(
             table,
             classification=classification,
-            level=lvl,
+            level=_level,
             year=year,
             code_column_name=code_column_name,
             year_column_name=year_column_name,
@@ -436,25 +352,7 @@ def get_code_classification(
     code_column_name: str = "Code",
     year_column_name: str = "Year",
 ) -> pd.Series:
-    """_summary_
-
-    Parameters
-    ----------
-    _input : pd.DataFrame | pd.Series
-        _description_
-    year : int
-        _description_
-    level : int
-        _description_
-    code_column_name : str, optional
-        _description_, by default "Code"
-    attribute_text : str, optional
-        _description_, by default "names"
-
-    Returns
-    -------
-    pd.Series
-        _description_
+    """docs
     """
     if isinstance(_input, pd.Series):
         if year is None:
@@ -471,11 +369,14 @@ def get_code_classification(
         years = [year]
         _input["__Year__"] = year
     elif year_column_name in _input.columns:
-        years = _input[year_column_name].unique()
+        years = [int(y) for y in _input[year_column_name].unique()]
         _input["__Year__"] = _input[year_column_name]
     elif "year" in _input.attrs:
         year = _input.attrs["year"]
-        years = [year]
+        if year is not None:
+            years = [year]
+        else:
+            raise KeyError
         _input["__Year__"] = year
     else:
         raise TypeError(
@@ -548,7 +449,7 @@ def _build_translator(
     return translator
 
 
-def _get_code_range(code_range_info):
+def _get_code_range(code_range_info: int | dict | list) -> list[int]:
     if isinstance(code_range_info, int):
         code_range = [code_range_info]
     elif isinstance(code_range_info, dict):
@@ -557,5 +458,7 @@ def _get_code_range(code_range_info):
         code_range = []
         for element in code_range_info:
             code_range.extend(_get_code_range(element))
+    else:
+        raise KeyError
 
     return code_range
