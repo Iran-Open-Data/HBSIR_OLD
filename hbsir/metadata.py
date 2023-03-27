@@ -4,11 +4,49 @@ Metadata module
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 import yaml
 
 
 ROOT_DIRECTORY = Path(__file__).parents[1]
+
+
+Attributes = Literal["Urban-Rural", "Province", "Region"]
+
+GeneralTables = Literal[
+    "household_information",
+    "members_properties",
+    "house_specifications",
+]
+
+ExpenditureTables = Literal[
+    "food",
+    "tobacco",
+    "cloth",
+    "home",
+    "furniture",
+    "medical",
+    "transportation",
+    "communication",
+    "entertainment",
+    "education",
+    "hotel",
+    "other",
+    "durable",
+    "investment",
+]
+
+IncomeTables = Literal[
+    "employment_income",
+    "self_employed_income",
+    "other_income",
+    "subsidy",
+    "public_employment_income",
+    "private_employment_income",
+]
+
+Tables = Literal[GeneralTables, ExpenditureTables, IncomeTables]
 
 
 def open_yaml(path):
