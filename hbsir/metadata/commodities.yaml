@@ -1,7 +1,9 @@
 
+
 ###############################################################################
 ##                    - - -    Tables Code Range   - - -                     ##
 ###############################################################################
+
 
 tables:
   food:
@@ -161,6 +163,7 @@ ORIGINAL1383:
       farsi_name: "مواد خوراکی"
       code: {start: 11_000, end: 12_000}
 
+
     #                            #### LEVEL 2 ####                            #
     cereals_and_cereal_products:
       level: 2
@@ -187,6 +190,7 @@ ORIGINAL1383:
       level: 3
       code: {start: 11_170, end: 11_180}
 
+
     #                            #### LEVEL 2 ####                            #
     meat:
       level: 2
@@ -208,6 +212,7 @@ ORIGINAL1383:
       level: 3
       code: {start: 11_240, end: 11_250}
 
+
     #                            #### LEVEL 2 ####                            #
     fish_and_other_sea_foods:
       level: 2
@@ -219,6 +224,7 @@ ORIGINAL1383:
       level: 3
       farsi_name: "ماهی، میگو و فرآورده‌های آن‌ها"
       code: {start: 11_310, end: 11_330}
+
 
     #                            #### LEVEL 2 ####                            #
     milk_other_dairy_product_excluding_butter_and_eggs:
@@ -241,6 +247,7 @@ ORIGINAL1383:
       level: 3
       code: {start: 11_440, end: 11_450}
 
+
     #                            #### LEVEL 2 ####                            #
     oils_fats_and_butter:
       level: 2
@@ -262,6 +269,7 @@ ORIGINAL1383:
       level: 3
       code: {start: 11_530, end: 11_540}
 
+
     #                            #### LEVEL 2 ####                            #
     fruits_and_nuts:
       level: 2
@@ -282,6 +290,7 @@ ORIGINAL1383:
     nuts:
       level: 3
       code: {start: 11_650, end: 11_670}
+
 
     #                            #### LEVEL 2 ####                            #
     vegetables_and_pulses:
@@ -319,6 +328,7 @@ ORIGINAL1383:
       level: 3
       code: {start: 11_760, end: 11_770}
 
+
     #                            #### LEVEL 2 ####                            #
     sugar_confectionery_and_desserts:
       level: 2
@@ -334,6 +344,7 @@ ORIGINAL1383:
     confectionery_and_desserts:
       level: 3
       code: {start: 11_820, end: 11_850}
+
 
     #                            #### LEVEL 2 ####                            #
     spices_condiments_and_other_food_products:
@@ -358,6 +369,7 @@ ORIGINAL1383:
       farsi_name: "نوشیدنی‌های غیر الکلی"
       code: {start: 12_000, end: 13_000}
 
+
     #                            #### LEVEL 2 ####                            #
     tea_coffee_and_cocoa_drinks:
       level: 2
@@ -369,6 +381,7 @@ ORIGINAL1383:
       level: 3
       farsi_name: "چای، قهوه و کاکائو"
       code: {start: 12_110, end: 12_120}
+
 
     #                            #### LEVEL 2 ####                            #
     soft_drinks:
@@ -396,6 +409,7 @@ ORIGINAL1383:
       farsi_name: "نوشیدنی‌های الکلی"
       code: {start: 21_000, end: 22_000}
 
+
     #                            #### LEVEL 2 ####                            #
     _alcoholic_beverages:
       level: 2
@@ -414,6 +428,7 @@ ORIGINAL1383:
       level: 1
       farsi_name: "تنباکو"
       code: {start: 22_000, end: 23_000}
+
 
     #                            #### LEVEL 2 ####                            #
     _tobacco:
@@ -434,6 +449,7 @@ ORIGINAL1383:
       farsi_name: "مواد مخدر"
       code: {start: 23_000, end: 24_000}
 
+
     #                            #### LEVEL 2 ####                            #
     _norcotics:
       level: 2
@@ -445,6 +461,176 @@ ORIGINAL1383:
       level: 3
       farsi_name: "مواد مخدر"
       code: {start: 23_110, end: 23_120}
+
+
+    #                ################ LEVEL 0 ################                #
+    clothing_and_footwear:
+      level: 0
+      farsi_name: "پوشاک و کفش"
+      code: {start: 30_000, end: 33_000}
+      # This is an exceptional case due to the non-standard codes at the end  #
+      # of the classification for investment expenses (33_000 - 35_000). As   #
+      # a result, this case does not follow the typical pattern.              #
+
+
+    #                        ######## LEVEL 1 ########                        #
+    clothing:
+      level: 1
+      farsi_name: "پوشاک"
+      code: {start: 31_000, end: 32_000}
+
+
+    #                            #### LEVEL 2 ####                            #
+    clothing_materials:
+      level: 2
+      farsi_name: "مواد پوشاکی"
+      code: {start: 31_100, end: 31_200}
+
+    #                              ## LEVEL 3 ##                              #
+    _clothing_materials:
+      level: 3
+      farsi_name: "انواع پارچه"
+      code: {start: 31_110, end: 31_130}
+
+
+    #                            #### LEVEL 2 ####                            #
+    garments:
+      level: 2
+      farsi_name: "پوشاک"
+      code: {start: 31_200, end: 31_300}
+
+
+    #                            #### LEVEL 2 ####                            #
+    other_articles_of_clothing_and_clothing_accessories:
+      level: 2
+      farsi_name: "سایر انواع پوشاک و لوازم پوشاکی"
+      code: {start: 31_300, end: 31_400}
+
+
+    #                            #### LEVEL 2 ####                            #
+    cleaning_repair_tailoring_and_hire_of_clothing:
+      level: 2
+      farsi_name: "هزینه شستشو، اجرت دوخت، تعمیر و کرایه پوشاک"
+      code: {start: 31_400, end: 31_500}
+
+
+    #                        ######## LEVEL 1 ########                        #
+    footwear:
+      level: 1
+      farsi_name: "کفش"
+      code: {start: 32_000, end: 33_000}
+
+
+    #                            #### LEVEL 2 ####                            #
+    shoes_and_other_footwear:
+      level: 2
+      farsi_name: "انواع کفش"
+      code: {start: 32_100, end: 32_200}
+
+
+    #                            #### LEVEL 2 ####                            #
+    cleaning_repair_and_hire_of_footwear:
+      level: 2
+      farsi_name: "تعمیر و ملزومات کفش"
+      code: {start: 32_100, end: 32_200}
+
+
+    #                ################ LEVEL 0 ################                #
+    housing_water_electricity_gas_and_other_fuels:
+      level: 0
+      farsi_name: ""
+      code: {start: 40_000, end: 50_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    furnishings_household_equipment_and_routine_household_maintenance:
+      level: 0
+      farsi_name: ""
+      code: {start: 50_000, end: 60_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    health:
+      level: 0
+      farsi_name: ""
+      code: {start: 60_000, end: 70_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    transport:
+      level: 0
+      farsi_name: ""
+      code: {start: 70_000, end: 80_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    information_and_communication:
+      level: 0
+      farsi_name: ""
+      code: {start: 80_000, end: 90_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    recreation_sport_and_culture:
+      level: 0
+      farsi_name: ""
+      code: {start: 90_000, end: 100_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    education_services:
+      level: 0
+      farsi_name: ""
+      code: {start: 100_000, end: 110_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    restaurants_and_accommodation_services:
+      level: 0
+      farsi_name: ""
+      code: {start: 110_000, end: 120_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    other_commodities:
+      level: 0
+      farsi_name: ""
+      code: {start: 120_000, end: 130_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    transfer_payments:
+      level: 0
+      farsi_name: ""
+      code: {start: 130_000, end: 140_000}
+
+
+    #                        ######## LEVEL 1 ########                        #
+    transfer_payments:
+      level: 1
+      farsi_name: ""
+      code: {start: 139_000, end: 140_000}
+
+
+    #                ################ LEVEL 0 ################                #
+
+      level: 0
+      farsi_name: "investments"
+      code: {start: 33_000, end: 35_000}
+
+
+    #                        ######## LEVEL 1 ########                        #
+    investing_in_construction:
+      level: 1
+      farsi_name: ""
+      code: {start: 33_000, end: 34_000}
+
+
+    #                        ######## LEVEL 1 ########                        #
+    other_investments:
+      level: 1
+      farsi_name: ""
+      code: {start: 34_000, end: 35_000}
 
 
 original:
