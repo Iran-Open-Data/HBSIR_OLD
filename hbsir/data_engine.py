@@ -244,8 +244,9 @@ def get_household_attribute(
         years = [int(_year) for _year in _input[year_column_name].unique()]
         _input["__Year__"] = _input[year_column_name]
     elif "year" in _input.attrs:
-        assert isinstance(_input.attrs["year"], int)
-        years.append(_input.attrs["year"])
+        year = _input.attrs["year"]
+        assert isinstance(year, int)
+        years = [year]
         _input["__Year__"] = year
     else:
         raise TypeError(
