@@ -172,8 +172,8 @@ def _apply_type_to_column(column: pd.Series, column_metadata: dict) -> pd.Series
 def _convert_empty_items_to_nan(column: pd.Series):
     if pd.api.types.is_numeric_dtype(column):
         return column
-    chars_to_remove = r"\n\r\,\@\-\+"
-    column = column.str.replace(f"[{chars_to_remove}]", "", regex=True)
+    chars_to_remove = r"\n\r\,\@\-\+\*"
+    column = column.str.replace(f"[{chars_to_remove}]*", "", regex=True)
     column = column.replace(r"\A\s*\Z", np.nan, regex=True)
     return column
 
