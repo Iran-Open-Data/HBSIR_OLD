@@ -454,7 +454,12 @@ def _get_code_range(code_range_info: int | dict | list) -> list[int]:
     if isinstance(code_range_info, int):
         code_range = [code_range_info]
     elif isinstance(code_range_info, dict):
-        code_range = list(range(code_range_info["start"], code_range_info["end"]))
+        if ("start" in code_range_info) and ("end" in code_range_info):
+            code_range = list(range(code_range_info["start"], code_range_info["end"]))
+        elif "code" in code_range_info:
+            code_range = _get_code_range(code_range_info["code"])
+        else:
+            raise KeyError
     elif isinstance(code_range_info, list):
         code_range = []
         for element in code_range_info:
