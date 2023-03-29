@@ -13,6 +13,8 @@ from . import metadata, utils
 defaults = metadata.Defaults()
 metadata_obj = metadata.Metadata()
 _Attributes = metadata.Attributes
+_OriginalTables = metadata.OriginalTables
+_StandardTables = metadata.StandardTables
 _Tables = metadata.Tables
 
 
@@ -29,40 +31,73 @@ def _check_attribute(attribute: _Attributes | list[_Attributes]) -> None:
             )
 
 
+def read_hbs(
+    table_name: _Tables,
+    from_year: int | None = None,
+    to_year: int | None = None,
+    add_year: bool | None = None,
+    add_duration: bool | None = True,
+) -> pd.DataFrame:
+    """docs
+    """
+    if  table_name in metadata.standard_tables:
+        table_list: list[_OriginalTables] = metadata_obj.schema[table_name]["table_list"]
+    elif table_name in get_args(_OriginalTables):
+        table_list = [table_name]
+    else:
+        raise KeyError
+
+    if add_year is None:
+        add_year = utils.is_multi_year(table_list, from_year, to_year)
+
+    table = load_table(
+        table_name=table_list,
+        from_year=from_year,
+        to_year=to_year,
+        standard=True,
+        add_year=add_year,
+        add_duration=add_duration,
+    )
+
+    table = _imply_table_schema(table, table_name, from_year)
+
+    if not add_year:
+        table.attrs["year"] = from_year
+    return table
+
+
 def load_table(
-    table_name: _Tables | list[_Tables] | tuple[_Tables],
+    table_name: _OriginalTables | list[_OriginalTables] | tuple[_OriginalTables],
     from_year: int | None = None,
     to_year: int | None = None,
     standard: bool | None = None,
     add_year: bool | None = None,
+    add_duration: bool | None = None
 ) -> pd.DataFrame:
-    """docs
     """
-    year_name = utils.create_table_year_product(
-        table_name=table_name, from_year=from_year, to_year=to_year
-    )
-
-    if add_year is None:
-        add_year = utils.is_multi_year(table_name, from_year, to_year)
-
+    Load Tables
+    """
     if standard is None:
         if isinstance(table_name, str):
             standard = table_name in metadata_obj.schema
         else:
             standard = False
 
-    table_list = []
-    for name, year in year_name:
-        table = _get_parquet(name, year)
+    year_name = utils.create_table_year_product(
+        table_name=table_name, from_year=from_year, to_year=to_year
+    )
+    table_list: list[pd.DataFrame] = []
+    for _table_name, year in year_name:
+        table = _get_parquet(_table_name, year)
         if add_year:
             table["Year"] = year
         if standard:
-            table = imply_table_schema(table, name, year)
+            table = _imply_table_schema(table, _table_name, year)
+        if add_duration:
+            table = _add_duration(table, _table_name)
         table_list.append(table)
-    concat_table = pd.concat(table_list)
+    concat_table = pd.concat(table_list, ignore_index=True)
 
-    if not add_year:
-        concat_table.attrs["year"] = from_year
     return concat_table
 
 
@@ -96,18 +131,18 @@ def _download_parquet(table_name: str, year: int) -> None:
     utils.download_file(url=file_url, path=local_path, show_progress_bar=True)
 
 
-def imply_table_schema(table, table_name, year):
+def _imply_table_schema(table, table_name, year: int | None = None):
     """docs
     """
     table = table.copy()
-
     table_schema = metadata_obj.schema[table_name]
 
     if "columns" in table_schema:
         instructions = table_schema["columns"]
 
         for name, instruction in instructions.items():
-            instruction = metadata.get_metadata_version(instruction, year)
+            if isinstance(year, int):
+                instruction = metadata.get_metadata_version(instruction, year)
             table = _apply_column_instruction(table, name, instruction)
 
     if "order" in table_schema:
@@ -133,7 +168,7 @@ def _apply_categorical_instruction(table, column_name, instruction):
     if column_name not in table.columns:
         table[column_name] = None
 
-    # chack column type and behave accordingly not just changing the type
+    # fix me to chack column type and behave accordingly not just changing the type
     table[column_name] = table[column_name].astype(str)
 
     for category, condition in categories.items():
@@ -180,7 +215,15 @@ def _parse_expression(expression, table_name="table"):
 
 def _order_columns_by_schema(table, column_order):
     new_columns = [column for column in column_order if column in table.columns]
-    return table[new_columns]
+    table = table[new_columns]
+    return table
+
+
+def _add_duration(table, table_name):
+    table = table.copy()
+    default_duration = metadata_obj.commodities["tables"][table_name]["default_duration"]
+    table["Duration"] = default_duration
+    return table
 
 
 def add_attribute(

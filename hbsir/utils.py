@@ -131,6 +131,39 @@ def extract_with_7zip(compressed_file_path: str, output_directory: str) -> None:
         )
 
 
+def interpret_number_range(
+    number_range_info: int | dict | list,
+    default_end: int | None = None,
+    keyword: str = "code",
+) -> list[int]:
+    """
+    A tool for interpretation of number ranges
+    """
+    number_range: list[int] = []
+    if isinstance(number_range_info, int):
+        number_range.append(number_range_info)
+    elif isinstance(number_range_info, dict):
+        if ("start" in number_range_info) and ("end" in number_range_info):
+            number_range.extend(
+                list(range(number_range_info["start"], number_range_info["end"]))
+            )
+        elif ("start" in number_range_info) and (default_end is not None):
+            number_range.extend(list(range(number_range_info["start"], default_end)))
+        elif keyword in number_range_info:
+            number_range.extend(
+                interpret_number_range(number_range_info[keyword], default_end=default_end)
+            )
+        else:
+            raise KeyError
+    elif isinstance(number_range_info, list):
+        for element in number_range_info:
+            number_range.extend(interpret_number_range(element, default_end=default_end))
+    else:
+        raise KeyError
+
+    return number_range
+
+
 def build_year_interval(
     from_year: int | None,
     to_year: int | None,
@@ -188,7 +221,7 @@ def build_year_interval(
 
 def build_year_interval_for_table(
     table_name: _Tables, from_year: int | None = None, to_year: int | None = None
-) -> tuple[int, int]:
+) -> list[int]:
     """_summary_
 
     Parameters
@@ -205,18 +238,11 @@ def build_year_interval_for_table(
     _type_
         _description_
     """
-    availability_interval = metadata_obj.tables["yearly_table_availability"][table_name]
-    if isinstance(availability_interval, int):
-        earliest_year = availability_interval
-        latest_year = None
-    elif isinstance(availability_interval, list):
-        earliest_year, latest_year = availability_interval
-    else:
-        raise TypeError
-    from_year, to_year = build_year_interval(
-        from_year, to_year, earliest_year, latest_year
-    )
-    return from_year, to_year
+    availability_info = metadata_obj.tables["yearly_table_availability"][table_name]
+    available_years = interpret_number_range(availability_info, default_end=defaults.last_year+1)
+    from_year, to_year = build_year_interval(from_year, to_year)
+    selected_years = [year for year in range(from_year, to_year) if year in available_years]
+    return selected_years
 
 
 def create_table_year_product(
@@ -243,16 +269,12 @@ def create_table_year_product(
     if isinstance(table_name, str):
         table_list: list[_Tables] = [table_name]
     else:
-        table_list = [table for table in table_name]
+        table_list: list[_Tables] = list(table_name)
 
     product_list = []
     for _table_name in table_list:
-        _from_year, _to_year = build_year_interval_for_table(
-            _table_name, from_year, to_year
-        )
-        product_list.extend(
-            [(_table_name, year) for year in range(_from_year, _to_year)]
-        )
+        years = build_year_interval_for_table(_table_name, from_year, to_year)
+        product_list.extend([(_table_name, year) for year in years])
     return product_list
 
 
@@ -267,9 +289,7 @@ def is_multi_year(
         table_list = [table for table in table_name]
 
     for _table_name in table_list:
-        _from_year, _to_year = build_year_interval_for_table(
-            _table_name, from_year, to_year
-        )
-        if _to_year - _from_year > 1:
+        years = build_year_interval_for_table(_table_name, from_year, to_year)
+        if len(years) > 1:
             return True
     return False

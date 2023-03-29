@@ -47,7 +47,16 @@ IncomeTables = Literal[
     "private_employment_income",
 ]
 
-Tables = Literal[GeneralTables, ExpenditureTables, IncomeTables]
+OriginalTables = Literal[GeneralTables, ExpenditureTables, IncomeTables]
+
+standard_tables = (
+    "Expenditures",
+)
+StandardTables = Literal[
+    "Expenditures",
+]
+
+Tables = Literal[OriginalTables, StandardTables]
 
 
 def open_yaml(path):
