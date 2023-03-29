@@ -2,6 +2,7 @@
 Main file for ordinary use
 """
 
+from collections import defaultdict
 from typing import get_args
 
 import sympy
@@ -422,6 +423,11 @@ def _build_translator(
     attribute: str = "name",
     default_value: str | None = None,
 ) -> dict:
+    def closure(_input):
+        def inner_function():
+            return _input
+        return inner_function
+
     commodity_codes = metadata_obj.commodities[classification]["items"]
     commodity_codes = metadata.get_metadata_version(commodity_codes, year)
     selected_items = {
@@ -432,6 +438,9 @@ def _build_translator(
         for name, info in selected_items.items():
             categories = metadata.get_categories(info)
             for category_info in categories:
+                if "default" in category_info:
+                    translator = defaultdict(closure(name), translator)
+                    break
                 code_range = _get_code_range(category_info["code"])
                 for code in code_range:
                     translator[code] = name
@@ -439,12 +448,15 @@ def _build_translator(
         for info in selected_items.values():
             categories = metadata.get_categories(info)
             for category_info in categories:
+                try:
+                    attribute_value = category_info[attribute]
+                except KeyError:
+                    attribute_value = default_value
+                if "default" in category_info:
+                    translator = defaultdict(closure(attribute_value), translator)
+                    break
                 code_range = _get_code_range(category_info["code"])
                 for code in code_range:
-                    try:
-                        attribute_value = category_info[attribute]
-                    except KeyError:
-                        attribute_value = default_value
                     translator[code] = attribute_value
 
     return translator
