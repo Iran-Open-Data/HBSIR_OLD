@@ -3,7 +3,7 @@ Module for cleaning raw data into proper format
 """
 
 from pathlib import Path
-from typing import Hashable, List
+from typing import Hashable
 
 from tqdm import tqdm
 import pandas as pd
@@ -14,6 +14,7 @@ from . import metadata, utils
 
 defaults = metadata.Defaults()
 metadata_obj = metadata.Metadata()
+_Tables = metadata.Tables
 
 
 def load_table_data(
@@ -178,7 +179,7 @@ def _convert_empty_items_to_nan(column: pd.Series):
 
 
 def parquet_clean_data(
-    table_name: str | List[str],
+    table_name: _Tables | list[_Tables],
     from_year: int | None = None,
     to_year: int | None = None,
 ) -> None:
