@@ -111,7 +111,8 @@ def clean_table_with_metadata(table_name: str, year: int) -> pd.DataFrame:
 def _apply_metadata_to_table(table: pd.DataFrame, table_metadata: dict) -> pd.DataFrame:
     cleaned_table = pd.DataFrame()
     for column_name, column in table.items():
-        column_metadata = _get_column_metadata(table_metadata, column_name)
+        assert isinstance(column_name, str)
+        column_metadata = _get_column_metadata(table_metadata, column_name.upper())
         if column_metadata == "drop":
             continue
         column = _apply_metadata_to_column(column, column_metadata)
