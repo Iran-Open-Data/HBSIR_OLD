@@ -1,4 +1,15 @@
 
+common_order: &common_order
+  - Year
+  - ID
+  - Code
+  - Provision_Method
+  - Price_System
+  - Amount
+  - Duration
+  - Price
+  - Expenditure
+
 
 food:
 
@@ -27,23 +38,89 @@ food:
         type: numerical
         expression: "0.001 * Grams + Kilos"
 
-  order:
-    - Year
-    - ID
-    - Code
-    - Provision_Method
-    - Price_System
-    - Amount
-    - Price
-    - Expenditure
+  order: *common_order
 
 
 tobacco:
-  order:
-    - Year
-    - ID
-    - Code
-    - Provision_Method
-    - Amount
-    - Price
-    - Expenditure
+
+  order: *common_order
+
+
+cloth:
+
+  order: *common_order
+
+
+home:
+
+  order: *common_order
+
+
+furniture:
+
+  order: *common_order
+
+
+medical:
+
+  order: *common_order
+
+
+transportation:
+
+  order: *common_order
+
+
+communication:
+
+  order: *common_order
+
+
+entertainment:
+
+  order: *common_order
+
+
+education:
+
+  order: *common_order
+
+
+hotel:
+
+  order: *common_order
+
+
+other:
+
+  order: *common_order
+
+
+durable:
+
+  order: *common_order
+
+
+investment:
+
+  order: *common_order
+
+
+
+Expenditures:
+  table_list:
+    - food
+    - tobacco
+    - cloth
+    - home
+    - furniture
+    - medical
+    - transportation
+    - communication
+    - entertainment
+    - education
+    - hotel
+    - other
+    - durable
+
+  order: *common_order

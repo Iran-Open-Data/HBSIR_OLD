@@ -45,29 +45,29 @@
 
 # The range of years during which the table is available
 yearly_table_availability:
-    household_information:      1388
-    members_properties:         1363
-    house_specifications:       1363
+    household_information:      {start: 1388}
+    members_properties:         {start: 1363}
+    house_specifications:       {start: 1363}
 
-    food:                       1363
-    tobacco:                    1383
-    cloth:                      1363
-    home:                       1363
-    furniture:                  1363
-    medical:                    1363
-    transportation:             1363
-    communication:              1383
-    entertainment:              1363
-    education:                  1383
-    hotel:                      1383
-    other:                      1363
-    durable:                    1363
-    investment:                 1363
+    food:                       {start: 1363}
+    tobacco:                    {start: 1383}
+    cloth:                      {start: 1363}
+    home:                       {start: 1363}
+    furniture:                  {start: 1363}
+    medical:                    {start: 1363}
+    transportation:             {start: 1363}
+    communication:              {start: 1383}
+    entertainment:              {start: 1363}
+    education:                  {start: 1383}
+    hotel:                      {start: 1383}
+    other:                      {start: 1363}
+    durable:                    {start: 1363}
+    investment:                 [{start: 1366, end: 1375}, {start: 1378}]
 
-    employment_income:          1369
-    self_employed_income:       1369
-    other_income:               1369
-    subsidy:                    1390
+    employment_income:          {start: 1369}
+    self_employed_income:       {start: 1369}
+    other_income:               {start: 1369}
+    subsidy:                    {start: 1390}
     public_employment_income:   {start: 1363, end: 1369}
     private_employment_income:  {start: 1363, end: 1369}
 
@@ -82,12 +82,15 @@ default_table_settings:
 
 
 household_information:
+
+    settings:
+        missings: drop
+
+
     file_code:
         1363: null
         1388: "Data"
 
-    settings:
-        missings: drop
 
     columns:
         Address: &household_information_Address
@@ -153,11 +156,10 @@ members_properties:
                 6: "Other"
 
     columns:
-        Address: &property_Address
+        ADDRESS: &property_Address
             1363:
                 new_name: "ID"
                 type: "unsigned"
-        ADDRESS: *property_Address
 
         COL01: *member_number
         DYCOL01: *member_number
@@ -433,18 +435,38 @@ EXPENDITURE_ITEMS:
 
     # # # Security Deposit
 
-    security_deposit: &security_deposit
+    expenditure_security_deposit: &expenditure_security_deposit
         new_name: "Security_Deposit"
+        type: "float"
+
+
+    # # # Insurance and Loan Information
+
+    expenditure_insurance_and_loan_info: &expenditure_insurance_and_loan_info
+        new_name: "Insurance_and_Loan_Information"
+        type: "float"
+
+
+    # # # Lender
+
+    expenditure_lender: &expenditure_lender
+        new_name: "Lender"
+        type: "string"
+
+
+    # # # Secondhand Sale
+
+    expenditure_secondhand_sale: &expenditure_secondhand_sale
+        new_name: "Secondhand_Sale"
         type: "float"
 
 
     # # # Base Items
 
     expenditure_base_columns: &expenditure_base_columns
-        Address: &expenditure_income_Address
+        ADDRESS:
             new_name: "ID"
             type: "unsigned"
-        ADDRESS: *expenditure_income_Address
 
         COL1: &expenditure_code
             new_name: "Code"
@@ -478,9 +500,15 @@ EXPENDITURE_ITEMS:
 
 
 food:
+
+    defualts:
+        duration: 30
+
+
     file_code:
         1363: "P3S01"
     
+
     columns:
         <<: *expenditure_base_columns
 
@@ -561,7 +589,7 @@ home:
         <<: *expenditure_common_structure
         1384:
             <<: *expenditure_base_columns
-            DYCOL02: *security_deposit
+            DYCOL02: *expenditure_security_deposit
             DYCOL03: *expenditure_provision_method
             DYCOL04: *expenditure_value
 
@@ -621,6 +649,7 @@ education:
 
 
 hotel:
+
     file_code:
         1363: null
         1383: "P3S11"
@@ -630,6 +659,7 @@ hotel:
 
 
 other:
+
     file_code:
         1363: "P3S08"
         1383: "P3S12"
@@ -639,15 +669,52 @@ other:
 
 
 durable:
+
+    defualts:
+        duration: 360
+
+
     file_code:
         1363: "P3S09"
         1383: "P3S13"
 
-    columns:
-        <<: *expenditure_base_columns
 
+    columns:
+        1363:
+            <<: *expenditure_common_columns
+            COL5: *expenditure_secondhand_sale
+
+        1369:
+            <<: *expenditure_base_columns
+            COL3: *expenditure_provision_method
+            COL4: *expenditure_price_system
+            COL5: *expenditure_value
+            COL6: *expenditure_secondhand_sale
+
+        1374:
+            <<: *expenditure_common_columns
+            COL5: *expenditure_secondhand_sale
+
+        1384:
+            <<: *expenditure_base_columns
+            DYCOL02: *expenditure_insurance_and_loan_info
+            DYCOL03: *expenditure_provision_method
+            DYCOL04: *expenditure_value
+            DYCOL05: *expenditure_secondhand_sale
+
+        1388:
+            <<: *expenditure_base_columns
+            DYCOL02: *expenditure_insurance_and_loan_info
+            DYCOL03: *expenditure_lender
+            DYCOL04: *expenditure_provision_method
+            DYCOL05: *expenditure_value
+            DYCOL06: *expenditure_secondhand_sale
 
 investment:
+
+    defualts:
+        duration: 360
+        
     file_code:
         1363: null
         1366: "P3S10"
@@ -656,7 +723,35 @@ investment:
         1383: "P3S14"
 
     columns:
-        <<: *expenditure_base_columns
+        1366:
+            <<: *expenditure_base_columns
+            COL3: *expenditure_value
+
+        1366:
+            <<: *expenditure_base_columns
+            COL3: *expenditure_provision_method
+            COL4: *expenditure_value
+            COL5: *expenditure_secondhand_sale
+
+        1369:
+            <<: *expenditure_base_columns
+            COL3: *expenditure_provision_method
+            COL4: *expenditure_price_system
+            COL5: *expenditure_value
+            COL6: *expenditure_secondhand_sale
+
+        1374:
+            <<: *expenditure_base_columns
+            COL3: *expenditure_provision_method
+            COL4: *expenditure_value
+            COL5: *expenditure_secondhand_sale
+
+        1384:
+            <<: *expenditure_base_columns
+            DYCOL02: *expenditure_provision_method
+            DYCOL03: *expenditure_value
+            DYCOL04: *expenditure_secondhand_sale
+
 
 
 ######################################################################
