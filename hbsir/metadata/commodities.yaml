@@ -152,6 +152,7 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     food_and_non_alcoholic_beverages:
+      &original_1383_0_food_and_non_alcoholic_beverages
       level: 0
       farsi_name: "مواد خوراکی و نوشیدنی‌های غیر الکلی"
       code: {start: 10_000, end: 20_000}
@@ -398,6 +399,7 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     alcoholic_beverages_tobacco_and_norcotics:
+      &original_1383_0_alcoholic_beverages_tobacco_and_norcotics
       level: 0
       farsi_name: "نوشیدنی‌های الکلی، تنباکو و مواد مخدر"
       code: {start: 20_000, end: 30_000}
@@ -591,6 +593,63 @@ ORIGINAL1383:
       code: {start: 110_000, end: 120_000}
 
 
+    #                        ######## LEVEL 1 ########                        #
+    food_and_beverage_serving_services:
+      &original_1383_1_food_and_beverage_serving_services
+      level: 1
+      farsi_name: ""
+      code: {start: 111_000, end: 112_000}
+
+
+    #                            #### LEVEL 2 ####                            #
+    restaurants_cafés_and_the_like:
+      level: 2
+      farsi_name: ""
+      code: {start: 111_100, end: 111_200}
+
+
+    #                              ## LEVEL 3 ##                              #
+    _restaurants_cafés_and_the_like:
+      level: 3
+      farsi_name: ""
+      code: {start: 111_110, end: 111_150}
+
+
+    #                            #### LEVEL 2 ####                            #
+    canteens_cafeterias_and_refectories:
+      level: 2
+      farsi_name: ""
+      code: {start: 111_200, end: 111_300}
+
+
+    #                              ## LEVEL 3 ##                              #
+    _canteens_cafeterias_and_refectories:
+      level: 3
+      farsi_name: ""
+      code: {start: 111_110, end: 111_120}
+
+
+    #                        ######## LEVEL 1 ########                        #
+    accommodation_services:
+      level: 1
+      farsi_name: ""
+      code: {start: 112_000, end: 113_000}
+
+
+    #                            #### LEVEL 2 ####                            #
+    _accommodation_services:
+      level: 2
+      farsi_name: ""
+      code: {start: 112_000, end: 112_100}    # Yes! it is true!
+
+
+    #                              ## LEVEL 3 ##                              #
+    _accommodation_services:
+      level: 2
+      farsi_name: ""
+      code: {start: 112_010, end: 112_020}    # Yes! it is true!
+
+
     #                ################ LEVEL 0 ################                #
     other_commodities:
       level: 0
@@ -639,6 +698,24 @@ original:
   items:
     1363: *ORIGINAL1363
     1383: *ORIGINAL1383
+
+
+Food-NonFood:
+  default_levels: [1]
+
+  items:
+    1383:
+      Food:
+        level: 1
+        farsi_name: "مخارج خوراکی"
+        code:
+          - *original_1383_0_food_and_non_alcoholic_beverages
+          - *original_1383_0_alcoholic_beverages_tobacco_and_norcotics
+          - *original_1383_1_food_and_beverage_serving_services
+      Non-Food:
+        level: 1
+        farsi_name: "مخارج غیر خوراکی"
+        default: true
 
 
 

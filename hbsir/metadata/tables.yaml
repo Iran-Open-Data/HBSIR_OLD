@@ -56,10 +56,10 @@ yearly_table_availability:
     furniture:                  1363
     medical:                    1363
     transportation:             1363
-    communication:              1363
+    communication:              1383
     entertainment:              1363
-    education:                  1363
-    hotel:                      1363
+    education:                  1383
+    hotel:                      1383
     other:                      1363
     durable:                    1363
     investment:                 1363
@@ -409,11 +409,13 @@ EXPENDITURE_ITEMS:
         new_name: "Kilos"
         type: "float"
 
+
     # # # Amount
 
     expenditure_amount: &expenditure_amount
         new_name: "Amount"
         type: "float"
+
 
     # # # Price
 
@@ -426,6 +428,13 @@ EXPENDITURE_ITEMS:
 
     expenditure_value: &expenditure_value
         new_name: "Expenditure"
+        type: "float"
+
+
+    # # # Security Deposit
+
+    security_deposit: &security_deposit
+        new_name: "Security_Deposit"
         type: "float"
 
 
@@ -453,6 +462,19 @@ EXPENDITURE_ITEMS:
 
         COL4: *expenditure_value
         DYCOL03: *expenditure_value
+
+
+    # # # Common Structure
+
+    expenditure_common_structure: &expenditure_common_structure
+        1363: *expenditure_common_columns
+        1369:
+            <<: *expenditure_base_columns
+            COL3: *expenditure_provision_method
+            COL4: *expenditure_price_system
+            COL5: *expenditure_amount
+            COL6: *expenditure_value
+        1374: *expenditure_common_columns
 
 
 food:
@@ -520,20 +542,15 @@ tobacco:
         DYCOL06: *expenditure_value
         DYCOL07: drop
 
+
 cloth:
     file_code:
         1363: "P3S02"
         1383: "P3S03"
 
     columns:
-        1363: *expenditure_common_columns
-        1369:
-            <<: *expenditure_base_columns
-            COL3: *expenditure_provision_method
-            COL4: *expenditure_price_system
-            COL5: *expenditure_amount
-            COL6: *expenditure_value
-        1374: *expenditure_common_columns
+        <<: *expenditure_common_structure
+
 
 home:
     file_code:
@@ -541,7 +558,13 @@ home:
         1383: "P3S04"
 
     columns:
-        <<: *expenditure_base_columns
+        <<: *expenditure_common_structure
+        1384:
+            <<: *expenditure_base_columns
+            DYCOL02: *security_deposit
+            DYCOL03: *expenditure_provision_method
+            DYCOL04: *expenditure_value
+
 
 furniture:
     file_code:
@@ -549,7 +572,7 @@ furniture:
         1383: "P3S05"
 
     columns:
-        <<: *expenditure_common_columns
+        <<: *expenditure_common_structure
 
 
 medical:
@@ -558,7 +581,7 @@ medical:
         1383: "P3S06"
 
     columns:
-        <<: *expenditure_common_columns
+        <<: *expenditure_common_structure
 
 
 transportation:
@@ -567,16 +590,16 @@ transportation:
         1383: "P3S07"
 
     columns:
-        <<: *expenditure_common_columns
+        <<: *expenditure_common_structure
 
 
 communication:
-    1363: null
-    1383:
-        file_code: "P3S08"
+    file_code:
+        1363: null
+        1383: "P3S08"
 
-        columns:
-            <<: *expenditure_common_columns
+    columns:
+        <<: *expenditure_common_structure
 
 
 entertainment:
@@ -585,7 +608,7 @@ entertainment:
         1383: "P3S09"
 
     columns:
-        <<: *expenditure_common_columns
+        <<: *expenditure_common_structure
 
 
 education:
@@ -594,7 +617,7 @@ education:
         1383: "P3S10"
 
     columns:
-        <<: *expenditure_common_columns
+        <<: *expenditure_common_structure
 
 
 hotel:
@@ -603,7 +626,7 @@ hotel:
         1383: "P3S11"
 
     columns:
-        <<: *expenditure_common_columns
+        <<: *expenditure_common_structure
 
 
 other:
@@ -612,7 +635,7 @@ other:
         1383: "P3S12"
 
     columns:
-        <<: *expenditure_common_columns
+        <<: *expenditure_common_structure
 
 
 durable:
