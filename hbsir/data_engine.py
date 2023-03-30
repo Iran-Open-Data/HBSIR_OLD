@@ -10,8 +10,8 @@ import pandas as pd
 
 from . import metadata, utils
 
-defaults = metadata.Defaults()
-metadata_obj = metadata.Metadata()
+defaults = metadata.defaults
+metadatas = metadata.metadatas
 _Attributes = metadata.Attributes
 _OriginalTables = metadata.OriginalTables
 _StandardTables = metadata.StandardTables
@@ -41,7 +41,7 @@ def read_hbs(
     """docs
     """
     if  table_name in metadata.standard_tables:
-        table_list: list[_OriginalTables] = metadata_obj.schema[table_name]["table_list"]
+        table_list: list[_OriginalTables] = metadatas.schema[table_name]["table_list"]
         standard=True
     elif table_name in get_args(_OriginalTables):
         table_list = [table_name]
@@ -75,7 +75,7 @@ def load_table(
     """
     if standard is None:
         if isinstance(table_name, str):
-            standard = table_name in metadata_obj.schema
+            standard = table_name in metadatas.schema
         else:
             standard = False
     if add_year is None:
@@ -136,7 +136,7 @@ def _imply_table_schema(table, table_name, year: int | None = None):
     """docs
     """
     table = table.copy()
-    table_schema = metadata_obj.schema[table_name]
+    table_schema = metadatas.schema[table_name]
 
     if "columns" in table_schema:
         instructions = table_schema["columns"]
@@ -222,7 +222,7 @@ def _order_columns_by_schema(table, column_order):
 
 def _add_duration(table, table_name):
     table = table.copy()
-    default_duration = metadata_obj.commodities["tables"][table_name]["default_duration"]
+    default_duration = metadatas.commodities["tables"][table_name]["default_duration"]
     table["Duration"] = default_duration
     return table
 
@@ -321,7 +321,7 @@ def _get_attribute_by_id(
     attribute: _Attributes,
     attribute_text="names",
 ) -> pd.Series:
-    attr_dict = metadata_obj.household[attribute]
+    attr_dict = metadatas.household[attribute]
     text = metadata.get_metadata_version(attr_dict[attribute_text], year)
     attr_codes = _get_attribute_code(household_id_column, year, attribute)
     attr_codes = attr_codes.map(text)
@@ -334,8 +334,8 @@ def _get_attribute_code(
     year: int,
     attribute: _Attributes,
 ) -> pd.Series:
-    id_length = metadata.get_metadata_version(metadata_obj.household["ID_Length"], year)
-    attr_dict = metadata_obj.household[attribute]
+    id_length = metadata.get_metadata_version(metadatas.household["ID_Length"], year)
+    attr_dict = metadatas.household[attribute]
     position = metadata.get_metadata_version(attr_dict["position"], year)
     start, end = position["start"], position["end"]
     attr_codes = household_id_column % pow(10, (id_length - start))
@@ -357,7 +357,7 @@ def add_classification(
     table = table.copy()
 
     if level is None:
-        levels = metadata_obj.commodities[classification]["default_levels"]
+        levels = metadatas.commodities[classification]["default_levels"]
     elif isinstance(level, int):
         levels = [level]
     elif isinstance(level, list):
@@ -366,8 +366,8 @@ def add_classification(
         raise TypeError
 
     if new_column_name is None:
-        if "default_names" in metadata_obj.commodities[classification]:
-            column_names = metadata_obj.commodities[classification]["default_names"]
+        if "default_names" in metadatas.commodities[classification]:
+            column_names = metadatas.commodities[classification]["default_names"]
         else:
             column_names = [f"{classification}-{_level}" for _level in levels]
     elif isinstance(new_column_name, str):
@@ -475,7 +475,7 @@ def _build_translator(
             return _input
         return inner_function
 
-    commodity_codes = metadata_obj.commodities[classification]["items"]
+    commodity_codes = metadatas.commodities[classification]["items"]
     commodity_codes = metadata.get_metadata_version(commodity_codes, year)
     selected_items = {
         name: info for name, info in commodity_codes.items() if info["level"] == level

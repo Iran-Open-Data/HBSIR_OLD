@@ -15,7 +15,7 @@ import pyodbc
 from . import metadata, utils
 
 
-defaults = metadata.Defaults()
+defaults = metadata.defaults
 
 
 def setup(
@@ -151,7 +151,7 @@ def _download_year_file(year: int, replace: bool = True) -> None:
 
 
 def _unpack_archive_with_7zip(
-        compressed_file_path: str, output_directory: str) -> None:
+        compressed_file_path: Path | str, output_directory: Path | str) -> None:
     """
     Extracts the contents of a compressed file using the 7-Zip tool.
 
@@ -364,8 +364,8 @@ def _extract_table(year: int, table_name: str, replace: bool = True):
 
 def _change_1380_table_names(year: int, table_name: str):
     if year == 1380:
-        if table_name in metadata.Metadata.other["unusual_names_of_1380"]:
-            table_name = metadata.Metadata.other["unusual_names_of_1380"][table_name]
+        if table_name in metadata.metadatas.other["unusual_names_of_1380"]:
+            table_name = metadata.metadatas.other["unusual_names_of_1380"][table_name]
     return table_name
 
 

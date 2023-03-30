@@ -79,12 +79,12 @@ def open_yaml(path):
 
 
 @dataclass
-class Metadata:
+class Metadatas:
     """
     A dataclass for accessing metadata used in other parts of the project.
 
     """
-
+    instruction = open_yaml("metadata/_instruction.yaml")
     tables = open_yaml("metadata/tables.yaml")
     maps = open_yaml("metadata/maps.yaml")
     household = open_yaml("metadata/household.yaml")
@@ -132,6 +132,10 @@ class Defaults:
 
     first_year: int = settings["first_year"]
     last_year: int = settings["last_year"]
+
+
+metadatas = Metadatas()
+defaults = Defaults()
 
 
 def get_latest_version_year(metadata_dict: dict, year: int) -> int | bool:

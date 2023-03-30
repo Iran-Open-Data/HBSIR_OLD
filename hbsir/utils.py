@@ -10,12 +10,11 @@ from zipfile import ZipFile
 from tqdm import tqdm
 import requests
 
-from . import metadata
-
-
-defaults = metadata.Defaults()
-metadata_obj = metadata.Metadata()
-_Tables = metadata.Tables
+from .metadata import (
+    defaults,
+    metadatas,
+    Tables as _Tables,
+)
 
 
 def download_file(
@@ -238,7 +237,7 @@ def build_year_interval_for_table(
     _type_
         _description_
     """
-    availability_info = metadata_obj.tables["yearly_table_availability"][table_name]
+    availability_info = metadatas.tables["yearly_table_availability"][table_name]
     available_years = interpret_number_range(availability_info, default_end=defaults.last_year+1)
     from_year, to_year = build_year_interval(from_year, to_year)
     selected_years = [year for year in range(from_year, to_year) if year in available_years]

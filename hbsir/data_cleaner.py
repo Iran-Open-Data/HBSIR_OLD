@@ -12,8 +12,8 @@ import numpy as np
 from . import metadata, utils
 
 
-defaults = metadata.Defaults()
-metadata_obj = metadata.Metadata()
+defaults = metadata.defaults
+metadatas = metadata.metadatas
 _Tables = metadata.Tables
 
 
@@ -70,7 +70,7 @@ def _build_file_path(table_name: str, year: int, is_urban: bool) -> Path:
 def _get_table_metadata(
     table_name: str, year: int, is_urban: bool | None = None
 ) -> dict:
-    table_metadata = metadata_obj.tables[table_name]
+    table_metadata = metadatas.tables[table_name]
     table_metadata = metadata.get_metadata_version(table_metadata, year)
 
     if is_urban is True:
@@ -136,7 +136,7 @@ def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
 
 
 def _get_table_settings(table_metadata: dict) -> dict:
-    default_table_settings = metadata_obj.tables["default_table_settings"]
+    default_table_settings = metadatas.tables["default_table_settings"]
     try:
         table_settings = table_metadata["settings"]
     except KeyError:
