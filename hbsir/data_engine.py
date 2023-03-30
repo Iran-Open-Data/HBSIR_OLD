@@ -47,9 +47,6 @@ def read_hbs(
     else:
         raise KeyError
 
-    if add_year is None:
-        add_year = utils.is_multi_year(table_list, from_year, to_year)
-
     table = load_table(
         table_name=table_list,
         from_year=from_year,
@@ -60,9 +57,6 @@ def read_hbs(
     )
 
     table = _imply_table_schema(table, table_name, from_year)
-
-    if not add_year:
-        table.attrs["year"] = from_year
     return table
 
 
@@ -82,6 +76,8 @@ def load_table(
             standard = table_name in metadata_obj.schema
         else:
             standard = False
+    if add_year is None:
+        add_year = utils.is_multi_year(table_name, from_year, to_year)
 
     year_name = utils.create_table_year_product(
         table_name=table_name, from_year=from_year, to_year=to_year
@@ -97,6 +93,9 @@ def load_table(
             table = _add_duration(table, _table_name)
         table_list.append(table)
     concat_table = pd.concat(table_list, ignore_index=True)
+
+    if not add_year:
+        concat_table.attrs["year"] = from_year
 
     return concat_table
 
