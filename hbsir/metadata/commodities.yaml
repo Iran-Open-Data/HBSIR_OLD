@@ -767,6 +767,7 @@ original:
 
 Food-NonFood:
   default_levels: [1]
+  default_names: ["Food-NonFood"]
 
   items:
     1383:

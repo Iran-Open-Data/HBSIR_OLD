@@ -1,4 +1,13 @@
 
+
+household_information:
+  order:
+    - Year
+    - ID
+    - Season
+    - Weight	
+
+
 common_order: &common_order
   - Year
   - ID
@@ -9,6 +18,7 @@ common_order: &common_order
   - Duration
   - Price
   - Expenditure
+  - Secondhand_Sale
 
 
 food:
