@@ -42,8 +42,10 @@ def read_hbs(
     """
     if  table_name in metadata.standard_tables:
         table_list: list[_OriginalTables] = metadata_obj.schema[table_name]["table_list"]
+        standard=True
     elif table_name in get_args(_OriginalTables):
         table_list = [table_name]
+        standard=False
     else:
         raise KeyError
 
@@ -51,7 +53,7 @@ def read_hbs(
         table_name=table_list,
         from_year=from_year,
         to_year=to_year,
-        standard=True,
+        standard=standard,
         add_year=add_year,
         add_duration=add_duration,
     )
