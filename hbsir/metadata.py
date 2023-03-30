@@ -104,10 +104,14 @@ class Defaults:
 
     """
 
-    try:
+    if ROOT_DIRECTORT.joinpath("hbsir-settings.yaml").exists():
         settings = open_yaml(ROOT_DIRECTORT.joinpath("hbsir-settings.yaml"))
-    except FileNotFoundError:
+    elif PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml").exists():
+        settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml"))
+    elif PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml").exists():
         settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml"))
+    else:
+        raise FileNotFoundError
 
     # online directory
     online_dir = settings["online_directory"]
