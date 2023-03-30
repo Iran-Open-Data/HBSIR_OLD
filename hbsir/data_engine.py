@@ -365,7 +365,10 @@ def add_classification(
         raise TypeError
 
     if new_column_name is None:
-        column_names = [f"{classification}-{_level}" for _level in levels]
+        if "default_names" in metadata_obj.commodities[classification]:
+            column_names = metadata_obj.commodities[classification]["default_names"]
+        else:
+            column_names = [f"{classification}-{_level}" for _level in levels]
     elif isinstance(new_column_name, str):
         column_names = [new_column_name]
     else:
