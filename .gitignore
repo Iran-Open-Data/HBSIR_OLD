@@ -3,10 +3,11 @@ dist/
 .venv/
 .vscode/
 
+*checkpoint.ipynb*
 *draft*
 
 Data/*
 7-Zip/*
 temp/*
 
-hbsir-settings.yaml
+*hbsir-settings.yaml
