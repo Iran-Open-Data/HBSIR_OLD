@@ -10,4 +10,6 @@ Data/*
 7-Zip/*
 temp/*
 
+*.pdf
+
 *hbsir-settings.yaml
