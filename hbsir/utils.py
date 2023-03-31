@@ -5,6 +5,7 @@ Utility functions
 import subprocess
 from pathlib import Path
 import platform
+import re
 from zipfile import ZipFile
 
 from tqdm import tqdm
@@ -292,3 +293,62 @@ def is_multi_year(
         if len(years) > 1:
             return True
     return False
+
+
+def _parse_sentence(sentence: str):
+    if sentence.count("*") > 1:
+        raise SyntaxError
+    if sentence.count("*") == 1:
+        coeff, var = sentence.split("*")
+    else:
+        numbers = [(char.isnumeric() or (char == ".")) for char in sentence]
+        first_letter = numbers.index(False)
+        coeff, var = sentence[:first_letter], sentence[first_letter:]
+    if coeff == "":
+        coeff = 1
+    elif coeff.find(".") > 0:
+        coeff = float(coeff)
+    else:
+        coeff = int(coeff)
+    parsed_sentence = (coeff, var)
+    return parsed_sentence
+
+
+def _parse_expression(expression: str):
+    expression = expression.replace(" ", "")
+    symbols = re.findall(r"[+\-]", expression)
+    sentences = re.split(r"[+\-]", expression)
+    parsed_sentences = [_parse_sentence(sent) for sent in sentences if sent != ""]
+    coeffs = [element[0] for element in parsed_sentences]
+    variables = [element[1] for element in parsed_sentences]
+    if len(symbols) + 1 == len(variables):
+        symbols = ["+"] + symbols
+    if len(symbols) != len(variables):
+        raise SyntaxError
+    parsed_expression = list(zip(symbols, coeffs, variables))
+    return list(parsed_expression)
+
+
+def build_pandas_expression(expression: str, table_name="table"):
+    parsed_expression = _parse_expression(expression)
+
+    first_sentence =True
+    pandas_expression = ""
+    for sign, coeff, var in parsed_expression:
+        if first_sentence:
+            first_sentence = False
+            sign = "" if sign == "+" else sign
+        sign += " "
+
+        if coeff == 0:
+            continue
+
+        if coeff == 1:
+            coeff = ""
+        else:
+            coeff = f" * {coeff}"
+
+        pandas_expression += (f"{sign}{table_name}['{var}'].fillna(0){coeff} ")
+    pandas_expression = pandas_expression.strip()
+    return pandas_expression
+

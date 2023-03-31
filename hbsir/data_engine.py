@@ -5,7 +5,6 @@ Main file for ordinary use
 from collections import defaultdict
 from typing import get_args
 
-import sympy
 import pandas as pd
 
 from . import metadata, utils
@@ -191,27 +190,9 @@ def _apply_categorical_instruction(table, column_name, instruction):
 
 def _apply_numerical_instruction(table, column_name, instruction):
     expr = instruction["expression"]
-    pandas_expr = _parse_expression(expr)
+    pandas_expr = utils.build_pandas_expression(expr)
     table[column_name] = pd.eval(pandas_expr)
     return table
-
-
-def _parse_expression(expression, table_name="table"):
-    expr = sympy.simplify(expression)
-    terms = []
-
-    if len(expr.args) == 0:
-        _, var = expr.as_coeff_Mul()
-        return f"{table_name}['{var}']"
-
-    if (len(expr.args) == 2) and (len(expr.args[1].args) == 0):
-        coeff, var = expr.as_coeff_Mul()
-        return f"{table_name}['{var}'] * {coeff}"
-
-    for term in expr.args:
-        coeff, var = term.as_coeff_Mul()
-        terms.append(f"{table_name}['{var}'].fillna(0) * {coeff}")
-    return " + ".join(terms)
 
 
 def _order_columns_by_schema(table, column_order):
