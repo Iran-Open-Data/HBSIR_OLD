@@ -35,12 +35,17 @@ def read_hbs(
     from_year: int | None = None,
     to_year: int | None = None,
     add_year: bool | None = None,
-    add_duration: bool | None = True,
+    add_duration: bool | None = None,
+    add_table_names: bool = False,
 ) -> pd.DataFrame:
     """docs
     """
     if  table_name in metadata.standard_tables:
         table_list: list[_OriginalTables] = metadatas.schema[table_name]["table_list"]
+        try:
+            add_table_names = metadatas.schema[table_name]["settings"]["add_table_names"]
+        except KeyError:
+            pass
         standard=True
     elif table_name in get_args(_OriginalTables):
         table_list = [table_name]
@@ -54,8 +59,13 @@ def read_hbs(
         to_year=to_year,
         standard=standard,
         add_year=add_year,
-        add_duration=add_duration,
+        add_duration=True,
+        add_table_names=add_table_names,
     )
+
+    if add_duration is None:
+        if len(table["Duration"].unique()) < 2:
+            table = table.drop(columns="Duration")
 
     table = _imply_table_schema(table, table_name, from_year)
     return table
@@ -67,7 +77,8 @@ def load_table(
     to_year: int | None = None,
     standard: bool | None = None,
     add_year: bool | None = None,
-    add_duration: bool | None = None
+    add_duration: bool | None = None,
+    add_table_names: bool = False,
 ) -> pd.DataFrame:
     """
     Load Tables
@@ -92,6 +103,8 @@ def load_table(
             table = _imply_table_schema(table, _table_name, year)
         if add_duration:
             table = _add_duration(table, _table_name)
+        if add_table_names:
+            table["table"] = _table_name
         table_list.append(table)
     concat_table = pd.concat(table_list, ignore_index=True)
 
@@ -203,7 +216,10 @@ def _order_columns_by_schema(table, column_order):
 
 def _add_duration(table, table_name):
     table = table.copy()
-    default_duration = metadatas.commodities["tables"][table_name]["default_duration"]
+    if table_name in metadata.expenditure_tables:
+        default_duration = metadatas.commodities["tables"][table_name]["default_duration"]
+    else:
+        default_duration = 360
     table["Duration"] = default_duration
     return table
 
@@ -251,7 +267,7 @@ def get_household_attribute(
     """docs
     """
     _check_attribute(attribute)
-    if isinstance(_input, pd.Series):
+    if isinstance(_input, (pd.Series, pd.Index)):
         if year is None:
             raise TypeError(
                 "Since the input is a Pandas series, the 'year' variable must "
