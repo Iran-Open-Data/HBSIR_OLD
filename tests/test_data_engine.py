@@ -62,7 +62,7 @@ class TestWithFormalNumbers:
 
     @pytest.fixture()
     def year_table(self, prepared_expenditure, prepared_hh_info):
-        """docs"""
+        """Create summary expenditure table of 1400"""
         agg_tables = []
         for ur_ru in ["Urban", "Rural"]:
             frame = self._calc_hh_agg(prepared_expenditure, ur_ru)
@@ -74,16 +74,18 @@ class TestWithFormalNumbers:
 
     def test_equality(self, year_table):
         """
-          Urban-Rural    Net-Gross    Food-NonFood     Value
-          -------------  -----------  --------------  --------
-          Urban          Net          Food             246,537
-          Urban          Net          Non-Food         678,479
-          Urban          Gross        Food             246,537
-          Urban          Gross        Non-Food         694,814
-          Rural          Net          Food             207,037
-          Rural          Net          Non-Food         312,090
-          Rural          Gross        Food             207,037
-          Rural          Gross        Non-Food         322,389
+        # Compare output numbers with summary expenditure table of 1400
+
+            Urban-Rural    Net-Gross    Food-NonFood     Value
+            -------------  -----------  --------------  --------
+            Urban          Net          Food             246,537
+            Urban          Net          Non-Food         678,479
+            Urban          Gross        Food             246,537
+            Urban          Gross        Non-Food         694,814
+            Rural          Net          Food             207,037
+            Rural          Net          Non-Food         312,090
+            Rural          Gross        Food             207,037
+            Rural          Gross        Non-Food         322,389
         """
         index_value =[
                 [('Urban',   'Net',      'Food'),       246_537],
