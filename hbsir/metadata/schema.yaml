@@ -134,3 +134,54 @@ Expenditures:
     - durable
 
   order: *common_order
+
+
+
+employment_income:
+  []
+
+
+self_employed_income:
+  []
+
+
+other_income:
+  []
+
+
+subsidy:
+  []
+
+
+public_employment_income:
+  []
+
+
+private_employment_income:
+  []
+
+
+Incomes:
+  settings:
+    add_table_names: true
+
+  table_list:
+    - employment_income
+    - self_employed_income
+
+  columns:
+    Anual_Income:
+      type: numerical
+      expression: "Yearly_Net_Income + Profit"
+
+    Income_Type:
+      type: categorical
+      categories:
+        employment_income: {table: employment_income}
+        self_employed_income: {table: self_employed_income}
+
+  order:
+    - ID
+    - Member_Number
+    - Income_Type
+    - Anual_Income

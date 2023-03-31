@@ -21,6 +21,22 @@ GeneralTables = Literal[
     "house_specifications",
 ]
 
+expenditure_tables = (
+    "food",
+    "tobacco",
+    "cloth",
+    "home",
+    "furniture",
+    "medical",
+    "transportation",
+    "communication",
+    "entertainment",
+    "education",
+    "hotel",
+    "other",
+    "durable",
+    "investment",
+)
 ExpenditureTables = Literal[
     "food",
     "tobacco",
@@ -51,6 +67,7 @@ OriginalTables = Literal[GeneralTables, ExpenditureTables, IncomeTables]
 
 standard_tables = (
     "Expenditures",
+    "Incomes",
 )
 StandardTables = Literal[
     "Expenditures",
