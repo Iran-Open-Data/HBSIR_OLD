@@ -598,6 +598,22 @@ ORIGINAL1383:
       code: {start: 40_000, end: 50_000}
 
 
+    #                        ######## LEVEL 1 ########                        #
+    actual_rentals_for_housing:
+      &original_1383_0_actual_rentals_for_housing
+      level: 1
+      farsi_name: ""
+      code: {start: 41_000, end: 42_000}
+
+
+    #                        ######## LEVEL 1 ########                        #
+    actual_rentals_for_housing:
+      &original_1383_0_imputed_rentals_for_housing
+      level: 1
+      farsi_name: ""
+      code: {start: 42_000, end: 43_000}
+
+
     #                ################ LEVEL 0 ################                #
     furnishings_household_equipment_and_routine_household_maintenance:
       &original_1383_0_furnishings_household_equipment_and_routine_household_maintenance
@@ -783,6 +799,17 @@ Food-NonFood:
         farsi_name: "مخارج غیر خوراکی"
         default: True
 
+
+Imputed_Rent:
+  default_levels: [1]
+  default_names: ["Imputed_Rent"]
+
+  items:
+    Imputed_Rent:
+      level: 1
+      is_imputed: 1
+      code:
+        - *original_1383_0_imputed_rentals_for_housing
 
 
 ###############################################################################

@@ -3,8 +3,8 @@
 from .hbsframe import HBSDF
 
 from .data_engine import (
+    read_table,
     load_table,
-    read_hbs,
     add_attribute,
     add_classification,
 )

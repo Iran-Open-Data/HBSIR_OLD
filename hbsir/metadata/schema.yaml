@@ -23,30 +23,32 @@ common_order: &common_order
 
 food:
 
-  columns:
+  yearly_schema:
 
-    Price_System:
-      1363:
-        type: categorical
-        categories:
-          Free_Price:       {Provision_Method: Purchase_Free_Price}
-          Subsidised_Price: {Provision_Method: Purchase_Subsidised_Price}
-      1369: null
+    columns:
 
-    Provision_Method:
-      1363:
-        type: categorical
-        categories:
-          Purchase: [Purchase_Free_Price, Purchase_Subsidised_Price]
-      1369: null
+      Price_System:
+        1363:
+          type: categorical
+          categories:
+            Free_Price:       {Provision_Method: Purchase_Free_Price}
+            Subsidised_Price: {Provision_Method: Purchase_Subsidised_Price}
+        1369: null
 
-    Amount:
-      1363:
-        type: numerical
-        expression: "Kilos"
-      1383:
-        type: numerical
-        expression: "0.001 * Grams + Kilos"
+      Provision_Method:
+        1363:
+          type: categorical
+          categories:
+            Purchase: [Purchase_Free_Price, Purchase_Subsidised_Price]
+        1369: null
+
+      Amount:
+        1363:
+          type: numerical
+          expression: "Kilos"
+        1383:
+          type: numerical
+          expression: "0.001 * Grams + Kilos"
 
   order: *common_order
 
@@ -117,7 +119,8 @@ investment:
 
 
 
-Expenditures:
+Original_Expenditures:
+
   table_list:
     - food
     - tobacco
@@ -133,33 +136,98 @@ Expenditures:
     - other
     - durable
 
-  order: *common_order
+  columns:
+    Gross_Expenditure:
+      type: numerical
+      expression: "Expenditure"
 
+    Net_Expenditure:
+      type: numerical
+      expression: "Expenditure - Secondhand_Sale"
+
+  order:
+    - Year
+    - ID
+    - Code
+    - Provision_Method
+    - Price_System
+    - Amount
+    - Duration
+    - Price
+    - Gross_Expenditure
+    - Net_Expenditure
+
+
+Expenditures:
+
+  table_list:
+    - Original_Expenditures
+
+  columns:
+    Gross_Expenditure:
+      type: numerical
+      expression: "Gross_Expenditure / Duration * 360"
+
+    Net_Expenditure:
+      type: numerical
+      expression: "Net_Expenditure / Duration * 360"
+
+  order:
+    - Year
+    - ID
+    - Code
+    - Provision_Method
+    - Price_System
+    - Amount
+    - Price
+    - Gross_Expenditure
+    - Net_Expenditure
 
 
 employment_income:
-  []
+  {}
 
 
 self_employed_income:
-  []
+  {}
 
 
 other_income:
-  []
+  yearly_schema:
+    columns:
+      Other_Incomes:
+        type: numerical
+        expression: "Retirement + Rent + Interest + Aid + Home_Production + Transfer"
 
 
 subsidy:
-  []
+  {}
 
 
 public_employment_income:
-  []
+  {}
 
 
 private_employment_income:
-  []
+  {}
 
+Imputed_Rent:
+
+  table_list:
+    - home
+
+  classifications:
+    - {classification: Imputed_Rent, attribute: is_imputed, dropna: true}
+
+  columns:
+    Imputed_Rent:
+      type: numerical
+      expression: "Expenditure * Imputed_Rent * 12"
+
+  order:
+    - ID
+    - Provision_Method
+    - Imputed_Rent
 
 Incomes:
   settings:
@@ -168,20 +236,30 @@ Incomes:
   table_list:
     - employment_income
     - self_employed_income
+    - other_income
+    - subsidy
+    - Imputed_Rent
 
   columns:
     Anual_Income:
       type: numerical
-      expression: "Yearly_Net_Income + Profit"
+      expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy + Imputed_Rent"
 
     Income_Type:
       type: categorical
       categories:
         employment_income: {table: employment_income}
         self_employed_income: {table: self_employed_income}
+        other_income: {table: other_income}
+        subsidy: {table: subsidy}
 
   order:
     - ID
     - Member_Number
     - Income_Type
+    - Yearly_Net_Income
+    - Profit
+    - Other_Incomes
+    - Subsidy
+    - Imputed_Rent
     - Anual_Income

@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from hbsir.data_engine import add_attribute, add_classification, load_table
+from hbsir.data_engine import add_attribute, add_classification, read_table
 
 
 class TestAddAttribute:
@@ -33,16 +33,13 @@ class TestWithFormalNumbers:
         exp = expenditures_1400.copy()
         exp = add_attribute(exp, attribute="Urban-Rural")
         exp = add_classification(exp, "Food-NonFood")
-        exp["Expenditure"] = exp["Expenditure"] * 360 / exp["Duration"]
-        exp["Secondhand_Sale"] = exp["Secondhand_Sale"] * 360 / exp["Duration"]
-        exp["Net"] = exp.fillna(0).eval("Expenditure - Secondhand_Sale")
-        exp["Gross"] = exp["Expenditure"]
+        exp = exp.rename(columns={"Net_Expenditure": "Net", "Gross_Expenditure": "Gross"})
         return exp
 
     @pytest.fixture()
     def prepared_hh_info(self):
         """Get household info"""
-        info = load_table("household_information", 1400)
+        info = read_table("household_information", 1400)
         info = add_attribute(info, attribute="Urban-Rural")
         info = info.set_index("ID")
         return info

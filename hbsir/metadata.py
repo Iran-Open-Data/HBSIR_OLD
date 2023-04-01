@@ -4,7 +4,7 @@ Metadata module
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Literal, get_args
 
 import yaml
 
@@ -21,23 +21,7 @@ GeneralTables = Literal[
     "house_specifications",
 ]
 
-expenditure_tables = (
-    "food",
-    "tobacco",
-    "cloth",
-    "home",
-    "furniture",
-    "medical",
-    "transportation",
-    "communication",
-    "entertainment",
-    "education",
-    "hotel",
-    "other",
-    "durable",
-    "investment",
-)
-ExpenditureTables = Literal[
+ExpenditureTable = Literal[
     "food",
     "tobacco",
     "cloth",
@@ -53,8 +37,9 @@ ExpenditureTables = Literal[
     "durable",
     "investment",
 ]
+expenditure_tables: tuple[ExpenditureTable, ...] = get_args(ExpenditureTable)
 
-IncomeTables = Literal[
+IncomeTable = Literal[
     "employment_income",
     "self_employed_income",
     "other_income",
@@ -63,17 +48,18 @@ IncomeTables = Literal[
     "private_employment_income",
 ]
 
-OriginalTables = Literal[GeneralTables, ExpenditureTables, IncomeTables]
+OriginalTable = Literal[GeneralTables, ExpenditureTable, IncomeTable]
+original_tables: tuple[OriginalTable, ...] = get_args(OriginalTable)
 
-standard_tables = (
+StandardTable = Literal[
+    "Original_Expenditures",
     "Expenditures",
+    "Imputed_Rent",
     "Incomes",
-)
-StandardTables = Literal[
-    "Expenditures",
 ]
+standard_tables: tuple[StandardTable, ...] = get_args(StandardTable)
 
-Tables = Literal[OriginalTables, StandardTables]
+Tables = Literal[OriginalTable, StandardTable]
 
 
 def open_yaml(path):

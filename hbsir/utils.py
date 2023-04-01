@@ -5,7 +5,7 @@ Utility functions
 import subprocess
 from pathlib import Path
 import platform
-import re
+# import re
 from zipfile import ZipFile
 
 from tqdm import tqdm
@@ -14,7 +14,7 @@ import requests
 from .metadata import (
     defaults,
     metadatas,
-    Tables as _Tables,
+    Tables as _Table,
 )
 
 
@@ -209,18 +209,20 @@ def build_year_interval(
         if to_year < from_year:
             raise ValueError("`from_year` is greater than `to_year`")
         _from_year, _to_year = from_year, to_year + 1
-    elif (from_year is not None) and (to_year is None):
+    elif from_year == 0:
+        _from_year, _to_year = earliest_year, latest_year + 1
+    elif from_year is not None:
         _from_year, _to_year = from_year, from_year + 1
-    elif (from_year is None) and (to_year is not None):
+    elif to_year is not None:
         raise KeyError
     else:
-        _from_year, _to_year = earliest_year, latest_year + 1
+        _from_year, _to_year = latest_year, latest_year + 1
 
     return _from_year, _to_year
 
 
 def build_year_interval_for_table(
-    table_name: _Tables, from_year: int | None = None, to_year: int | None = None
+    table_name: _Table, from_year: int | None = None, to_year: int | None = None
 ) -> list[int]:
     """_summary_
 
@@ -246,10 +248,10 @@ def build_year_interval_for_table(
 
 
 def create_table_year_product(
-    table_name: _Tables | list[_Tables] | tuple[_Tables],
+    table_name: _Table | list[_Table] | tuple[_Table],
     from_year: int | None = None,
     to_year: int | None = None,
-) -> list[tuple[_Tables, int]]:
+) -> list[tuple[_Table, int]]:
     """_summary_
 
     Parameters
@@ -266,10 +268,10 @@ def create_table_year_product(
     List[tuple]
         _description_
     """
-    if isinstance(table_name, str):
-        table_list: list[_Tables] = [table_name]
+    if isinstance(table_name, (list, tuple)):
+        table_list: list[_Table] = list(table_name)
     else:
-        table_list: list[_Tables] = list(table_name)
+        table_list: list[_Table] = [table_name]
 
     product_list = []
     for _table_name in table_list:
@@ -279,12 +281,12 @@ def create_table_year_product(
 
 
 def is_multi_year(
-    table_name: _Tables | list[_Tables] | tuple[_Tables],
+    table_name: _Table | list[_Table] | tuple[_Table],
     from_year: int | None = None,
     to_year: int | None = None,
 ) -> bool:
     if isinstance(table_name, str):
-        table_list: list[_Tables] = [table_name]
+        table_list: list[_Table] = [table_name]
     else:
         table_list = [table for table in table_name]
 
@@ -295,60 +297,58 @@ def is_multi_year(
     return False
 
 
-def _parse_sentence(sentence: str):
-    if sentence.count("*") > 1:
-        raise SyntaxError
-    if sentence.count("*") == 1:
-        coeff, var = sentence.split("*")
-    else:
-        numbers = [(char.isnumeric() or (char == ".")) for char in sentence]
-        first_letter = numbers.index(False)
-        coeff, var = sentence[:first_letter], sentence[first_letter:]
-    if coeff == "":
-        coeff = 1
-    elif coeff.find(".") > 0:
-        coeff = float(coeff)
-    else:
-        coeff = int(coeff)
-    parsed_sentence = (coeff, var)
-    return parsed_sentence
+# def _parse_sentence(sentence: str):
+#     if sentence.count("*") >= 1:
+#         parts = sentence.split("*")
+#         coeffs = [part for part in parts if (part.isnumeric())]
+#     else:
+#         numbers = [(char.isnumeric() or (char == ".")) for char in sentence]
+#         first_letter = numbers.index(False)
+#         coeff, var = sentence[:first_letter], sentence[first_letter:]
+#     if coeff == "":
+#         coeff = 1
+#     elif coeff.find(".") > 0:
+#         coeff = float(coeff)
+#     else:
+#         coeff = int(coeff)
+#     parsed_sentence = (coeff, var)
+#     return parsed_sentence
 
 
-def _parse_expression(expression: str):
-    expression = expression.replace(" ", "")
-    symbols = re.findall(r"[+\-]", expression)
-    sentences = re.split(r"[+\-]", expression)
-    parsed_sentences = [_parse_sentence(sent) for sent in sentences if sent != ""]
-    coeffs = [element[0] for element in parsed_sentences]
-    variables = [element[1] for element in parsed_sentences]
-    if len(symbols) + 1 == len(variables):
-        symbols = ["+"] + symbols
-    if len(symbols) != len(variables):
-        raise SyntaxError
-    parsed_expression = list(zip(symbols, coeffs, variables))
-    return list(parsed_expression)
+# def _parse_expression(expression: str):
+#     expression = expression.replace(" ", "")
+#     symbols = re.findall(r"[+\-]", expression)
+#     sentences = re.split(r"[+\-]", expression)
+#     parsed_sentences = [_parse_sentence(sent) for sent in sentences if sent != ""]
+#     coeffs = [element[0] for element in parsed_sentences]
+#     variables = [element[1] for element in parsed_sentences]
+#     if len(symbols) + 1 == len(variables):
+#         symbols = ["+"] + symbols
+#     if len(symbols) != len(variables):
+#         raise SyntaxError
+#     parsed_expression = list(zip(symbols, coeffs, variables))
+#     return list(parsed_expression)
 
 
-def build_pandas_expression(expression: str, table_name="table"):
-    parsed_expression = _parse_expression(expression)
+# def build_pandas_expression(expression: str, table_name="table"):
+#     parsed_expression = _parse_expression(expression)
 
-    first_sentence =True
-    pandas_expression = ""
-    for sign, coeff, var in parsed_expression:
-        if first_sentence:
-            first_sentence = False
-            sign = "" if sign == "+" else sign
-        sign += " "
+#     first_sentence =True
+#     pandas_expression = ""
+#     for sign, coeff, var in parsed_expression:
+#         if first_sentence:
+#             first_sentence = False
+#             sign = "" if sign == "+" else sign
+#         sign += " "
 
-        if coeff == 0:
-            continue
+#         if coeff == 0:
+#             continue
 
-        if coeff == 1:
-            coeff = ""
-        else:
-            coeff = f" * {coeff}"
+#         if coeff == 1:
+#             coeff = ""
+#         else:
+#             coeff = f" * {coeff}"
 
-        pandas_expression += (f"{sign}{table_name}['{var}'].fillna(0){coeff} ")
-    pandas_expression = pandas_expression.strip()
-    return pandas_expression
-
+#         pandas_expression += (f"{sign}{table_name}['{var}'].fillna(0){coeff} ")
+#     pandas_expression = pandas_expression.strip()
+#     return pandas_expression

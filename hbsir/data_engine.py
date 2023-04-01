@@ -2,6 +2,7 @@
 Main file for ordinary use
 """
 
+import re
 from collections import defaultdict
 from typing import get_args
 
@@ -12,9 +13,9 @@ from . import metadata, utils
 defaults = metadata.defaults
 metadatas = metadata.metadatas
 _Attributes = metadata.Attributes
-_OriginalTables = metadata.OriginalTables
-_StandardTables = metadata.StandardTables
-_Tables = metadata.Tables
+_OriginalTable = metadata.OriginalTable
+_StandardTables = metadata.StandardTable
+_Table = metadata.Tables
 
 
 def _check_attribute(attribute: _Attributes | list[_Attributes]) -> None:
@@ -30,77 +31,81 @@ def _check_attribute(attribute: _Attributes | list[_Attributes]) -> None:
             )
 
 
-def read_hbs(
-    table_name: _Tables,
+def load_table(
+    table_name: _Table,
     from_year: int | None = None,
     to_year: int | None = None,
-    add_year: bool | None = None,
-    add_duration: bool | None = None,
-    add_table_names: bool = False,
+    **kwargs,
 ) -> pd.DataFrame:
-    """docs
-    """
-    if  table_name in metadata.standard_tables:
-        table_list: list[_OriginalTables] = metadatas.schema[table_name]["table_list"]
-        try:
-            add_table_names = metadatas.schema[table_name]["settings"]["add_table_names"]
-        except KeyError:
-            pass
-        standard=True
-    elif table_name in get_args(_OriginalTables):
-        table_list = [table_name]
-        standard=False
+    """docs"""
+    if table_name in metadata.original_tables:
+        table_name_list = [table_name]
     else:
-        raise KeyError
+        table_name_list: list[_Table] = metadatas.schema[table_name]["table_list"]
 
-    table = load_table(
-        table_name=table_list,
-        from_year=from_year,
-        to_year=to_year,
-        standard=standard,
-        add_year=add_year,
-        add_duration=True,
-        add_table_names=add_table_names,
-    )
+    original_kwargs = kwargs.copy()
+    for variable in ["add_year", "add_duration", "add_table_names"]:
+        if variable in kwargs:
+            continue
+        try:
+            kwargs[variable] = metadatas.schema[table_name]["settings"][variable]
+        except KeyError:
+            kwargs[variable] = True
 
-    if add_duration is None:
-        if len(table["Duration"].unique()) < 2:
-            table = table.drop(columns="Duration")
+    sub_tables = []
+    for _table_name in table_name_list:
+        if _table_name in metadata.original_tables:
+            table = read_table(_table_name, from_year, to_year, **kwargs)
+        else:
+            table = load_table(_table_name, from_year, to_year, **kwargs)
 
-    table = _imply_table_schema(table, table_name, from_year)
+        sub_tables.append(table)
+    table = pd.concat(sub_tables, ignore_index=True)
+
+    if "classifications" in metadatas.schema[table_name]:
+        for classification in metadatas.schema[table_name]["classifications"]:
+            table = add_classification(table, **classification)
+
+    if (
+        ("add_duration" not in original_kwargs)
+        and ("Duration" in table.columns)
+        and (len(table["Duration"].unique()) < 2)
+    ):
+        table = table.drop(columns="Duration")
+
+    table_schema = metadatas.schema[table_name]
+    table = _imply_table_schema(table, table_schema, from_year)
     return table
 
 
-def load_table(
-    table_name: _OriginalTables | list[_OriginalTables] | tuple[_OriginalTables],
+def read_table(
+    table_name: _OriginalTable | list[_OriginalTable] | tuple[_OriginalTable],
     from_year: int | None = None,
     to_year: int | None = None,
-    standard: bool | None = None,
-    add_year: bool | None = None,
-    add_duration: bool | None = None,
+    original: bool = False,
+    add_year: bool = False,
+    add_duration: bool = False,
     add_table_names: bool = False,
+    **kwargs,
 ) -> pd.DataFrame:
     """
     Load Tables
     """
-    if standard is None:
-        if isinstance(table_name, str):
-            standard = table_name in metadatas.schema
-        else:
-            standard = False
-    if add_year is None:
-        add_year = utils.is_multi_year(table_name, from_year, to_year)
-
-    year_name = utils.create_table_year_product(
+    tname_year = utils.create_table_year_product(
         table_name=table_name, from_year=from_year, to_year=to_year
     )
     table_list: list[pd.DataFrame] = []
-    for _table_name, year in year_name:
-        table = _get_parquet(_table_name, year)
+    for _table_name, year in tname_year:
+        table = _get_parquet(_table_name, year, **kwargs)
+        if not original:
+            try:
+                table_schema = metadatas.schema[_table_name]["yearly_schema"]
+            except KeyError:
+                pass
+            else:
+                table = _imply_table_schema(table, table_schema, year)
         if add_year:
             table["Year"] = year
-        if standard:
-            table = _imply_table_schema(table, _table_name, year)
         if add_duration:
             table = _add_duration(table, _table_name)
         if add_table_names:
@@ -144,11 +149,9 @@ def _download_parquet(table_name: str, year: int) -> None:
     utils.download_file(url=file_url, path=local_path, show_progress_bar=True)
 
 
-def _imply_table_schema(table, table_name, year: int | None = None):
-    """docs
-    """
+def _imply_table_schema(table, table_schema, year: int | None = None):
+    """docs"""
     table = table.copy()
-    table_schema = metadatas.schema[table_name]
 
     if "columns" in table_schema:
         instructions = table_schema["columns"]
@@ -168,9 +171,9 @@ def _apply_column_instruction(table, name, instruction):
     if instruction is None:
         pass
     elif instruction["type"] == "categorical":
-        table = _apply_categorical_instruction(table, name, instruction)
+        table[name] = _apply_categorical_instruction(table, name, instruction)
     elif instruction["type"] == "numerical":
-        table = _apply_numerical_instruction(table, name, instruction)
+        table[name] = _apply_numerical_instruction(table, instruction)
 
     return table
 
@@ -198,14 +201,16 @@ def _apply_categorical_instruction(table, column_name, instruction):
         table.loc[filt, column_name] = category
 
     table[column_name] = table[column_name].astype("category")
-    return table
+    return table[column_name]
 
 
-def _apply_numerical_instruction(table, column_name, instruction):
+def _apply_numerical_instruction(table: pd.DataFrame, instruction: dict) -> pd.Series:
+    columns_names = re.split(r"[\+\-\*\/\s\.]+", instruction["expression"])
+    columns_names = [name for name in columns_names if not name.isnumeric()]
+    columns = table[columns_names].astype(float).copy()
     expr = instruction["expression"]
-    pandas_expr = utils.build_pandas_expression(expr)
-    table[column_name] = pd.eval(pandas_expr)
-    return table
+    result = columns.fillna(0).eval(expr)
+    return result
 
 
 def _order_columns_by_schema(table, column_order):
@@ -217,7 +222,9 @@ def _order_columns_by_schema(table, column_order):
 def _add_duration(table, table_name):
     table = table.copy()
     if table_name in metadata.expenditure_tables:
-        default_duration = metadatas.commodities["tables"][table_name]["default_duration"]
+        default_duration = metadatas.commodities["tables"][table_name][
+            "default_duration"
+        ]
     else:
         default_duration = 360
     table["Duration"] = default_duration
@@ -232,8 +239,7 @@ def add_attribute(
     year_column_name: str = "Year",
     attribute_text="names",
 ) -> pd.DataFrame:
-    """docs
-    """
+    """docs"""
     if attribute is None:
         attribute_list = [attr for attr in get_args(_Attributes)]
     elif isinstance(attribute, (list, tuple)):
@@ -264,8 +270,7 @@ def get_household_attribute(
     year_column_name: str = "Year",
     attribute_text="names",
 ) -> pd.Series:
-    """docs
-    """
+    """docs"""
     _check_attribute(attribute)
     if isinstance(_input, (pd.Series, pd.Index)):
         if year is None:
@@ -348,9 +353,10 @@ def add_classification(
     code_column_name: str = "Code",
     year_column_name: str = "Year",
     new_column_name: str | list[str] | None = None,
+    attribute: str | None = None,
+    dropna: bool = False,
 ) -> pd.DataFrame:
-    """docs
-    """
+    """docs"""
     table = table.copy()
 
     if level is None:
@@ -384,8 +390,12 @@ def add_classification(
             year=year,
             code_column_name=code_column_name,
             year_column_name=year_column_name,
+            attribute=attribute,
         )
         table[column_name] = classification_column
+
+    if dropna:
+        table = table.dropna(subset=column_names)
 
     return table
 
@@ -397,16 +407,18 @@ def get_code_classification(
     year: int | None = None,
     code_column_name: str = "Code",
     year_column_name: str = "Year",
+    attribute: str | None = None,
 ) -> pd.Series:
-    """docs
-    """
+    """docs"""
     if isinstance(_input, pd.Series):
         if year is None:
             raise TypeError(
                 "Since the input is a Pandas series, the 'year' variable must "
                 "be specified. Please provide a year value in the format YYYY."
             )
-        return _get_classification_by_code(_input, classification, level, year)
+        return _get_classification_by_code(
+            _input, classification, level, year, attribute
+        )
     if not isinstance(_input, pd.DataFrame):
         raise ValueError
 
@@ -439,6 +451,7 @@ def get_code_classification(
             classification=classification,
             level=level,
             year=_year,
+            attribute=attribute,
         )
         classification_column.loc[filt] = classification_series
 
@@ -451,9 +464,10 @@ def _get_classification_by_code(
     classification: str,
     level: int,
     year: int,
+    attribute: str | None = None,
 ) -> pd.Series:
     translator = _build_translator(
-        classification=classification, level=level, year=year
+        classification=classification, level=level, year=year, attribute=attribute
     )
     classification_column = commodity_code_column.map(translator)
     classification_column = classification_column.astype("category")
@@ -464,12 +478,13 @@ def _build_translator(
     classification: str,
     level: int,
     year: int,
-    attribute: str = "name",
+    attribute: str | None = None,
     default_value: str | None = None,
 ) -> dict:
     def closure(_input):
         def inner_function():
             return _input
+
         return inner_function
 
     commodity_codes = metadatas.commodities[classification]["items"]
@@ -478,7 +493,7 @@ def _build_translator(
         name: info for name, info in commodity_codes.items() if info["level"] == level
     }
     translator = {}
-    if attribute == "name":
+    if attribute is None:
         for name, info in selected_items.items():
             categories = metadata.get_categories(info)
             for category_info in categories:
