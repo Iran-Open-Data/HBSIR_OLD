@@ -156,7 +156,7 @@ def _apply_type_to_column(column: pd.Series, column_metadata: dict) -> pd.Series
     column = _convert_empty_items_to_nan(column)
     new_column = pd.Series(np.nan, index=column.index)
     if column_metadata["type"] == "boolean":
-        new_column = column == column_metadata["true_condition"]
+        new_column = column.astype("Int32") == column_metadata["true_condition"]
     elif column_metadata["type"] in ("unsigned", "integer", "float"):
         new_column = pd.to_numeric(column, downcast=column_metadata["type"])
     elif column_metadata["type"] == "category":
