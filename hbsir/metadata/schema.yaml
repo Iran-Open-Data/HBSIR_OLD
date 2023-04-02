@@ -184,6 +184,70 @@ Expenditures:
     - Net_Expenditure
 
 
+Original_Outlays:
+  table_list:
+    - food
+    - tobacco
+    - cloth
+    - home
+    - furniture
+    - medical
+    - transportation
+    - communication
+    - entertainment
+    - education
+    - hotel
+    - other
+    - durable
+    - investment
+
+  columns:
+    Gross_Expenditure:
+      type: numerical
+      expression: "Expenditure"
+
+    Net_Expenditure:
+      type: numerical
+      expression: "Expenditure - Secondhand_Sale"
+
+  order:
+    - Year
+    - ID
+    - Code
+    - Provision_Method
+    - Price_System
+    - Amount
+    - Duration
+    - Price
+    - Gross_Expenditure
+    - Net_Expenditure
+
+
+Outlays:
+  table_list:
+    - Original_Expenditures
+
+  columns:
+    Gross_Expenditure:
+      type: numerical
+      expression: "Gross_Expenditure / Duration * 360"
+
+    Net_Expenditure:
+      type: numerical
+      expression: "Net_Expenditure / Duration * 360"
+
+  order:
+    - Year
+    - ID
+    - Code
+    - Provision_Method
+    - Price_System
+    - Amount
+    - Price
+    - Gross_Expenditure
+    - Net_Expenditure
+
+
 employment_income:
   {}
 
@@ -211,6 +275,7 @@ public_employment_income:
 private_employment_income:
   {}
 
+
 Imputed_Rent:
 
   table_list:
@@ -220,16 +285,66 @@ Imputed_Rent:
     - {classification: Imputed_Rent, attribute: is_imputed, dropna: true}
 
   columns:
-    Imputed_Rent:
+    Income:
       type: numerical
       expression: "Expenditure * Imputed_Rent * 12"
 
-  order:
-    - ID
-    - Provision_Method
-    - Imputed_Rent
+    Income_Type:
+      type: categorical
+      categories:
+        NonCash_ImputedRent: null
 
-Incomes:
+  order:
+    - Year
+    - ID
+    - Income_Type
+    - Income
+
+
+NonCash_Incomes_Excluding_Imputed_Rent:
+
+  table_list:
+    - Outlays
+
+  filter: "Provision_Method not in ['Purchase']"
+
+  columns:
+    Income:
+      type: numerical
+      expression: "Net_Expenditure"
+
+    Income_Type:
+      type: categorical
+      categories:
+        NonCash_Private:          {Provision_Method: Instead_of_Private_Service}
+        NonCash_Public:           {Provision_Method: Instead_of_Public_Service}
+        NonCash_Cooperative:      {Provision_Method: Instead_of_Cooperative_Service}
+        NonCash_Agricultural:     {Provision_Method: Agricultural_Work}
+        NonCash_NonAgricultural:  {Provision_Method: Non_Agricultural_Work}
+        NonCash_Donation:         {Provision_Method: Donation}   
+        NonCash_HomeProduction:   {Provision_Method: Home_Production}   
+
+  order:
+    - Year
+    - ID
+    - Income_Type
+    - Income
+
+
+NonCash_Incomes:
+
+  table_list:
+    - Imputed_Rent
+    - NonCash_Incomes_Excluding_Imputed_Rent
+
+  order:
+    - Year
+    - ID
+    - Income_Type
+    - Income
+
+
+Cash_Incomes:
   settings:
     add_table_names: true
 
@@ -238,28 +353,39 @@ Incomes:
     - self_employed_income
     - other_income
     - subsidy
-    - Imputed_Rent
 
   columns:
-    Anual_Income:
+    Income:
       type: numerical
-      expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy + Imputed_Rent"
+      expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy"
 
     Income_Type:
       type: categorical
       categories:
-        employment_income: {table: employment_income}
-        self_employed_income: {table: self_employed_income}
-        other_income: {table: other_income}
-        subsidy: {table: subsidy}
+        Cash_Public:          {table: employment_income, Sector: Public}
+        Cash_Private:         {table: employment_income, Sector: Private}
+        Cash_Cooperative:     {table: employment_income, Sector: Cooperative}
+        Cash_Agricultural:    {table: self_employed_income, Is_Agricultural: true}
+        Cash_NonAgricultural: {table: self_employed_income, Is_Agricultural: false}
+        Cash_Other:           {table: other_income}
+        Cash_Subsidy:         {table: subsidy}
 
   order:
+    - Year
     - ID
     - Member_Number
     - Income_Type
-    - Yearly_Net_Income
-    - Profit
-    - Other_Incomes
-    - Subsidy
-    - Imputed_Rent
-    - Anual_Income
+    - Income
+
+
+Incomes:
+  table_list:
+    - NonCash_Incomes
+    - Cash_Incomes
+
+  order:
+    - Year
+    - ID
+    - Member_Number
+    - Income_Type
+    - Income

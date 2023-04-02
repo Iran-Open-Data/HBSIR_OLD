@@ -14,5 +14,11 @@ def food_1400():
 
 @pytest.fixture(scope="session")
 def expenditures_1400():
-    """Loads 1400 Expenditure Table"""
+    """Loads 1400 Expenditures Table"""
     return data_engine.load_table("Expenditures", 1400)
+
+
+@pytest.fixture(scope="session")
+def incomes_1400():
+    """Loads 1400 Incomes Table"""
+    return data_engine.load_table("Incomes", 1400)

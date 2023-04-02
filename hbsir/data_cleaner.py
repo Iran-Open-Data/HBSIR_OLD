@@ -154,11 +154,9 @@ def _apply_metadata_to_column(column: pd.Series, column_metadata: dict) -> pd.Se
 
 def _apply_type_to_column(column: pd.Series, column_metadata: dict) -> pd.Series:
     column = _convert_empty_items_to_nan(column)
-    non_empty = column.notna()
     new_column = pd.Series(np.nan, index=column.index)
-    if column_metadata["type"] == "boolian":
-        new_column = column.astype("Int32").astype("category")
-        new_column.loc[non_empty] = new_column == column_metadata["true_condition"]
+    if column_metadata["type"] == "boolean":
+        new_column = column == column_metadata["true_condition"]
     elif column_metadata["type"] in ("unsigned", "integer", "float"):
         new_column = pd.to_numeric(column, downcast=column_metadata["type"])
     elif column_metadata["type"] == "category":
@@ -173,7 +171,7 @@ def _convert_empty_items_to_nan(column: pd.Series):
     if pd.api.types.is_numeric_dtype(column):
         return column
     chars_to_remove = r"\n\r\,\@\-\+\*"
-    column = column.str.replace(f"[{chars_to_remove}]*", "", regex=True)
+    column = column.str.replace(f"[{chars_to_remove}]+", "", regex=True)
     column = column.replace(r"\A\s*\Z", np.nan, regex=True)
     return column
 

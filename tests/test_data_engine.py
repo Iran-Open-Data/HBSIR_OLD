@@ -3,6 +3,7 @@
 import pandas as pd
 import pytest
 
+import hbsir
 from hbsir.data_engine import add_attribute, add_classification, read_table
 
 
@@ -95,4 +96,45 @@ class TestWithFormalNumbers:
                 [('Rural',   'Gross',    'Non-Food'),   322_383],
             ]
         for index, value in index_value:
-            assert (year_table.loc[index] - value) < 10
+            assert abs(year_table.loc[index] - value) < 10
+
+
+def test_incomes(incomes_1400):
+    table = incomes_1400.copy()
+    filt = hbsir.add_attribute(table, "Urban-Rural")["Urban-Rural"] == "Urban"
+    table = table.loc[filt]
+    table = table.groupby(["ID", "Income_Type"])["Income"].sum()
+    table = table.unstack()
+
+    info = read_table("household_information", 1400)
+    info = add_attribute(info, attribute="Urban-Rural")
+    filt = hbsir.get_attribute(info, "Urban-Rural", year=1400) == "Urban"
+    info = info.loc[filt]
+    info = info.set_index("ID")
+    weights = info["Weight"]
+
+    results = {}
+    for column_name, column in table.items():
+        value = (column * weights).sum() / weights.sum() / 1000
+        results[column_name] = value
+
+    for key, value in [
+        ("Cash_Public",                 102_544),
+        ("NonCash_Public",               19_806),
+        ("Cash_Cooperative",                467),
+        ("NonCash_Cooperative",              72),
+        ("Cash_Private",                219_459),
+        ("NonCash_Private",              23_686),
+        ("Cash_Agricultural",            17_482),
+        ("NonCash_Agricultural",            368),
+        ("Cash_NonAgricultural",        166_680),
+        ("NonCash_NonAgricultural",       1_423),
+        # Cash_Others                   325_061
+        ("Cash_Other",                  272_590),
+        ("Cash_Subsidy",                 12_591),
+        # NonCash_Others                247_168
+        ("NonCash_ImputedRent",         214_137),
+        ("NonCash_Donation",             32_250),
+        ("NonCash_HomeProduction",          781),
+    ]:
+        assert abs(results[key] - value) < 10

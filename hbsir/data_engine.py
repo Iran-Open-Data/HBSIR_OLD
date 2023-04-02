@@ -4,7 +4,7 @@ Main file for ordinary use
 
 import re
 from collections import defaultdict
-from typing import get_args
+from typing import Literal, get_args
 
 import pandas as pd
 
@@ -149,7 +149,7 @@ def _download_parquet(table_name: str, year: int) -> None:
     utils.download_file(url=file_url, path=local_path, show_progress_bar=True)
 
 
-def _imply_table_schema(table, table_schema, year: int | None = None):
+def _imply_table_schema(table: pd.DataFrame, table_schema: dict, year: int | None = None):
     """docs"""
     table = table.copy()
 
@@ -160,6 +160,18 @@ def _imply_table_schema(table, table_schema, year: int | None = None):
             if isinstance(year, int):
                 instruction = metadata.get_metadata_version(instruction, year)
             table = _apply_column_instruction(table, name, instruction)
+
+    if "filter" in table_schema:
+        if isinstance(table_schema["filter"], str):
+            filt = table.eval(table_schema["filter"])
+        elif isinstance(table_schema["filter"], list):
+            filts = []
+            for filt_str in table_schema["filter"]:
+                filts.append(table.eval(filt_str))
+            filt = pd.concat(filts, axis="columns").sum(axis="columns") == len(table_schema["filter"])
+        else:
+            raise KeyError
+        table = table.loc[filt]
 
     if "order" in table_schema:
         column_order = table_schema["order"]
@@ -178,30 +190,37 @@ def _apply_column_instruction(table, name, instruction):
     return table
 
 
-def _apply_categorical_instruction(table, column_name, instruction):
+def _apply_categorical_instruction(table: pd.DataFrame, column_name: str, instruction: dict):
     categories = instruction["categories"]
 
-    if column_name not in table.columns:
-        table[column_name] = None
+    if column_name in table.columns:
+        categorical_column = table[column_name].copy()
 
-    # fix me to chack column type and behave accordingly not just changing the type
-    table[column_name] = table[column_name].astype(str)
+    categorical_column = pd.Series(index=table.index, dtype="category")
 
     for category, condition in categories.items():
-        if isinstance(condition, str):
+        if condition is None:
+            filt = table.index
+        elif isinstance(condition, str):
             filt = table[column_name] == condition
         elif isinstance(condition, list):
             filt = table[column_name].isin(condition)
         elif isinstance(condition, dict):
-            filt = pd.Series(False, index=table.index)
+            filts = []
             for other_column, value in condition.items():
-                filt = filt | (table[other_column] == value)
+                if isinstance(value, (bool, str)):
+                    filts.append(table[other_column] == value)
+                elif isinstance(value, list):
+                    filts.append(table[other_column].isin(value))
+                else:
+                    raise KeyError
+            filt = pd.concat(filts, axis="columns").sum(axis="columns") == len(condition)
         else:
             raise KeyError
-        table.loc[filt, column_name] = category
+        categorical_column = categorical_column.cat.add_categories([category])
+        categorical_column.loc[filt] = category
 
-    table[column_name] = table[column_name].astype("category")
-    return table[column_name]
+    return categorical_column
 
 
 def _apply_numerical_instruction(table: pd.DataFrame, instruction: dict) -> pd.Series:
@@ -250,7 +269,7 @@ def add_attribute(
     table = table.copy()
 
     for _attribute in attribute_list:
-        attribute_column = get_household_attribute(
+        attribute_column = get_attribute(
             _input=table,
             year=year,
             attribute=_attribute,
@@ -262,8 +281,8 @@ def add_attribute(
     return table
 
 
-def get_household_attribute(
-    _input: pd.DataFrame | pd.Series,
+def get_attribute(
+    _input: pd.DataFrame | pd.Series | pd.Index,
     attribute: _Attributes,
     year: int | None = None,
     id_column_name="ID",
@@ -318,7 +337,7 @@ def get_household_attribute(
 
 
 def _get_attribute_by_id(
-    household_id_column: pd.Series,
+    household_id_column: pd.Series | pd.Index,
     year: int,
     attribute: _Attributes,
     attribute_text="names",
@@ -332,7 +351,7 @@ def _get_attribute_by_id(
 
 
 def _get_attribute_code(
-    household_id_column: pd.Series,
+    household_id_column: pd.Series | pd.Index,
     year: int,
     attribute: _Attributes,
 ) -> pd.Series:
@@ -383,7 +402,7 @@ def add_classification(
     level_and_name = zip(levels, column_names)
 
     for _level, column_name in level_and_name:
-        classification_column = get_code_classification(
+        classification_column = get_classification(
             table,
             classification=classification,
             level=_level,
@@ -400,7 +419,7 @@ def add_classification(
     return table
 
 
-def get_code_classification(
+def get_classification(
     _input: pd.DataFrame | pd.Series,
     classification: str,
     level: int,
@@ -539,3 +558,37 @@ def _get_code_range(code_range_info: int | dict | list) -> list[int]:
         raise KeyError
 
     return code_range
+
+
+def add_weights(
+    table: pd.DataFrame,
+    year: int | None = None,
+    **kwargs
+) -> pd.DataFrame:
+    pass
+
+
+def get_weights(
+    _input: int | pd.DataFrame,
+    method: Literal["default", "external", "household_info"] = "default",
+) -> pd.Series:
+    if isinstance(_input , int):
+        if (method == "household_info") or (method == "default" and _input > 1395):
+            weights = _get_weights_by_household_info(_input)
+        else:
+            weights = _get_weights_by_external_data(_input)
+    elif isinstance(_input, pd.DataFrame):
+        pass
+    else:
+        raise ValueError
+    return weights
+
+
+def _get_weights_by_household_info(year: int) -> pd.Series:
+    hh_info = read_table("household_information", year)
+    hh_info = hh_info.set_index("ID")
+    weights = hh_info["Weight"]
+    return weights
+
+def _get_weights_by_external_data(year: int) -> pd.Series:
+    pass

@@ -607,7 +607,7 @@ ORIGINAL1383:
 
 
     #                        ######## LEVEL 1 ########                        #
-    actual_rentals_for_housing:
+    imputed_rentals_for_housing:
       &original_1383_0_imputed_rentals_for_housing
       level: 1
       farsi_name: ""
@@ -809,7 +809,8 @@ Imputed_Rent:
       level: 1
       is_imputed: 1
       code:
-        - *original_1383_0_imputed_rentals_for_housing
+        - 42_111
+        - 42_211
 
 
 ###############################################################################
