@@ -304,8 +304,57 @@ members_properties:
 
 
 house_specifications:
+    settings:
+        missings: drop
+
     file_code:
         1363: "P2"
+
+    columns:
+
+        ADDRESS:
+            new_name: "ID"
+            type: "unsigned"
+
+        DYCOL01:
+            new_name: "Tenure"
+            type: "category"
+            categories:
+                1: "Owned_Estate_Land"
+                2: "Owned_Estate"
+                3: "Rent"
+                4: "Mortgage"
+                5: "Service"
+                6: "Free"
+                7: "Other"
+        DYCOL03:
+            new_name: "Number_of_Rooms"
+            type: "unsigned"
+
+        DYCOL04:
+            new_name: "Space"
+            type: "unsigned"
+
+        DYCOL07:
+            new_name: "Car"
+            type: "boolean"
+            true_condition: 1
+
+        DYCOL08:
+            new_name: "Motorcycle"
+            type: "boolean"
+            true_condition: 1
+
+        DYCOL09:
+            new_name: "Bicycle"
+            type: "boolean"
+            true_condition: 1
+
+        DYCOL10:
+            new_name: "Radio"
+            type: "boolean"
+            true_condition: 1
+
 
 
 ######################################################################
