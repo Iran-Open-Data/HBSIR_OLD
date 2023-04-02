@@ -14,6 +14,7 @@ import requests
 from .metadata import (
     defaults,
     metadatas,
+    original_tables,
     Tables as _Table,
 )
 
@@ -248,7 +249,7 @@ def build_year_interval_for_table(
 
 
 def create_table_year_product(
-    table_name: _Table | list[_Table] | tuple[_Table],
+    table_name: _Table | list[_Table] | tuple[_Table] | None,
     from_year: int | None = None,
     to_year: int | None = None,
 ) -> list[tuple[_Table, int]]:
@@ -268,10 +269,13 @@ def create_table_year_product(
     List[tuple]
         _description_
     """
-    if isinstance(table_name, (list, tuple)):
-        table_list: list[_Table] = list(table_name)
+    table_list: list[_Table] | tuple[_Table]
+    if table_name is None:
+        table_list = original_tables
+    elif isinstance(table_name, (list, tuple)):
+        table_list = table_name
     else:
-        table_list: list[_Table] = [table_name]
+        table_list = [table_name]
 
     product_list = []
     for _table_name in table_list:
