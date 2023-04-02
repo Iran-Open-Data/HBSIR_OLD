@@ -47,6 +47,6 @@ def publish_parquet(
         pbar.desc = f"Uploading table: {_table_name}, for year: {year}"
         file_name = f"{year}_{_table_name}.parquet"
         path = defaults.processed_data.joinpath(file_name)
-        url = f"parquet_files/{file_name}"
+        url = f"HBSIR/parquet_files/{file_name}"
         upload_file_to_online_directory(path, url)
     pbar.close()
