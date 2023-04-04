@@ -156,15 +156,15 @@ def _apply_metadata_to_column(column: pd.Series, column_metadata: dict) -> pd.Se
 def _apply_type_to_column(column: pd.Series, column_metadata: dict) -> pd.Series:
     column = _convert_empty_items_to_nan(column)
     new_column = pd.Series(np.nan, index=column.index)
-    if column_metadata["type"] == "boolean":
+    if ("type" not in column_metadata) or (column_metadata["type"] == "string"):
+        new_column = column.copy()
+    elif column_metadata["type"] == "boolean":
         new_column = column.astype("Int32") == column_metadata["true_condition"]
     elif column_metadata["type"] in ("unsigned", "integer", "float"):
         new_column = pd.to_numeric(column, downcast=column_metadata["type"])
     elif column_metadata["type"] == "category":
         new_column = column.astype("Int32").astype("category")
         new_column = new_column.cat.rename_categories(column_metadata["categories"])
-    elif column_metadata["type"] == "string":
-        new_column = column.copy()
     return new_column
 
 
