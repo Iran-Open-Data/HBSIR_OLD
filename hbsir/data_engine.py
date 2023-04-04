@@ -18,19 +18,6 @@ _StandardTables = metadata.StandardTable
 _Table = metadata.Tables
 
 
-def _check_attribute(attribute: _Attributes | list[_Attributes]) -> None:
-    available_attributes = get_args(_Attributes)
-    if not isinstance(attribute, (list, tuple)):
-        attribute = [attribute]
-    for atr in attribute:
-        if not atr in available_attributes:
-            available_attributes_str = ", ".join(str(x) for x in available_attributes)
-            raise KeyError(
-                f"Invalid attribute: {atr}. This attribute is not supported."
-                f"Available attributes: {available_attributes_str}"
-            )
-
-
 def load_table(
     table_name: _Table,
     from_year: int | None = None,
@@ -290,7 +277,6 @@ def get_attribute(
     attribute_text="names",
 ) -> pd.Series:
     """docs"""
-    _check_attribute(attribute)
     if isinstance(_input, (pd.Series, pd.Index)):
         if year is None:
             raise TypeError(
