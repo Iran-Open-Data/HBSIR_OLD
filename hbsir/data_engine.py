@@ -69,7 +69,7 @@ def read_table(
     table_name: _OriginalTable | list[_OriginalTable] | tuple[_OriginalTable],
     from_year: int | None = None,
     to_year: int | None = None,
-    original: bool = False,
+    apply_yearly_schema: bool = True,
     add_year: bool = False,
     add_duration: bool = False,
     add_table_names: bool = False,
@@ -84,7 +84,7 @@ def read_table(
     table_list: list[pd.DataFrame] = []
     for _table_name, year in tname_year:
         table = _get_parquet(_table_name, year, **kwargs)
-        if not original:
+        if apply_yearly_schema:
             try:
                 table_schema = metadatas.schema[_table_name]["yearly_schema"]
             except KeyError:
@@ -136,7 +136,9 @@ def _download_parquet(table_name: str, year: int) -> None:
     utils.download_file(url=file_url, path=local_path, show_progress_bar=True)
 
 
-def _imply_table_schema(table: pd.DataFrame, table_schema: dict, year: int | None = None):
+def _imply_table_schema(
+    table: pd.DataFrame, table_schema: dict, year: int | None = None
+) -> pd.DataFrame:
     """docs"""
     table = table.copy()
 
@@ -158,7 +160,8 @@ def _imply_table_schema(table: pd.DataFrame, table_schema: dict, year: int | Non
             filts = []
             for filt_str in table_schema["filter"]:
                 filts.append(table.eval(filt_str))
-            filt = pd.concat(filts, axis="columns").sum(axis="columns") == len(table_schema["filter"])
+            filt_sum = pd.concat(filts, axis="columns").sum(axis="columns")
+            filt = filt_sum == len(table_schema["filter"])
         else:
             raise KeyError
         table = table.loc[filt]
@@ -186,7 +189,9 @@ def _apply_column_instruction(table, name, instruction):
     return table
 
 
-def _apply_categorical_instruction(table: pd.DataFrame, column_name: str, instruction: dict):
+def _apply_categorical_instruction(
+    table: pd.DataFrame, column_name: str, instruction: dict
+) -> pd.Series:
     categories = instruction["categories"]
 
     if column_name in table.columns:
@@ -210,7 +215,8 @@ def _apply_categorical_instruction(table: pd.DataFrame, column_name: str, instru
                     filts.append(table[other_column].isin(value))
                 else:
                     raise KeyError
-            filt = pd.concat(filts, axis="columns").sum(axis="columns") == len(condition)
+            filt_sum = pd.concat(filts, axis="columns").sum(axis="columns")
+            filt = filt_sum == len(condition)
         else:
             raise KeyError
         categorical_column = categorical_column.cat.add_categories([category])
