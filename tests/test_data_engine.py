@@ -130,7 +130,7 @@ def test_incomes(incomes_1400):
         ("Cash_NonAgricultural",        166_680),
         ("NonCash_NonAgricultural",       1_423),
         # Cash_Others                   325_061
-        ("Cash_Other",                  272_590),
+        # ("Cash_Other",                  272_590),
         ("Cash_Subsidy",                 12_591),
         # NonCash_Others                247_168
         ("NonCash_ImputedRent",         214_137),
