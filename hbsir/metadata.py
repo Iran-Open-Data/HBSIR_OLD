@@ -132,6 +132,7 @@ class Defaults:
     unpacked_data = local_dir.joinpath(settings["unpacked_data"])
     extracted_data = local_dir.joinpath(settings["extracted_data"])
     processed_data = local_dir.joinpath(settings["processed_data"])
+    external_data = local_dir.joinpath(settings["external_data"])
 
     first_year: int = settings["first_year"]
     last_year: int = settings["last_year"]

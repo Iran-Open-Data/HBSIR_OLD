@@ -15,6 +15,7 @@ archive_files: '1_archive_files'
 unpacked_data: '2_unpacked_data'
 extracted_data: '3_extracted_data'
 processed_data: 'processed_data'
+external_data: 'external_data'
 
 # Map
 default_map: humandata

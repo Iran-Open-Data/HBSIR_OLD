@@ -561,35 +561,67 @@ def _get_code_range(code_range_info: int | dict | list) -> list[int]:
     return code_range
 
 
-def add_weights(
-    table: pd.DataFrame,
-    year: int | None = None,
-    **kwargs
-) -> pd.DataFrame:
-    pass
+def add_weights(table: pd.DataFrame, year: int | None = None, **kwargs) -> pd.DataFrame:
+    return table
 
 
 def get_weights(
-    _input: int | pd.DataFrame,
+    _input: int | list[int] | pd.DataFrame,
     method: Literal["default", "external", "household_info"] = "default",
 ) -> pd.Series:
-    if isinstance(_input , int):
-        if (method == "household_info") or (method == "default" and _input > 1395):
-            weights = _get_weights_by_household_info(_input)
-        else:
-            weights = _get_weights_by_external_data(_input)
+    years: list[int]
+    if isinstance(_input, int):
+        years = [_input]
     elif isinstance(_input, pd.DataFrame):
-        pass
+        years = list(_input["Year"].unique())
+    elif isinstance(_input, list):
+        years = _input
+
+    if method == "external":
+        weights = _get_weights_from_external_data(years)
+    elif method == "household_info":
+        weights = _get_weights_from_household_info(years)
+    elif method == "default":
+        before1395 = [year for year in years if year <= 1395]
+        after1395 = [year for year in years if year > 1395]
+
+        weight_list = []
+        if len(before1395) > 0:
+            weight_list.append(_get_weights_from_external_data(before1395))
+        if len(after1395) > 0:
+            weight_list.append(_get_weights_from_household_info(after1395))
+        weights = pd.concat(weight_list, axis="index")
+        assert isinstance(weights, pd.Series)
     else:
-        raise ValueError
+        raise KeyError
+    weights.index = weights.index.set_levels(                          # type: ignore
+        [weights.index.levels[0].astype(int), weights.index.levels[1]] # type: ignore
+    )
     return weights
 
 
-def _get_weights_by_household_info(year: int) -> pd.Series:
-    hh_info = read_table("household_information", year)
-    hh_info = hh_info.set_index("ID")
-    weights = hh_info["Weight"]
+def _get_weights_from_household_info(years: int | list[int]) -> pd.Series:
+    if isinstance(years, int):
+        years = [years]
+    weight_list = []
+    for year in years:
+        hh_info = read_table("household_information", year)
+        hh_info = hh_info.set_index("ID")
+        weight_list.append(hh_info["Weight"])
+    weights = pd.concat(weight_list, axis="index", keys=years, names=["Year", "ID"])
+    assert isinstance(weights, pd.Series)
     return weights
 
-def _get_weights_by_external_data(year: int) -> pd.Series:
-    pass
+
+def _get_weights_from_external_data(years: int | list[int]) -> pd.Series:
+    if isinstance(years, int):
+        years = [years]
+    weights_path = defaults.external_data.joinpath("weights.parquet")
+    if not weights_path.exists():
+        defaults.external_data.mkdir(parents=True, exist_ok=True)
+        utils.download_file(
+            f"{defaults.online_dir}/external_data/weights.parquet", weights_path
+        )
+    weights = pd.read_parquet(weights_path)
+    weights = weights.loc[(years), "Weight"]
+    return weights
