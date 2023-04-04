@@ -154,7 +154,7 @@ def _apply_metadata_to_column(column: pd.Series, column_metadata: dict) -> pd.Se
 
 
 def _apply_type_to_column(column: pd.Series, column_metadata: dict) -> pd.Series:
-    column = _convert_empty_items_to_nan(column)
+    column = _general_cleaning(column)
     new_column = pd.Series(np.nan, index=column.index)
     if ("type" not in column_metadata) or (column_metadata["type"] == "string"):
         new_column = column.copy()
@@ -168,10 +168,10 @@ def _apply_type_to_column(column: pd.Series, column_metadata: dict) -> pd.Series
     return new_column
 
 
-def _convert_empty_items_to_nan(column: pd.Series):
+def _general_cleaning(column: pd.Series):
     if pd.api.types.is_numeric_dtype(column):
         return column
-    chars_to_remove = r"\n\r\,\@\-\+\*"
+    chars_to_remove = r"\n\r\,\@\-\+\*\[\]"
     column = column.str.replace(f"[{chars_to_remove}]+", "", regex=True)
     column = column.replace(r"\A\s*\Z", np.nan, regex=True)
     return column
