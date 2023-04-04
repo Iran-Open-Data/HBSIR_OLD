@@ -174,7 +174,7 @@ def _imply_table_schema(
 
 def _preprocess_table(table: pd.DataFrame, instructions: list) -> pd.DataFrame:
     for instruction in instructions:
-        table = pd.eval(instruction, target=table) # type: ignore
+        table = pd.eval(instruction, target=table)  # type: ignore
     return table
 
 
