@@ -813,6 +813,22 @@ Imputed_Rent:
         - 42_211
 
 
+Insurance_Benefits:
+  default_levels: [1]
+  default_names: ["Insurance_Benefits"]
+
+  items:
+    Insurance_Benefits:
+      level: 1
+      is_benefit: 1
+      code:
+        - 125_113
+        - 125_115
+        - 125_121
+        - 125_311
+        - 125_313
+
+
 ###############################################################################
 ##          _ _ _   Classification of Individual Consumption   _ _ _         ##
 ##                     According to Purpose (COICOP) 2018                    ##

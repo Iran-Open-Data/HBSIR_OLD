@@ -257,11 +257,50 @@ self_employed_income:
 
 
 other_income:
-  yearly_schema:
-    columns:
-      Other_Incomes:
-        type: numerical
-        expression: "Retirement + Rent + Interest + Aid + Home_Production + Transfer"
+
+  columns:
+    Other_Incomes:
+      type: numerical
+      expression: "Retirement + Rent + Interest + Aid + Home_Production + Transfer"
+
+
+_long_other_incomes:
+  settings:
+    add_table_names: false
+    add_duration: false
+
+  table_list:
+    - other_income
+
+  preprocessing:
+    - "table.set_index(['Year', 'ID', 'Member_Number'])"
+    - "table.stack().to_frame().reset_index()"
+    - "table.set_axis(['Year', 'ID', 'Member_Number', 'type', 'value'], axis='columns')"
+
+  columns:
+    Other_Incomes:
+      type: numerical
+      expression: "value"
+
+    Other_Income_Type:
+      type: categorical
+      categories:
+        Retirement:        {type: Retirement}
+        Rent:              {type: Rent}
+        Interest:          {type: Interest}
+        Aid:               {type: Aid}
+        Home_Production:   {type: Home_Production}
+        Transfer:          {type: Transfer}
+
+  filter:
+    "Other_Incomes > 0"
+
+  order:
+    - Year
+    - ID
+    - Member_Number
+    - Other_Incomes
+    - Other_Income_Type
 
 
 subsidy:
@@ -306,8 +345,6 @@ NonCash_Incomes_Excluding_Imputed_Rent:
   table_list:
     - Outlays
 
-  filter: "Provision_Method not in ['Purchase']"
-
   columns:
     Income:
       type: numerical
@@ -323,6 +360,8 @@ NonCash_Incomes_Excluding_Imputed_Rent:
         NonCash_NonAgricultural:  {Provision_Method: Non_Agricultural_Work}
         NonCash_Donation:         {Provision_Method: Donation}   
         NonCash_HomeProduction:   {Provision_Method: Home_Production}   
+
+  filter: "Provision_Method not in ['Purchase']"
 
   order:
     - Year
@@ -344,31 +383,79 @@ NonCash_Incomes:
     - Income
 
 
-Cash_Incomes:
+Direct_Cash_Incomes:
   settings:
     add_table_names: true
 
   table_list:
     - employment_income
     - self_employed_income
-    - other_income
+    - _long_other_incomes
     - subsidy
+    - investment
 
   columns:
     Income:
       type: numerical
-      expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy"
+      expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy + Secondhand_Sale"
 
     Income_Type:
       type: categorical
       categories:
-        Cash_Public:          {table: employment_income, Sector: Public}
-        Cash_Private:         {table: employment_income, Sector: Private}
-        Cash_Cooperative:     {table: employment_income, Sector: Cooperative}
-        Cash_Agricultural:    {table: self_employed_income, Is_Agricultural: true}
-        Cash_NonAgricultural: {table: self_employed_income, Is_Agricultural: false}
-        Cash_Other:           {table: other_income}
-        Cash_Subsidy:         {table: subsidy}
+        Cash_Public:              {table: employment_income, Sector: Public}
+        Cash_Private:             {table: employment_income, Sector: Private}
+        Cash_Cooperative:         {table: employment_income, Sector: Cooperative}
+        Cash_Agricultural:        {table: self_employed_income, Is_Agricultural: true}
+        Cash_NonAgricultural:     {table: self_employed_income, Is_Agricultural: false}
+        Cash_Retirement:          {Other_Income_Type: Retirement}
+        Cash_Rent:                {Other_Income_Type: Rent}
+        Cash_Interest:            {Other_Income_Type: Interest}
+        Cash_Aid:                 {Other_Income_Type: Aid}
+        Cash_Home_Production:     {Other_Income_Type: Home_Production}
+        Cash_Transfer:            {Other_Income_Type: Transfer}
+        Cash_Subsidy:             {table: subsidy}
+        Cash_Investment_Disposal: {table: investment}
+
+  order:
+    - Year
+    - ID
+    - Member_Number
+    - Income_Type
+    - Income
+
+
+Indirect_Cash_Income:
+
+  table_list:
+    - durable
+
+  classifications:
+    - {classification: Insurance_Benefits, attribute: is_benefit, dropna: true}
+
+  filter: "Provision_Method in ['Purchase']"
+
+  columns:
+    Income:
+      type: numerical
+      expression: "Expenditure"
+
+    Income_Type:
+      type: categorical
+      categories:
+        Cash_Insurance_Benefits: null
+
+  order:
+    - Year
+    - ID
+    - Member_Number
+    - Income_Type
+    - Income
+
+
+Cash_Incomes:
+  table_list:
+    - Direct_Cash_Incomes
+    - Indirect_Cash_Income
 
   order:
     - Year

@@ -93,12 +93,11 @@ household_information:
 
 
     columns:
-        Address: &household_information_Address
+        ADDRESS:
             new_name: "ID"
             type: "unsigned"
-        ADDRESS: *household_information_Address
 
-        Fasl:
+        FASL:
             new_name: "Season"
             type: "category"
             categories: 
@@ -107,7 +106,7 @@ household_information:
                 3: "Autumn"
                 4: "Winter"
 
-        weight:
+        WEIGHT:
             new_name: "Weight"
             type: "unsigned"
 
@@ -889,13 +888,27 @@ INCOME_ITEMS:
         type: "boolean"
         true_condition: 1
 
-    income_work_type: &income_work_type
+    income_work_type: &income_work_type_base
         new_name: "Work_Type"
         type: "category"
+
+    income_work_type_1: &income_work_type_1
+        <<: *income_work_type_base
+        categories:
+            4: "Employer"
+            5: "Independent_Worker"
+            6: "Family_Worker"
+
+    income_work_type_2: &income_work_type_2
+        <<: *income_work_type_base
         categories:
             1: "Employer"
             2: "Independent_Worker"
             3: "Family_Worker"
+
+    income_work_type: &income_work_type
+        1369: *income_work_type_1
+        1398: *income_work_type_2
 
     income_is_agricultural: &income_is_agricultural
         new_name: "Is_Agricultural"
