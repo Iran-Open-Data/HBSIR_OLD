@@ -44,7 +44,7 @@ def load_table(
         if _table_name in metadata.original_tables:
             table = read_table(_table_name, from_year, to_year, **kwargs)
         else:
-            table = load_table(_table_name, from_year, to_year, **kwargs)
+            table = load_table(_table_name, from_year, to_year)
 
         sub_tables.append(table)
     table = pd.concat(sub_tables, ignore_index=True)
