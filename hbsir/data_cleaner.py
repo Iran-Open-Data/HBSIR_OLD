@@ -11,10 +11,11 @@ import numpy as np
 
 from . import metadata, utils
 
-
-defaults = metadata.defaults
-metadatas = metadata.metadatas
-_Tables = metadata.Tables
+from .metadata import (
+    OriginalTable as _OriginalTable,
+    defaults,
+    metadatas,
+)
 
 
 def load_table_data(
@@ -177,7 +178,10 @@ def _convert_empty_items_to_nan(column: pd.Series):
 
 
 def parquet_clean_data(
-    table_name: _Tables | list[_Tables],
+    table_name: _OriginalTable
+    | list[_OriginalTable]
+    | tuple[_OriginalTable]
+    | None = None,
     from_year: int | None = None,
     to_year: int | None = None,
 ) -> None:

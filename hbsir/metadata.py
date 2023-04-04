@@ -15,7 +15,7 @@ ROOT_DIRECTORT = Path().absolute()
 
 Attributes = Literal["Urban-Rural", "Province", "Region"]
 
-GeneralTables = Literal[
+GeneralTable = Literal[
     "household_information",
     "members_properties",
     "house_specifications",
@@ -48,7 +48,7 @@ IncomeTable = Literal[
     "private_employment_income",
 ]
 
-OriginalTable = Literal[GeneralTables, ExpenditureTable, IncomeTable]
+OriginalTable = Literal[GeneralTable, ExpenditureTable, IncomeTable]
 original_tables: tuple[OriginalTable, ...] = get_args(OriginalTable)
 
 StandardTable = Literal[
@@ -59,7 +59,7 @@ StandardTable = Literal[
 ]
 standard_tables: tuple[StandardTable, ...] = get_args(StandardTable)
 
-Tables = Literal[OriginalTable, StandardTable]
+Table = Literal[OriginalTable, StandardTable]
 
 
 def open_yaml(path):

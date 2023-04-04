@@ -15,7 +15,7 @@ from .metadata import (
     defaults,
     metadatas,
     original_tables,
-    Tables as _Table,
+    Table as _Table,
 )
 
 

@@ -15,7 +15,7 @@ metadatas = metadata.metadatas
 _Attributes = metadata.Attributes
 _OriginalTable = metadata.OriginalTable
 _StandardTables = metadata.StandardTable
-_Table = metadata.Tables
+_Table = metadata.Table
 
 
 def load_table(
