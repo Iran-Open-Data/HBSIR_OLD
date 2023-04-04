@@ -140,6 +140,9 @@ def _imply_table_schema(table: pd.DataFrame, table_schema: dict, year: int | Non
     """docs"""
     table = table.copy()
 
+    if "preprocessing" in table_schema:
+        table = _preprocess_table(table, table_schema["preprocessing"])
+
     if "columns" in table_schema:
         instructions = table_schema["columns"]
 
@@ -163,6 +166,12 @@ def _imply_table_schema(table: pd.DataFrame, table_schema: dict, year: int | Non
     if "order" in table_schema:
         column_order = table_schema["order"]
         table = _order_columns_by_schema(table, column_order)
+    return table
+
+
+def _preprocess_table(table: pd.DataFrame, instructions: list) -> pd.DataFrame:
+    for instruction in instructions:
+        table = pd.eval(instruction, target=table) # type: ignore
     return table
 
 
