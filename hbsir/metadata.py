@@ -125,13 +125,13 @@ class Defaults:
     if Path(settings["local_directory"]).is_absolute():
         local_dir = Path(settings["local_directory"])
     elif settings["in_root"]:
-        local_dir: Path = root_dir.joinpath(settings["local_directory"])
+        local_dir = root_dir.joinpath(settings["local_directory"])
     else:
-        local_dir: Path = pack_dir.joinpath(settings["local_directory"])
-    archive_files: Path = local_dir.joinpath(settings["archive_files"])
-    unpacked_data: Path = local_dir.joinpath(settings["unpacked_data"])
-    extracted_data: Path = local_dir.joinpath(settings["extracted_data"])
-    processed_data: Path = local_dir.joinpath(settings["processed_data"])
+        local_dir = pack_dir.joinpath(settings["local_directory"])
+    archive_files = local_dir.joinpath(settings["archive_files"])
+    unpacked_data = local_dir.joinpath(settings["unpacked_data"])
+    extracted_data = local_dir.joinpath(settings["extracted_data"])
+    processed_data = local_dir.joinpath(settings["processed_data"])
 
     first_year: int = settings["first_year"]
     last_year: int = settings["last_year"]
