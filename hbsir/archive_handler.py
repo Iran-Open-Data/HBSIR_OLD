@@ -3,6 +3,8 @@ The purpose of the archive handler module is to allow downloading and storing
 raw data more easily.
 """
 
+from contextlib import contextmanager
+from typing import Generator
 import shutil
 import subprocess
 import platform
@@ -327,26 +329,46 @@ def extract_tables(
 
 
 def _extract_tables_from_access_file(year: int, replace: bool = True) -> None:
-    table_list = _get_access_table_list(year)
-    for table_name in tqdm(
-        table_list, desc=f"Extracting data from {year}", unit="table"
-    ):
-        _extract_table(year, table_name, replace)
+    with _create_cursor(year) as cursor:
+        table_list = _get_access_table_list(cursor)
+        for table_name in tqdm(
+            table_list, desc=f"Extracting data from {year}", unit="table"
+        ):
+            _extract_table(cursor, year, table_name, replace)
 
 
-def _get_access_table_list(year: int) -> list:
+@contextmanager
+def _create_cursor(year: int) -> Generator[pyodbc.Cursor, None, None]:
     connection_string = _make_connection_string(year)
-    with pyodbc.connect(connection_string) as connection:
-        cursor = connection.cursor()
-        access_tables = cursor.tables()
-        table_list = []
-        for table in access_tables:
-            table_list.append(table.table_name)
+    connection = pyodbc.connect(connection_string)
+    try:
+        yield connection.cursor()
+    finally:
+        connection.close()
+
+
+def _make_connection_string(year: int):
+    if platform.system() == "Windows":
+        driver = "Microsoft Access Driver (*.mdb, *.accdb)"
+    else:
+        driver = "MDBTools"
+
+    year_directory = defaults.unpacked_data.joinpath(str(year))
+    access_file_path = _find_access_file_by_extension(year_directory)
+    conn_str = f"DRIVER={{{driver}}};" f"DBQ={access_file_path};"
+    return conn_str
+
+
+def _get_access_table_list(cursor: pyodbc.Cursor) -> list:
+    table_list = []
+    access_tables = cursor.tables()
+    for table in access_tables:
+        table_list.append(table.table_name)
     table_list = [table for table in table_list if table.find("MSys") == -1]
     return table_list
 
 
-def _extract_table(year: int, table_name: str, replace: bool = True):
+def _extract_table(cursor: pyodbc.Cursor, year: int, table_name: str, replace: bool = True):
     file_name = _change_1380_table_names(year, table_name)
     year_directory = defaults.extracted_data.joinpath(str(year))
     year_directory.mkdir(parents=True, exist_ok=True)
@@ -355,7 +377,7 @@ def _extract_table(year: int, table_name: str, replace: bool = True):
         return
 
     try:
-        table = _get_access_table(year, table_name)
+        table = _get_access_table(cursor, table_name)
     except (pyodbc.ProgrammingError, pyodbc.OperationalError):
         tqdm.write(f"table {table_name} from {year} failed to extract")
         return
@@ -369,26 +391,11 @@ def _change_1380_table_names(year: int, table_name: str):
     return table_name
 
 
-def _get_access_table(year: int, table_name: str) -> pd.DataFrame:
-    connection_string = _make_connection_string(year)
-    with pyodbc.connect(connection_string) as connection:
-        cursor = connection.cursor()
-        rows = cursor.execute(f"SELECT * FROM [{table_name}]").fetchall()
-        headers = [c[0] for c in cursor.description]
+def _get_access_table(cursor: pyodbc.Cursor, table_name: str) -> pd.DataFrame:
+    rows = cursor.execute(f"SELECT * FROM [{table_name}]").fetchall()
+    headers = [c[0] for c in cursor.description]
     table = pd.DataFrame.from_records(rows, columns=headers)
     return table
-
-
-def _make_connection_string(year: int):
-    if platform.system() == "Windows":
-        driver = "Microsoft Access Driver (*.mdb, *.accdb)"
-    else:
-        driver = "MDBTools"
-
-    year_directory = defaults.unpacked_data.joinpath(str(year))
-    access_file_path = _find_access_file_by_extension(year_directory)
-    conn_str = f"DRIVER={{{driver}}};" f"DBQ={access_file_path};"
-    return conn_str
 
 
 def _find_access_file_by_extension(directory: Path) -> Path:
