@@ -562,6 +562,10 @@ def _get_code_range(code_range_info: int | dict | list) -> list[int]:
 
 
 def add_weights(table: pd.DataFrame, year: int | None = None, **kwargs) -> pd.DataFrame:
+    """Add weight column to dataframe"""
+    _input = table if year is None else year
+    weights = get_weights(_input, **kwargs)
+    table["Weights"] = weights
     return table
 
 
@@ -569,6 +573,7 @@ def get_weights(
     _input: int | list[int] | pd.DataFrame,
     method: Literal["default", "external", "household_info"] = "default",
 ) -> pd.Series:
+    """Return wight column for specified year(s) or dataframe"""
     years: list[int]
     if isinstance(_input, int):
         years = [_input]
