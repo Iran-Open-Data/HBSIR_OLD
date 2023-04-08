@@ -255,10 +255,7 @@ def _add_duration(table, table_name):
 def add_attribute(
     table: pd.DataFrame,
     attribute: _Attributes | list[_Attributes] | tuple[_Attributes] | None,
-    year: int | None = None,
-    id_column_name="ID",
-    year_column_name: str = "Year",
-    attribute_text="names",
+    **kwargs
 ) -> pd.DataFrame:
     """docs"""
     if attribute is None:
@@ -273,11 +270,8 @@ def add_attribute(
     for _attribute in attribute_list:
         attribute_column = get_attribute(
             _input=table,
-            year=year,
             attribute=_attribute,
-            id_column_name=id_column_name,
-            year_column_name=year_column_name,
-            attribute_text=attribute_text,
+            **kwargs
         )
         table[_attribute] = attribute_column
     return table
@@ -287,18 +281,23 @@ def get_attribute(
     _input: pd.DataFrame | pd.Series | pd.Index,
     attribute: _Attributes,
     year: int | None = None,
-    id_column_name="ID",
+    index_id: bool = False,
+    id_column_name: str = "ID",
     year_column_name: str = "Year",
-    attribute_text="names",
+    attribute_text = "names",
 ) -> pd.Series:
     """docs"""
     if isinstance(_input, (pd.Series, pd.Index)):
-        if year is None:
-            raise TypeError(
-                "Since the input is a Pandas series, the 'year' variable must "
-                "be specified. Please provide a year value in the format YYYY."
-            )
-        return _get_attribute_by_id(_input, year, attribute, attribute_text)
+        if year is not None:
+            return _get_attribute_by_id(_input, year, attribute, attribute_text)
+        if (isinstance(_input, pd.Series)) and ("year" in _input.attrs):
+            assert isinstance(_input.attrs["year"], int)
+            return _get_attribute_by_id(_input, _input.attrs["year"], attribute, attribute_text)
+        raise TypeError(
+            "Since the input is a Pandas series, the 'year' variable must "
+            "be specified. Please provide a year value in the format YYYY."
+        )
+
     if not isinstance(_input, pd.DataFrame):
         raise ValueError
 
@@ -324,7 +323,10 @@ def get_attribute(
     attribute_column = pd.Series(None, dtype="object", index=_input.index)
     for _year in years:
         filt = _input["__Year__"] == _year
-        id_series = _input.loc[filt, id_column_name]
+        if index_id:
+            id_series = _input.loc[filt].index
+        else:
+            id_series = _input.loc[filt, id_column_name]
         attribute_series = _get_attribute_by_id(
             household_id_column=id_series,
             attribute=attribute,
@@ -431,13 +433,17 @@ def get_classification(
 ) -> pd.Series:
     """docs"""
     if isinstance(_input, pd.Series):
-        if year is None:
-            raise TypeError(
-                "Since the input is a Pandas series, the 'year' variable must "
-                "be specified. Please provide a year value in the format YYYY."
+        if year is not None:
+            return _get_classification_by_code(
+                _input, classification, level, year, attribute
             )
-        return _get_classification_by_code(
-            _input, classification, level, year, attribute
+        if "year" in _input.attrs:
+            return _get_classification_by_code(
+                _input, classification, level, _input.attrs["year"], attribute
+            )
+        raise TypeError(
+            "Since the input is a Pandas series, the 'year' variable must "
+            "be specified. Please provide a year value in the format YYYY."
         )
     if not isinstance(_input, pd.DataFrame):
         raise ValueError
