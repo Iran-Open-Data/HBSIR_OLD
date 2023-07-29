@@ -4,7 +4,7 @@ raw data more easily.
 """
 
 from contextlib import contextmanager
-from typing import Generator
+from typing import Generator, Iterable
 import shutil
 import subprocess
 import platform
@@ -21,8 +21,8 @@ defaults = metadata.defaults
 
 
 def setup(
-        from_year: int | None = None, to_year: int | None = None,
-        replace: bool = False) -> None:
+    years: int | Iterable[int] | str | None = None, replace: bool = False
+) -> None:
     """
     Download census data archive files, unpack them, and extract tables from the MS Access files
     for each year specified in the range of years and save them as CSV.
@@ -62,33 +62,31 @@ def setup(
     .. warning::
         Note that setting up files for the entire range of years will occupy approximately 12 GB
         of storage.
-    
+
 
     Examples
     --------
-    To set up all available files:    
+    To set up all available files:
 
     >>> setup()
 
-    To set up files for the year 1393:    
+    To set up files for the year 1393:
 
     >>> setup(1393)
 
-    To set up files for the years 1370 to 1380, inclusive:    
+    To set up files for the years 1370 to 1380, inclusive:
 
     >>> setup(1370, 1380)
     """
-    download(from_year, to_year, replace)
-    unpack(from_year, to_year, replace)
-    extract_tables(from_year, to_year, replace)
+    download(years, replace)
+    unpack(years, replace)
+    extract_tables(years, replace)
 
 
-def download(
-        from_year: int | None = None, to_year: int | None = None,
-        replace: bool = False) -> None:
+def download(years: int | Iterable[int] | str | None = None, replace: bool = False) -> None:
     """
     Downloads household census data archive files.
-    
+
     Parameters
     ----------
     from_year : int, optional
@@ -100,7 +98,7 @@ def download(
         download files for the single year specified in from_year.
     replace : bool, optional
         If True, overwrite existing files. If False, skip existing files. Default is False.
-        
+
     Returns
     -------
     None
@@ -112,21 +110,21 @@ def download(
 
     Examples
     --------
-    To download all available files:    
+    To download all available files:
 
     >>> download()
 
-    To download files for the year 1393:    
+    To download files for the year 1393:
 
     >>> download(1393)
 
-    To download files for the years 1370 to 1380, inclusively:    
+    To download files for the years 1370 to 1380, inclusively:
 
     >>> download(1370, 1380)
     """
-    from_year, to_year = utils.build_year_interval(from_year, to_year)
+    years = utils.parse_years(years)
     Path(defaults.archive_files).mkdir(exist_ok=True, parents=True)
-    for year in range(from_year, to_year):
+    for year in years:
         _download_year_file(year, replace=replace)
 
 
@@ -148,12 +146,12 @@ def _download_year_file(year: int, replace: bool = True) -> None:
     defaults.archive_files.mkdir(parents=True, exist_ok=True)
     local_path = defaults.archive_files.joinpath(file_name)
     if (not Path(local_path).exists()) or replace:
-        utils.download_file(url=file_url, path=local_path,
-                            show_progress_bar=True)
+        utils.download_file(url=file_url, path=local_path, show_progress_bar=True)
 
 
 def _unpack_archive_with_7zip(
-        compressed_file_path: Path | str, output_directory: Path | str) -> None:
+    compressed_file_path: Path | str, output_directory: Path | str
+) -> None:
     """
     Extracts the contents of a compressed file using the 7-Zip tool.
 
@@ -195,9 +193,7 @@ def _unpack_archive_with_7zip(
         )
 
 
-def unpack(
-        from_year: int | None = None, to_year: int | None = None,
-        replace: bool = False) -> None:
+def unpack(years: int | Iterable[int] | str | None = None, replace: bool = False) -> None:
     """
     Unpacks census data archive files, extracts tables from the MS Access files and saves them
     as CSV files for each year specified in the range of years.
@@ -230,17 +226,16 @@ def unpack(
 
     Examples
     --------
-    To unpack all available archives:    
+    To unpack all available archives:
 
     >>> unpack()
 
-    To unpack archives from 1393 to 1400:    
+    To unpack archives from 1393 to 1400:
 
     >>> unpack(1393, 1400)
     """
-    from_year, to_year = utils.build_year_interval(
-        from_year=from_year, to_year=to_year)
-    for year in tqdm(range(from_year, to_year), desc="Unziping raw data", unit="file"):
+    years = utils.parse_years(years)
+    for year in tqdm(years, desc="Unziping raw data", unit="file"):
         _unpack_yearly_data_archive(year, replace=replace)
 
 
@@ -273,8 +268,7 @@ def _unpack_archives_recursive(directory: str | Path):
     """
     while True:
         all_files = list(Path(directory).iterdir())
-        archive_files = [
-            file for file in all_files if file.suffix in (".zip", ".rar")]
+        archive_files = [file for file in all_files if file.suffix in (".zip", ".rar")]
         if len(archive_files) == 0:
             break
         for file in archive_files:
@@ -288,9 +282,7 @@ def _remove_created_directories(directory: Path):
             shutil.rmtree(path)
 
 
-def extract_tables(
-        from_year: int | None = None, to_year: int | None = None,
-        replace: bool = False) -> None:
+def extract_tables(years: int | Iterable[int] | str | None = None, replace: bool = False) -> None:
     """
     Extracts tables from a census MS Access file and saves them as CSV files.
 
@@ -315,16 +307,16 @@ def extract_tables(
 
     Examples
     --------
-    To extract tables from all available census files:    
+    To extract tables from all available census files:
 
     >>> extract_tables()
 
-    To extract tables from all available census files from 1393 to 1400:    
+    To extract tables from all available census files from 1393 to 1400:
 
     >>> extract_tables(from_year=1393, to_year=1400)
     """
-    from_year, to_year = utils.build_year_interval(from_year, to_year)
-    for year in range(from_year, to_year):
+    years = utils.parse_years(years)
+    for year in years:
         _extract_tables_from_access_file(year, replace)
 
 
@@ -368,7 +360,9 @@ def _get_access_table_list(cursor: pyodbc.Cursor) -> list:
     return table_list
 
 
-def _extract_table(cursor: pyodbc.Cursor, year: int, table_name: str, replace: bool = True):
+def _extract_table(
+    cursor: pyodbc.Cursor, year: int, table_name: str, replace: bool = True
+):
     file_name = _change_1380_table_names(year, table_name)
     year_directory = defaults.extracted_data.joinpath(str(year))
     year_directory.mkdir(parents=True, exist_ok=True)
