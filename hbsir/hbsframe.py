@@ -8,6 +8,7 @@ from .metadata import (
     Attributes as _Attributes,
 )
 
+
 @pd.api.extensions.register_dataframe_accessor("hbs")
 class HBSDF:
     """Household Budget Survay pandas API"""
@@ -37,7 +38,7 @@ class HBSDF:
         classification: str = "original",
         level: int | list[int] | None = None,
         new_column_name: str | list[str] | None = None,
-        ) -> pd.DataFrame:
+    ) -> pd.DataFrame:
         """
         Add Commodities Classification to the DataFrame
         """

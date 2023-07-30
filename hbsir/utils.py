@@ -131,6 +131,7 @@ def extract_with_7zip(compressed_file_path: str, output_directory: str) -> None:
             check=False,
         )
 
+
 def _check_year_validity(year: str | int) -> int:
     if isinstance(year, str):
         year = int(year.strip())
@@ -140,10 +141,13 @@ def _check_year_validity(year: str | int) -> int:
     elif year < 100:
         year += 1300
 
-    if year not in range(defaults.first_year, defaults.last_year+1):
-        raise ValueError(f"Year {year} not in range {defaults.first_year, defaults.last_year}")
+    if year not in range(defaults.first_year, defaults.last_year + 1):
+        raise ValueError(
+            f"Year {year} not in range {defaults.first_year, defaults.last_year}"
+        )
 
     return year
+
 
 def _parse_year_str(year: str) -> list[int]:
     year_list = []
@@ -156,53 +160,54 @@ def _parse_year_str(year: str) -> list[int]:
             start_year, end_year = year_interval
             start_year = _check_year_validity(start_year)
             end_year = _check_year_validity(end_year)
-            year_list.extend(list(range(start_year, end_year+1)))
+            year_list.extend(list(range(start_year, end_year + 1)))
         else:
             year_list.append(_check_year_validity(part))
     return year_list
 
 
-def parse_years(years: int | Iterable[int] | str | None,) -> list[int]:
+def parse_years(
+    years: int | Iterable[int] | str | None,
+) -> list[int]:
     """Convert different year representations to a list of integer years.
-    
-    This function handles converting various different input types representing 
+
+    This function handles converting various different input types representing
     years into a standardized list of integer years.
 
     Args:
         years: The input year value. Can be one of the following types:
             - int: A single year
-            - Iterable[int]: A collection of years 
+            - Iterable[int]: A collection of years
             - str: A comma-separated string of years or ranges
 
     Returns:
         list[int]: The converted years as a list of integer values.
-    
+
     Raises:
         TypeError: If the input year is not one of the accepted types.
 
     Examples:
         >>> get_year_list(1399)
         [1399]
-        
-        >>> get_year_list([98, 99, 1400]) 
+
+        >>> get_year_list([98, 99, 1400])
         [1398, 1399, 1400]
-        
+
         >>> get_year_list('1365, 80-83, 99')
         [1365, 1380, 1381, 1382, 1383, 1399]
     """
     if years is None:
-        year_list = list(range(defaults.first_year, defaults.last_year+1))
+        year_list = list(range(defaults.first_year, defaults.last_year + 1))
     elif isinstance(years, int):
         year_list = [_check_year_validity(years)]
     elif isinstance(years, str):
-        year_list = _parse_year_str (years)
+        year_list = _parse_year_str(years)
     elif isinstance(years, Iterable):
         year_list = [_check_year_validity(year) for year in years]
     else:
         raise TypeError
 
     return year_list
-
 
 
 def interpret_number_range(
@@ -225,13 +230,17 @@ def interpret_number_range(
             number_range.extend(list(range(number_range_info["start"], default_end)))
         elif keyword in number_range_info:
             number_range.extend(
-                interpret_number_range(number_range_info[keyword], default_end=default_end)
+                interpret_number_range(
+                    number_range_info[keyword], default_end=default_end
+                )
             )
         else:
             raise KeyError
     elif isinstance(number_range_info, list):
         for element in number_range_info:
-            number_range.extend(interpret_number_range(element, default_end=default_end))
+            number_range.extend(
+                interpret_number_range(element, default_end=default_end)
+            )
     else:
         raise KeyError
 
@@ -296,8 +305,8 @@ def build_year_interval(
 
 
 def build_years_for_table(
-    table_name: _Table,
-    years: int | Iterable[int] | str | None = None) -> list[int]:
+    table_name: _Table, years: int | Iterable[int] | str | None = None
+) -> list[int]:
     """_summary_
 
     Parameters
@@ -313,7 +322,9 @@ def build_years_for_table(
         _description_
     """
     availability_info = metadatas.tables["yearly_table_availability"][table_name]
-    available_years = interpret_number_range(availability_info, default_end=defaults.last_year+1)
+    available_years = interpret_number_range(
+        availability_info, default_end=defaults.last_year + 1
+    )
     years = parse_years(years)
     selected_years = [year for year in years if year in available_years]
     return selected_years
@@ -321,7 +332,7 @@ def build_years_for_table(
 
 def create_table_year_product(
     table_name: _Table | list[_Table] | tuple[_Table] | None,
-    years: int | Iterable[int] | str | None = None
+    years: int | Iterable[int] | str | None = None,
 ) -> list[tuple[_Table, int]]:
     """_summary_
 
@@ -354,7 +365,7 @@ def create_table_year_product(
 
 def is_multi_year(
     table_name: _Table | list[_Table] | tuple[_Table],
-    years: int | Iterable[int] | str | None = None
+    years: int | Iterable[int] | str | None = None,
 ) -> bool:
     if isinstance(table_name, str):
         table_list: list[_Table] = [table_name]

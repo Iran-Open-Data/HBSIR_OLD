@@ -59,7 +59,6 @@ def load_table(
     ):
         table = table.drop(columns="Duration")
 
-    
     table_schema = metadatas.schema[table_name]
     table = _imply_table_schema(table, table_schema, utils.parse_years(years)[0])
     return table
@@ -77,8 +76,7 @@ def read_table(
     """
     Load Tables
     """
-    tname_year = utils.create_table_year_product(
-        table_name=table_name, years=years)
+    tname_year = utils.create_table_year_product(table_name=table_name, years=years)
     table_list: list[pd.DataFrame] = []
     for _table_name, year in tname_year:
         table = _get_parquet(_table_name, year, **kwargs)
@@ -253,7 +251,7 @@ def _add_duration(table, table_name):
 def add_attribute(
     table: pd.DataFrame,
     attribute: _Attributes | list[_Attributes] | tuple[_Attributes] | None,
-    **kwargs
+    **kwargs,
 ) -> pd.DataFrame:
     """docs"""
     if attribute is None:
@@ -266,11 +264,7 @@ def add_attribute(
     table = table.copy()
 
     for _attribute in attribute_list:
-        attribute_column = get_attribute(
-            _input=table,
-            attribute=_attribute,
-            **kwargs
-        )
+        attribute_column = get_attribute(_input=table, attribute=_attribute, **kwargs)
         table[_attribute] = attribute_column
     return table
 
@@ -282,7 +276,7 @@ def get_attribute(
     index_id: bool = False,
     id_column_name: str = "ID",
     year_column_name: str = "Year",
-    attribute_text = "names",
+    attribute_text="names",
 ) -> pd.Series:
     """docs"""
     if isinstance(_input, (pd.Series, pd.Index)):
@@ -290,7 +284,9 @@ def get_attribute(
             return _get_attribute_by_id(_input, year, attribute, attribute_text)
         if (isinstance(_input, pd.Series)) and ("year" in _input.attrs):
             assert isinstance(_input.attrs["year"], int)
-            return _get_attribute_by_id(_input, _input.attrs["year"], attribute, attribute_text)
+            return _get_attribute_by_id(
+                _input, _input.attrs["year"], attribute, attribute_text
+            )
         raise TypeError(
             "Since the input is a Pandas series, the 'year' variable must "
             "be specified. Please provide a year value in the format YYYY."
@@ -603,8 +599,8 @@ def get_weights(
         assert isinstance(weights, pd.Series)
     else:
         raise KeyError
-    weights.index = weights.index.set_levels(                          # type: ignore
-        [weights.index.levels[0].astype(int), weights.index.levels[1]] # type: ignore
+    weights.index = weights.index.set_levels(  # type: ignore
+        [weights.index.levels[0].astype(int), weights.index.levels[1]]  # type: ignore
     )
     return weights
 
