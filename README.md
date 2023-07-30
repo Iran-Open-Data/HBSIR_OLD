@@ -1,4 +1,4 @@
-# HBSIR
+# HBSIR <img src='https://github.com/Iran-Open-Data/HBSIR/assets/36173945/af8a7d40-d610-42e2-b6b4-c220f7430df4' align="right" height="139" />
 
 A package to obtain household expenditure and income survey data.
 
@@ -10,19 +10,24 @@ A package to obtain household expenditure and income survey data.
 git clone https://github.com/iran-open-data/HBSIR household
 ```
 
-:two: Create the `settings.yaml` file based on the `settings-sample.yaml`.
+:two: Create the `hbsir-settings.yaml` file based on the `settings-sample.yaml`.
 
 :three: Create a script in the root folder, using the `hbsir` modules as needed:
 
 ```python
-from hbsir import archive_handler, raw_data, process
- 
-archive_handler.download_year_files_in_range(1396, 1397)
-archive_handler.unpack_yearly_data_archives (1396, 1397)
-archive_handler.extract_data_from_access_files(1396, 1397)
+from hbsir import data_engine, data_cleaner, archive_handler, utils
 
-raw_data.make_parquet([1396, 1397], 'food')
+# Downloads 7zip in appropriate directory for you
+utils.download_7zip()
 
-process.get_commodity_data("flour_and_noodle", 1397)
-process.get_commodity_data("meat", 1397)
+# Downloads raw survey data for year(s)
+archive_handler.setup(1397)
+
+# Find each table name from tables.yaml
+data_cleaner.parquet_clean_data('household_information', 1397)
+
+# Access data at each step of the way
+raw = data_cleaner.load_table_data('household_information', 1397)
+processed = data_engine.read_table('household_information', 1397)
+final = data_engine.load_table('household_information', 1397)
 ```
