@@ -4,7 +4,7 @@ Main file for ordinary use
 
 import re
 from collections import defaultdict
-from typing import Literal, get_args
+from typing import Iterable, Literal, get_args
 
 import pandas as pd
 
@@ -20,8 +20,7 @@ _Table = metadata.Table
 
 def load_table(
     table_name: _Table,
-    from_year: int | None = None,
-    to_year: int | None = None,
+    years: int | Iterable[int] | str | None = None,
     **kwargs,
 ) -> pd.DataFrame:
     """docs"""
@@ -42,9 +41,9 @@ def load_table(
     sub_tables = []
     for _table_name in table_name_list:
         if _table_name in metadata.original_tables:
-            table = read_table(_table_name, from_year, to_year, **kwargs)
+            table = read_table(_table_name, years, **kwargs)
         else:
-            table = load_table(_table_name, from_year, to_year)
+            table = load_table(_table_name, years)
 
         sub_tables.append(table)
     table = pd.concat(sub_tables, ignore_index=True)
@@ -61,14 +60,13 @@ def load_table(
         table = table.drop(columns="Duration")
 
     table_schema = metadatas.schema[table_name]
-    table = _imply_table_schema(table, table_schema, from_year)
+    table = _imply_table_schema(table, table_schema, utils.parse_years(years)[0])
     return table
 
 
 def read_table(
     table_name: _OriginalTable | list[_OriginalTable] | tuple[_OriginalTable],
-    from_year: int | None = None,
-    to_year: int | None = None,
+    years: int | Iterable[int] | str | None = None,
     apply_yearly_schema: bool = True,
     add_year: bool = False,
     add_duration: bool = False,
@@ -78,9 +76,7 @@ def read_table(
     """
     Load Tables
     """
-    tname_year = utils.create_table_year_product(
-        table_name=table_name, from_year=from_year, to_year=to_year
-    )
+    tname_year = utils.create_table_year_product(table_name=table_name, years=years)
     table_list: list[pd.DataFrame] = []
     for _table_name, year in tname_year:
         table = _get_parquet(_table_name, year, **kwargs)
@@ -101,7 +97,7 @@ def read_table(
     concat_table = pd.concat(table_list, ignore_index=True)
 
     if not add_year:
-        concat_table.attrs["year"] = from_year
+        concat_table.attrs["year"] = utils.parse_years(years)[0]
 
     return concat_table
 
@@ -255,7 +251,7 @@ def _add_duration(table, table_name):
 def add_attribute(
     table: pd.DataFrame,
     attribute: _Attributes | list[_Attributes] | tuple[_Attributes] | None,
-    **kwargs
+    **kwargs,
 ) -> pd.DataFrame:
     """docs"""
     if attribute is None:
@@ -268,11 +264,7 @@ def add_attribute(
     table = table.copy()
 
     for _attribute in attribute_list:
-        attribute_column = get_attribute(
-            _input=table,
-            attribute=_attribute,
-            **kwargs
-        )
+        attribute_column = get_attribute(_input=table, attribute=_attribute, **kwargs)
         table[_attribute] = attribute_column
     return table
 
@@ -284,7 +276,7 @@ def get_attribute(
     index_id: bool = False,
     id_column_name: str = "ID",
     year_column_name: str = "Year",
-    attribute_text = "names",
+    attribute_text="names",
 ) -> pd.Series:
     """docs"""
     if isinstance(_input, (pd.Series, pd.Index)):
@@ -292,7 +284,9 @@ def get_attribute(
             return _get_attribute_by_id(_input, year, attribute, attribute_text)
         if (isinstance(_input, pd.Series)) and ("year" in _input.attrs):
             assert isinstance(_input.attrs["year"], int)
-            return _get_attribute_by_id(_input, _input.attrs["year"], attribute, attribute_text)
+            return _get_attribute_by_id(
+                _input, _input.attrs["year"], attribute, attribute_text
+            )
         raise TypeError(
             "Since the input is a Pandas series, the 'year' variable must "
             "be specified. Please provide a year value in the format YYYY."
@@ -605,8 +599,8 @@ def get_weights(
         assert isinstance(weights, pd.Series)
     else:
         raise KeyError
-    weights.index = weights.index.set_levels(                          # type: ignore
-        [weights.index.levels[0].astype(int), weights.index.levels[1]] # type: ignore
+    weights.index = weights.index.set_levels(  # type: ignore
+        [weights.index.levels[0].astype(int), weights.index.levels[1]]  # type: ignore
     )
     return weights
 
