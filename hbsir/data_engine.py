@@ -65,7 +65,7 @@ def load_table(
 
 
 def read_table(
-    table_name: _OriginalTable | list[_OriginalTable] | tuple[_OriginalTable],
+    table_names: _OriginalTable | list[_OriginalTable] | tuple[_OriginalTable],
     years: int | Iterable[int] | str | None = None,
     apply_yearly_schema: bool = True,
     add_year: bool = False,
@@ -76,7 +76,7 @@ def read_table(
     """
     Load Tables
     """
-    tname_year = utils.create_table_year_product(table_name=table_name, years=years)
+    tname_year = utils.construct_table_year_pairs(table_names=table_names, years=years)
     table_list: list[pd.DataFrame] = []
     for _table_name, year in tname_year:
         table = _get_parquet(_table_name, year, **kwargs)
@@ -129,7 +129,7 @@ def _download_parquet(table_name: str, year: int) -> None:
     file_name = f"{year}_{table_name}.parquet"
     file_url = f"{defaults.online_dir}/parquet_files/{file_name}"
     local_path = defaults.processed_data.joinpath(file_name)
-    utils.download_file(url=file_url, path=local_path, show_progress_bar=True)
+    utils.download(url=file_url, path=local_path, show_progress_bar=True)
 
 
 def _imply_table_schema(
@@ -624,7 +624,7 @@ def _get_weights_from_external_data(years: int | list[int]) -> pd.Series:
     weights_path = defaults.external_data.joinpath("weights.parquet")
     if not weights_path.exists():
         defaults.external_data.mkdir(parents=True, exist_ok=True)
-        utils.download_file(
+        utils.download(
             f"{defaults.online_dir}/external_data/weights.parquet", weights_path
         )
     weights = pd.read_parquet(weights_path)
