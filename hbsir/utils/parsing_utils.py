@@ -3,6 +3,7 @@ from typing import Iterable
 from ..metadata import defaults, metadatas, Table as _Table
 from .argham import Argham
 
+
 def parse_years(years: int | Iterable[int] | str | None) -> list[int]:
     """Convert different year representations to a list of integer years.
 
@@ -88,8 +89,8 @@ def construct_table_year_pairs(
     for table_name in table_names:
         table_argham = Argham(
             metadatas.tables["yearly_table_availability"][table_name],
-            default_start = defaults.first_year,
-            default_end = defaults.last_year + 1
+            default_start=defaults.first_year,
+            default_end=defaults.last_year + 1,
         )
         table_year.extend(
             [(table_name, year) for year in years if table_argham.contains(year)]

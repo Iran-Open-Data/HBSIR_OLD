@@ -41,6 +41,7 @@ def _windows_extract(compressed_file_path: str | Path, output_directory: str | P
         shell=True,
     )
 
+
 def _linux_extract(compressed_file_path: str | Path, output_directory: str | Path):
     seven_zip_file_path = defaults.pack_dir.joinpath("7-Zip", "7zz")
     if not seven_zip_file_path.exists():

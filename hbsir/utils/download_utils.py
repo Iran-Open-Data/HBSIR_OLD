@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import platform
 from zipfile import ZipFile
@@ -61,6 +60,7 @@ def _get_name_and_path(url: str, path: str | Path | None) -> tuple[str, Path]:
     else:
         raise TypeError
     return file_name, path
+
 
 def download_7zip():
     """
