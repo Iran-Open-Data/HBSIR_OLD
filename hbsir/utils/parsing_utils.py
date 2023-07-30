@@ -86,7 +86,11 @@ def construct_table_year_pairs(
     table_names = [table_names] if isinstance(table_names, str) else table_names
     table_year = []
     for table_name in table_names:
-        table_argham = Argham(metadatas.tables["yearly_table_availability"][table_name])
+        table_argham = Argham(
+            metadatas.tables["yearly_table_availability"][table_name],
+            default_start = defaults.first_year,
+            default_end = defaults.last_year + 1
+        )
         table_year.extend(
             [(table_name, year) for year in years if table_argham.contains(year)]
         )

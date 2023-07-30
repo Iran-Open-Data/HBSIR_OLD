@@ -1,16 +1,22 @@
-
 from typing import Iterable, overload
 
-class Argham:
-    default_start: int | None = None
-    default_end: int | None = None
-    default_step: int = 1
 
-    def __init__(self, argham: list | dict | int, keywords: list[str] | None = None):
+class Argham:
+    def __init__(
+        self,
+        argham: list | dict | int,
+        keywords: list[str] | None = None,
+        default_start: int | None = None,
+        default_end: int | None = None,
+        default_step: int = 1,
+    ):
         self.argham = argham
         self.range_list = []
         self.number_list = []
         self.keywords = [] if keywords is None else keywords
+        self.default_start = default_start
+        self.default_end = default_end
+        self.default_step = default_step
         self._parse_argham(argham)
 
     def _parse_argham(self, argham) -> None:
