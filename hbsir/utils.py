@@ -169,7 +169,7 @@ def parse_years(years: int | Iterable[int] | str | None,) -> list[int]:
     years into a standardized list of integer years.
 
     Args:
-        year: The input year value. Can be one of the following types:
+        years: The input year value. Can be one of the following types:
             - int: A single year
             - Iterable[int]: A collection of years 
             - str: A comma-separated string of years or ranges
@@ -295,18 +295,16 @@ def build_year_interval(
     return _from_year, _to_year
 
 
-def build_year_interval_for_table(
-    table_name: _Table, from_year: int | None = None, to_year: int | None = None
-) -> list[int]:
+def build_years_for_table(
+    table_name: _Table,
+    years: int | Iterable[int] | str | None = None) -> list[int]:
     """_summary_
 
     Parameters
     ----------
     table_name : str
         _description_
-    from_year : int | None, optional
-        _description_, by default None
-    to_year : int | None, optional
+    years : int | Iterable[int] | str | None = None) -> list[int], optional
         _description_, by default None
 
     Returns
@@ -316,15 +314,14 @@ def build_year_interval_for_table(
     """
     availability_info = metadatas.tables["yearly_table_availability"][table_name]
     available_years = interpret_number_range(availability_info, default_end=defaults.last_year+1)
-    from_year, to_year = build_year_interval(from_year, to_year)
-    selected_years = [year for year in range(from_year, to_year) if year in available_years]
+    years = parse_years(years)
+    selected_years = [year for year in years if year in available_years]
     return selected_years
 
 
 def create_table_year_product(
     table_name: _Table | list[_Table] | tuple[_Table] | None,
-    from_year: int | None = None,
-    to_year: int | None = None,
+    years: int | Iterable[int] | str | None = None
 ) -> list[tuple[_Table, int]]:
     """_summary_
 
@@ -332,9 +329,7 @@ def create_table_year_product(
     ----------
     table_name : str | List[str]
         _description_
-    from_year : int | None
-        _description_
-    to_year : int | None, optional
+    years : int | Iterable[int] | str | None = None) -> list[int], optional
         _description_, by default None
 
     Returns
@@ -352,15 +347,14 @@ def create_table_year_product(
 
     product_list = []
     for _table_name in table_list:
-        years = build_year_interval_for_table(_table_name, from_year, to_year)
+        years = build_years_for_table(_table_name, years)
         product_list.extend([(_table_name, year) for year in years])
     return product_list
 
 
 def is_multi_year(
     table_name: _Table | list[_Table] | tuple[_Table],
-    from_year: int | None = None,
-    to_year: int | None = None,
+    years: int | Iterable[int] | str | None = None
 ) -> bool:
     if isinstance(table_name, str):
         table_list: list[_Table] = [table_name]
@@ -368,7 +362,7 @@ def is_multi_year(
         table_list = [table for table in table_name]
 
     for _table_name in table_list:
-        years = build_year_interval_for_table(_table_name, from_year, to_year)
+        years = build_years_for_table(_table_name, years)
         if len(years) > 1:
             return True
     return False

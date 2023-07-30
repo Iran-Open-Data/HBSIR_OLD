@@ -4,7 +4,7 @@ Main file for ordinary use
 
 import re
 from collections import defaultdict
-from typing import Literal, get_args
+from typing import Iterable, Literal, get_args
 
 import pandas as pd
 
@@ -20,8 +20,7 @@ _Table = metadata.Table
 
 def load_table(
     table_name: _Table,
-    from_year: int | None = None,
-    to_year: int | None = None,
+    years: int | Iterable[int] | str | None = None,
     **kwargs,
 ) -> pd.DataFrame:
     """docs"""
@@ -42,9 +41,9 @@ def load_table(
     sub_tables = []
     for _table_name in table_name_list:
         if _table_name in metadata.original_tables:
-            table = read_table(_table_name, from_year, to_year, **kwargs)
+            table = read_table(_table_name, years, **kwargs)
         else:
-            table = load_table(_table_name, from_year, to_year)
+            table = load_table(_table_name, years)
 
         sub_tables.append(table)
     table = pd.concat(sub_tables, ignore_index=True)
@@ -60,15 +59,15 @@ def load_table(
     ):
         table = table.drop(columns="Duration")
 
+    
     table_schema = metadatas.schema[table_name]
-    table = _imply_table_schema(table, table_schema, from_year)
+    table = _imply_table_schema(table, table_schema, utils.parse_years(years)[0])
     return table
 
 
 def read_table(
     table_name: _OriginalTable | list[_OriginalTable] | tuple[_OriginalTable],
-    from_year: int | None = None,
-    to_year: int | None = None,
+    years: int | Iterable[int] | str | None = None,
     apply_yearly_schema: bool = True,
     add_year: bool = False,
     add_duration: bool = False,
@@ -79,8 +78,7 @@ def read_table(
     Load Tables
     """
     tname_year = utils.create_table_year_product(
-        table_name=table_name, from_year=from_year, to_year=to_year
-    )
+        table_name=table_name, years=years)
     table_list: list[pd.DataFrame] = []
     for _table_name, year in tname_year:
         table = _get_parquet(_table_name, year, **kwargs)
@@ -101,7 +99,7 @@ def read_table(
     concat_table = pd.concat(table_list, ignore_index=True)
 
     if not add_year:
-        concat_table.attrs["year"] = from_year
+        concat_table.attrs["year"] = utils.parse_years(years)[0]
 
     return concat_table
 

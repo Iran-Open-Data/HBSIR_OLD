@@ -4,6 +4,7 @@ import tomllib
 
 import requests
 from tqdm import tqdm
+from typing import Iterable
 import boto3
 
 from .metadata import (
@@ -55,10 +56,9 @@ def _get_file_size_online_directory(file_name):
 
 def publish_data(
     table_name: _OriginalTable | list[_OriginalTable] | None = None,
-    from_year: int | None = None,
-    to_year: int | None = None,
+    years: int | Iterable[int] | str | None = None
 ) -> None:
-    table_year = utils.create_table_year_product(table_name, from_year, to_year)
+    table_year = utils.create_table_year_product(table_name, years)
     pbar = tqdm(total=len(table_year), desc="Preparing ...", unit="Table")
     for _table_name, year in table_year:
         pbar.update()

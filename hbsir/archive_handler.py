@@ -29,13 +29,8 @@ def setup(
 
     Parameters
     ----------
-    from_year : int, optional
-        The starting year of the range. If not provided, files will be set up for all available
-        years.
-    to_year : int, optional
-        The ending year of the range. If provided, files will be set up for the years between
-        from_year and to_year, inclusive. If not provided, files will be set up for the single
-        year specified in from_year.
+    years : int | Iterable[int] | str | None = None) -> list[int], optional
+        _description_, by default None
     replace : bool, optional
         If True, existing files will be overwritten. If False, existing files will be skipped.
         The default is False.
@@ -89,13 +84,8 @@ def download(years: int | Iterable[int] | str | None = None, replace: bool = Fal
 
     Parameters
     ----------
-    from_year : int, optional
-        The starting year of the range. If provided, download files for that specific year only.
-        If not provided, download files for all available years.
-    to_year : int, optional
-        The ending year of the range. If provided, download files for the years between
-        from_year and to_year, inclusive. If not provided, and from_year is provided,
-        download files for the single year specified in from_year.
+    years : int | Iterable[int] | str | None = None) -> list[int], optional
+        _description_, by default None
     replace : bool, optional
         If True, overwrite existing files. If False, skip existing files. Default is False.
 
@@ -200,11 +190,8 @@ def unpack(years: int | Iterable[int] | str | None = None, replace: bool = False
 
     Parameters
     ----------
-    from_year : int, optional
-        The starting year of the range. If not provided, unpack files for all available years.
-    to_year : int, optional
-        The ending year of the range. If provided, unpack files for the years between from_year
-        and to_year, inclusive. unpack files for the single year specified in from_year.
+    years : int | Iterable[int] | str | None = None) -> list[int], optional
+        _description_, by default None
     replace : bool, optional
         If True, overwrite existing files. If False, skip existing files. Default is False.
 
@@ -288,11 +275,8 @@ def extract_tables(years: int | Iterable[int] | str | None = None, replace: bool
 
     Parameters
     ----------
-    from_year : int, optional
-        The starting year of the range. If not provided, extract tables for all available years.
-    to_year : int, optional
-        The ending year of the range. If provided, extract tables for the years between from_year
-        and to_year, inclusive. extract tables for the single year specified in from_year.
+    years : int | Iterable[int] | str | None = None) -> list[int], optional
+        _description_, by default None
     replace : bool, optional
         If True, overwrite existing files. If False, skip existing files. Default is False.
 
@@ -313,7 +297,7 @@ def extract_tables(years: int | Iterable[int] | str | None = None, replace: bool
 
     To extract tables from all available census files from 1393 to 1400:
 
-    >>> extract_tables(from_year=1393, to_year=1400)
+    >>> extract_tables(years=['1393-1400'])
     """
     years = utils.parse_years(years)
     for year in years:
