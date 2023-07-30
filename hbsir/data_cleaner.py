@@ -3,7 +3,7 @@ Module for cleaning raw data into proper format
 """
 
 from pathlib import Path
-from typing import Hashable, Iterable
+from typing import Hashable, Iterable, get_args
 
 from tqdm import tqdm
 import pandas as pd
@@ -178,10 +178,7 @@ def _general_cleaning(column: pd.Series):
 
 
 def parquet_clean_data(
-    table_name: _OriginalTable
-    | list[_OriginalTable]
-    | tuple[_OriginalTable]
-    | None = None,
+    table_names: _OriginalTable | Iterable[_OriginalTable] | None = None,
     years: int | Iterable[int] | str | None = None,
 ) -> None:
     """
@@ -211,7 +208,8 @@ def parquet_clean_data(
     .. seealso:: `utils.build_year_interval`, `clean_table_with_metadata`
 
     """
-    table_year = utils.create_table_year_product(table_name, years)
+    table_names = get_args(_OriginalTable) if table_names is None else table_names
+    table_year = utils.construct_table_year_pairs(table_names, years)
     pbar = tqdm(total=len(table_year), desc="Preparing ...", unit="Table")
     for _table_name, year in table_year:
         pbar.update()

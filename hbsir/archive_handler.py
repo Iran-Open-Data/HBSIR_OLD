@@ -6,7 +6,6 @@ raw data more easily.
 from contextlib import contextmanager
 from typing import Generator, Iterable
 import shutil
-import subprocess
 import platform
 from pathlib import Path
 
@@ -138,51 +137,7 @@ def _download_year_file(year: int, replace: bool = True) -> None:
     defaults.archive_files.mkdir(parents=True, exist_ok=True)
     local_path = defaults.archive_files.joinpath(file_name)
     if (not Path(local_path).exists()) or replace:
-        utils.download_file(url=file_url, path=local_path, show_progress_bar=True)
-
-
-def _unpack_archive_with_7zip(
-    compressed_file_path: Path | str, output_directory: Path | str
-) -> None:
-    """
-    Extracts the contents of a compressed file using the 7-Zip tool.
-
-    :param compressed_file_path: The path to the compressed file to be
-    extracted.
-    :type compressed_file_path: str
-    :param output_directory: The path to the directory where the
-    extracted files will be stored.
-    :type output_directory: str
-    :return: None, as this function does not return anything.
-
-    """
-    if platform.system() == "Windows":
-        seven_zip_file_path = Path().joinpath("7-Zip", "7z.exe")
-        if not seven_zip_file_path.exists():
-            utils.download_7zip()
-        subprocess.run(
-            [
-                seven_zip_file_path,
-                "e",
-                compressed_file_path,
-                f"-o{output_directory}",
-                "-y",
-            ],
-            check=False,
-            shell=True,
-        )
-    elif platform.system() == "Linux":
-        seven_zip_file_path = defaults.pack_dir.joinpath("7-Zip", "7zz")
-        subprocess.run(
-            [
-                seven_zip_file_path,
-                "e",
-                compressed_file_path,
-                f"-o{output_directory}",
-                "-y",
-            ],
-            check=False,
-        )
+        utils.download(url=file_url, path=local_path, show_progress_bar=True)
 
 
 def unpack(
@@ -241,7 +196,7 @@ def _unpack_yearly_data_archive(year: int, replace: bool = True):
             return
         shutil.rmtree(year_directory)
     year_directory.mkdir(parents=True)
-    _unpack_archive_with_7zip(file_path, year_directory)
+    utils.sz_extract(file_path, year_directory)
     _unpack_archives_recursive(year_directory)
     _remove_created_directories(year_directory)
 
@@ -263,7 +218,7 @@ def _unpack_archives_recursive(directory: str | Path):
         if len(archive_files) == 0:
             break
         for file in archive_files:
-            _unpack_archive_with_7zip(file, directory)
+            utils.sz_extract(file, directory)
             Path(file).unlink()
 
 
