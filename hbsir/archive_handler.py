@@ -140,7 +140,9 @@ def _download_year_file(year: int, replace: bool = True) -> None:
         utils.download(url=file_url, path=local_path, show_progress_bar=True)
 
 
-def unpack(years: int | Iterable[int] | str | None = None, replace: bool = False) -> None:
+def unpack(
+    years: int | Iterable[int] | str | None = None, replace: bool = False
+) -> None:
     """
     Unpacks census data archive files, extracts tables from the MS Access files and saves them
     as CSV files for each year specified in the range of years.
