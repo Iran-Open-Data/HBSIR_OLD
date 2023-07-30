@@ -9,19 +9,26 @@ from hbsir.data_engine import add_attribute, add_classification, read_table
 
 class TestAddAttribute:
     """Tests for add_attribute Function"""
+
     def test_basics(self, food_1400):
         """Test if add_attribute adds correct number of columns"""
         for attr in ["Urban-Rural", "Province", "Region"]:
             assert (
-                len(add_attribute(food_1400, attribute=attr).columns) # type: ignore
+                len(add_attribute(food_1400, attribute=attr).columns)  # type: ignore
                 == len(food_1400.columns) + 1
             )
 
-        for attr in [["Urban-Rural"], ["Urban-Rural", "Province"],
-                    ["Urban-Rural", "Province", "Region"]]:
-            assert (
-                len(add_attribute(food_1400, attribute=attr).columns) # type: ignore
-                == len(food_1400.columns) + len(attr)
+        for attr in [
+            ["Urban-Rural"],
+            ["Urban-Rural", "Province"],
+            ["Urban-Rural", "Province", "Region"],
+        ]:
+            assert len(
+                add_attribute(food_1400, attribute=attr).columns
+            ) == len(  # type: ignore
+                food_1400.columns
+            ) + len(
+                attr
             )
 
 
@@ -34,7 +41,9 @@ class TestWithFormalNumbers:
         exp = expenditures_1400.copy()
         exp = add_attribute(exp, attribute="Urban-Rural")
         exp = add_classification(exp, "Food-NonFood")
-        exp = exp.rename(columns={"Net_Expenditure": "Net", "Gross_Expenditure": "Gross"})
+        exp = exp.rename(
+            columns={"Net_Expenditure": "Net", "Gross_Expenditure": "Gross"}
+        )
         return exp
 
     @pytest.fixture()
@@ -55,7 +64,9 @@ class TestWithFormalNumbers:
     def _calc_wghtd_avrg(self, frame, hh_info, urban_rural):
         filt = hh_info["Urban-Rural"] == urban_rural
         weights = hh_info.loc[filt, "Weight"]
-        wghtd_avrg = frame.apply(lambda column: (column * weights).sum() / weights.sum()) / 1000
+        wghtd_avrg = (
+            frame.apply(lambda column: (column * weights).sum() / weights.sum()) / 1000
+        )
         return wghtd_avrg
 
     @pytest.fixture()
@@ -67,7 +78,9 @@ class TestWithFormalNumbers:
             frame = self._calc_wghtd_avrg(frame, prepared_hh_info, ur_ru)
             frame.index.rename(["Net-Gross", "Food-NonFood"], inplace=True)
             agg_tables.append(frame)
-        year_table = pd.concat(agg_tables, keys=["Urban", "Rural"], names=["Urban-Rural"])
+        year_table = pd.concat(
+            agg_tables, keys=["Urban", "Rural"], names=["Urban-Rural"]
+        )
         return year_table
 
     def test_equality(self, year_table):
@@ -85,16 +98,16 @@ class TestWithFormalNumbers:
             Rural          Gross        Food             207,037
             Rural          Gross        Non-Food         322,389
         """
-        index_value =[
-                [('Urban',   'Net',      'Food'),       246_537],
-                [('Urban',   'Net',      'Non-Food'),   678_480],
-                [('Urban',   'Gross',    'Food'),       246_537],
-                [('Urban',   'Gross',    'Non-Food'),   694_815],
-                [('Rural',   'Net',      'Food'),       207_034],
-                [('Rural',   'Net',      'Non-Food'),   312_085],
-                [('Rural',   'Gross',    'Food'),       207_034],
-                [('Rural',   'Gross',    'Non-Food'),   322_383],
-            ]
+        index_value = [
+            [("Urban", "Net", "Food"), 246_537],
+            [("Urban", "Net", "Non-Food"), 678_480],
+            [("Urban", "Gross", "Food"), 246_537],
+            [("Urban", "Gross", "Non-Food"), 694_815],
+            [("Rural", "Net", "Food"), 207_034],
+            [("Rural", "Net", "Non-Food"), 312_085],
+            [("Rural", "Gross", "Food"), 207_034],
+            [("Rural", "Gross", "Non-Food"), 322_383],
+        ]
         for index, value in index_value:
             assert abs(year_table.loc[index] - value) < 10
 
@@ -119,22 +132,22 @@ def test_incomes(incomes_1400):
         results[column_name] = value
 
     for key, value in [
-        ("Cash_Public",                 102_544),
-        ("NonCash_Public",               19_806),
-        ("Cash_Cooperative",                467),
-        ("NonCash_Cooperative",              72),
-        ("Cash_Private",                219_459),
-        ("NonCash_Private",              23_686),
-        ("Cash_Agricultural",            17_482),
-        ("NonCash_Agricultural",            368),
-        ("Cash_NonAgricultural",        166_680),
-        ("NonCash_NonAgricultural",       1_423),
+        ("Cash_Public", 102_544),
+        ("NonCash_Public", 19_806),
+        ("Cash_Cooperative", 467),
+        ("NonCash_Cooperative", 72),
+        ("Cash_Private", 219_459),
+        ("NonCash_Private", 23_686),
+        ("Cash_Agricultural", 17_482),
+        ("NonCash_Agricultural", 368),
+        ("Cash_NonAgricultural", 166_680),
+        ("NonCash_NonAgricultural", 1_423),
         # Cash_Others                   325_061
         # ("Cash_Other",                  272_590),
-        ("Cash_Subsidy",                 12_591),
+        ("Cash_Subsidy", 12_591),
         # NonCash_Others                247_168
-        ("NonCash_ImputedRent",         214_137),
-        ("NonCash_Donation",             32_250),
-        ("NonCash_HomeProduction",          781),
+        ("NonCash_ImputedRent", 214_137),
+        ("NonCash_Donation", 32_250),
+        ("NonCash_HomeProduction", 781),
     ]:
         assert abs(results[key] - value) < 10

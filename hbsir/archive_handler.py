@@ -78,7 +78,9 @@ def setup(
     extract_tables(years, replace)
 
 
-def download(years: int | Iterable[int] | str | None = None, replace: bool = False) -> None:
+def download(
+    years: int | Iterable[int] | str | None = None, replace: bool = False
+) -> None:
     """
     Downloads household census data archive files.
 
@@ -183,7 +185,9 @@ def _unpack_archive_with_7zip(
         )
 
 
-def unpack(years: int | Iterable[int] | str | None = None, replace: bool = False) -> None:
+def unpack(
+    years: int | Iterable[int] | str | None = None, replace: bool = False
+) -> None:
     """
     Unpacks census data archive files, extracts tables from the MS Access files and saves them
     as CSV files for each year specified in the range of years.
@@ -269,7 +273,9 @@ def _remove_created_directories(directory: Path):
             shutil.rmtree(path)
 
 
-def extract_tables(years: int | Iterable[int] | str | None = None, replace: bool = False) -> None:
+def extract_tables(
+    years: int | Iterable[int] | str | None = None, replace: bool = False
+) -> None:
     """
     Extracts tables from a census MS Access file and saves them as CSV files.
 

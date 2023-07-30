@@ -182,7 +182,7 @@ def parquet_clean_data(
     | list[_OriginalTable]
     | tuple[_OriginalTable]
     | None = None,
-    years: int | Iterable[int] | str | None = None
+    years: int | Iterable[int] | str | None = None,
 ) -> None:
     """
     Clean and process data for a specified table and year range, and save it in
