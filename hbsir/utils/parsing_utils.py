@@ -81,7 +81,7 @@ def _parse_year_str(year: str) -> list[int]:
 
 
 def construct_table_year_pairs(
-    table_names: _Table | Iterable[_Table], years: int | Iterable[int] | str | None
+    table_names: str | Iterable[str], years: int | Iterable[int] | str | None
 ) -> list[tuple[str, int]]:
     years = parse_years(years)
     table_names = [table_names] if isinstance(table_names, str) else table_names
