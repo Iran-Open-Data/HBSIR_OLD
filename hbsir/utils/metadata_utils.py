@@ -42,13 +42,17 @@ class MetaReader:
         ...
 
     def _retrive_version(self, element):
+        if element is None:
+            return None
         if isinstance(element, (int, str)):
             return element
         if isinstance(element, list):
             return [self._retrive_version(value) for value in element]
         if isinstance(element, dict):
             element = self._retrieve_dictionaty_verion(element)
-            return {key: self._retrive_version(value) for key, value in element.items()}
+            if isinstance(element, dict):
+                return {key: self._retrive_version(value) for key, value in element.items()}
+            return self._retrive_version(element)
         raise TypeError
 
     def _is_versioned(self, element):
