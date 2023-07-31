@@ -22,6 +22,7 @@ _Table = metadata.Table
 
 class ParquetHandler:
     """A class for loading parquet files"""
+
     def __init__(
         self,
         table_name: str,
@@ -58,6 +59,7 @@ class ParquetHandler:
         """Load parquet file from local hard drive"""
         return pd.read_parquet(self.local_path)
 
+
 class SchemaApplier:
     def __init__(self, table: pd.DataFrame, schema: dict):
         self.table = table
@@ -69,6 +71,10 @@ class SchemaApplier:
         self._apply_settings()
         if "preprocess" in self.schema:
             self._apply_instructions(self.schema["preprocess"])
+        if "columns" in self.schema:
+            instructions: dict = self.schema["columns"]
+            for name, instruction in instructions.items():
+                self._apply_column_instruction(name, instruction)
         if "postprocess" in self.schema:
             self._apply_instructions(self.schema["postprocess"])
         return self.table
@@ -103,28 +109,83 @@ class SchemaApplier:
         module_list = map(lambda x: self.modules[x], module_name_list)
         return module_list
 
+    def _apply_column_instruction(self, name, instruction):
+        print(name, instruction)
+        if instruction is None:
+            pass
+        elif instruction["type"] == "numerical":
+            self._apply_numerical_instruction(name, instruction)
+        elif instruction["type"] == "categorical":
+            self._apply_categorical_instruction(name, instruction)
+
+    def _apply_numerical_instruction(self, name, instruction: dict) -> None:
+        columns_names = re.split(r"[\+\-\*\/\s\.]+", instruction["expression"])
+        columns_names = [name for name in columns_names if not name.isnumeric()]
+        self.table[name] = self.table[columns_names].fillna(0).eval(instruction["expression"])
+
+    def _apply_categorical_instruction(self, name: str, instruction: dict) -> None:
+        categories = instruction["categories"]
+
+        if name in self.table.columns:
+            categorical_column = self.table[name].copy()
+        else:
+            categorical_column = pd.Series(index=self.table.index, dtype="category")
+
+        for category, condition in categories.items():
+            filt = self._construct_filter(name, condition)
+            categorical_column = categorical_column.cat.add_categories([category])
+            categorical_column.loc[filt] = category
+
+        self.table[name] = categorical_column
+
+    def _construct_filter(self, column_name, condition) -> pd.Series:
+        if condition is None:
+            filt = self.table.index.to_series()
+        elif isinstance(condition, str):
+            filt = self.table[column_name] == condition
+        elif isinstance(condition, list):
+            filt = self.table[column_name].isin(condition)
+        elif isinstance(condition, dict):
+            filts = []
+            for other_column, value in condition.items():
+                if isinstance(value, (bool, str)):
+                    filts.append(self.table[other_column] == value)
+                elif isinstance(value, list):
+                    filts.append(self.table[other_column].isin(value))
+                else:
+                    raise KeyError
+            filt_sum = pd.concat(filts, axis="columns").sum(axis="columns")
+            filt = filt_sum == len(condition)
+        else:
+            raise KeyError
+        return filt
+
 
 class TableLoader:
     def __init__(self, table_names: str | list[str], years):
         table_names = [table_names] if isinstance(table_names, str) else table_names
-        self.original_tables = [name for name in table_names if name in get_args(_OriginalTable)]
-        self.other_tables = [name for name in table_names if name not in self.original_tables]
+        self.original_tables = [
+            name for name in table_names if name in get_args(_OriginalTable)
+        ]
+        self.other_tables = [
+            name for name in table_names if name not in self.original_tables
+        ]
         self.tables: list[pd.DataFrame] = []
 
         self.years = years
 
-    def load_original_tables(self):
+    def load_original_tables(self) -> None:
         table_years = utils.construct_table_year_pairs(self.original_tables, self.years)
         for table_name, year in table_years:
             self._load_original_table(table_name, year)
 
-    def _load_original_table(self, table_name, year):
+    def _load_original_table(self, table_name: str, year: int) -> None:
         table = ParquetHandler(table_name, year).read()
         if table_name in metadatas.schema:
             schema: dict = metadatas.schema[table_name]
             schema.update({"table_name": table_name, "year": year})
             table = SchemaApplier(table, schema).apply()
-            self.tables.append(table)
+        self.tables.append(table)
 
 
 def load_table(
