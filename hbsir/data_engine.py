@@ -49,6 +49,8 @@ class ParquetHandler:
                 table.to_parquet(self.local_path)
         else:
             table = self.read_local_file()
+        table.attrs["table_name"] = self.table_name
+        table.attrs["year"] = self.year
         return table
 
     def download(self) -> pd.DataFrame:
@@ -79,16 +81,16 @@ class SchemaApplier:
             self._apply_instructions(self.schema["postprocess"])
         return self.table
 
-    def _apply_settings(self):
+    def _apply_settings(self) -> None:
         settings: dict = metadatas.schema["default_settings"]
         if "settings" in self.schema:
             settings.update(self.schema["settings"])
         if settings["add_table_names"]:
             self.table["table_name"] = self.schema["table_name"]
         if settings["add_year"]:
-            self.table["year"] = self.schema["year"]
+            self.table["Year"] = self.schema["year"]
 
-    def _apply_instructions(self, instructions: str | list[str]):
+    def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
         module_name_list = []
         func_name_list = []
@@ -109,34 +111,37 @@ class SchemaApplier:
         module_list = map(lambda x: self.modules[x], module_name_list)
         return module_list
 
-    def _apply_column_instruction(self, name, instruction):
-        print(name, instruction)
+    def _apply_column_instruction(self, column_name, instruction) -> None:
         if instruction is None:
             pass
         elif instruction["type"] == "numerical":
-            self._apply_numerical_instruction(name, instruction)
+            self._apply_numerical_instruction(column_name, instruction)
         elif instruction["type"] == "categorical":
-            self._apply_categorical_instruction(name, instruction)
+            self._apply_categorical_instruction(column_name, instruction)
 
-    def _apply_numerical_instruction(self, name, instruction: dict) -> None:
+    def _apply_numerical_instruction(self, column_name, instruction: dict) -> None:
         columns_names = re.split(r"[\+\-\*\/\s\.]+", instruction["expression"])
         columns_names = [name for name in columns_names if not name.isnumeric()]
-        self.table[name] = self.table[columns_names].fillna(0).eval(instruction["expression"])
+        self.table[column_name] = (
+            self.table[columns_names].fillna(0).eval(instruction["expression"])
+        )
 
-    def _apply_categorical_instruction(self, name: str, instruction: dict) -> None:
-        categories = instruction["categories"]
+    def _apply_categorical_instruction(
+        self, column_name: str, instruction: dict
+    ) -> None:
+        categories: dict = instruction["categories"]
 
-        if name in self.table.columns:
-            categorical_column = self.table[name].copy()
+        if column_name in self.table.columns:
+            categorical_column = self.table[column_name].copy()
         else:
             categorical_column = pd.Series(index=self.table.index, dtype="category")
 
         for category, condition in categories.items():
-            filt = self._construct_filter(name, condition)
+            filt = self._construct_filter(column_name, condition)
             categorical_column = categorical_column.cat.add_categories([category])
             categorical_column.loc[filt] = category
 
-        self.table[name] = categorical_column
+        self.table[column_name] = categorical_column
 
     def _construct_filter(self, column_name, condition) -> pd.Series:
         if condition is None:
@@ -160,32 +165,94 @@ class SchemaApplier:
             raise KeyError
         return filt
 
+    def apply_order(self) -> pd.DataFrame:
+        new_columns = [
+            column for column in self.schema["order"] if column in self.table.columns
+        ]
+        self.table = self.table[new_columns]
+        return self.table
+
 
 class TableLoader:
-    def __init__(self, table_names: str | list[str], years):
+    def __init__(
+        self,
+        table_names: str | list[str],
+        years: int | Iterable[int] | str | None,
+        apply_schema: bool = True,
+    ):
         table_names = [table_names] if isinstance(table_names, str) else table_names
-        self.original_tables = [
+        self.table_names = table_names
+        self.original_table_names = [
             name for name in table_names if name in get_args(_OriginalTable)
         ]
-        self.other_tables = [
-            name for name in table_names if name not in self.original_tables
+        self.schema_based_table_names = [
+            name for name in table_names if name not in self.original_table_names
         ]
-        self.tables: list[pd.DataFrame] = []
 
-        self.years = years
+        self.years = utils.parse_years(years)
+        self.apply_schema = apply_schema
 
-    def load_original_tables(self) -> None:
-        table_years = utils.construct_table_year_pairs(self.original_tables, self.years)
+        self.original_tables: dict[str, pd.DataFrame] = {}
+
+    def load(self) -> pd.DataFrame:
+        table_list = []
+        table_years = utils.construct_table_year_pairs(self.original_table_names, self.years)
         for table_name, year in table_years:
-            self._load_original_table(table_name, year)
-
-    def _load_original_table(self, table_name: str, year: int) -> None:
-        table = ParquetHandler(table_name, year).read()
-        if table_name in metadatas.schema:
-            schema: dict = metadatas.schema[table_name]
-            schema.update({"table_name": table_name, "year": year})
+            table_list.append(self._load_original_table(table_name, year))
+        table_years = utils.construct_table_year_pairs(self.schema_based_table_names, self.years)
+        for table_name, year in table_years:
+            table_list.append(self._construct_schema_based_table(table_name, year))
+        table = pd.concat(table_list, ignore_index=True)
+        if len(self.table_names) == 1:
+            schema = self._get_schema(self.table_names[0], self.years[-1])
             table = SchemaApplier(table, schema).apply()
-        self.tables.append(table)
+        return table
+
+    def _get_schema(self, table_name: str, year: int) -> dict:
+        schema: dict = metadatas.schema[table_name]
+        schema.update({"table_name": table_name, "year": year})
+        return schema
+
+    def _apply_schema(self, table: pd.DataFrame):
+        schema = self._get_schema(table.attrs["table_name"], table.attrs["year"])
+        table = SchemaApplier(table, schema).apply()
+        return table
+
+    def _load_original_table(self, table_name: str, year: int) -> pd.DataFrame:
+        if f"{table_name}_{year}" in self.original_tables:
+            return self.original_tables[f"{table_name}_{year}"]
+        table = ParquetHandler(table_name, year).read()
+        if self.apply_schema and (table_name in metadatas.schema):
+            table = self._apply_schema(table)
+        self.original_tables[f"{table_name}_{year}"] = table
+        return table
+
+    def _construct_schema_based_table(self, table_name: str, year: int) -> pd.DataFrame:
+        if table_name not in metadatas.schema:
+            raise KeyError("Table name is not available in schema")
+        table_names = metadatas.schema[table_name]["table_list"]
+
+        table_list = self._collect_schema_tables(table_names, year)
+
+        table = pd.concat(table_list, ignore_index=True)
+        table.attrs["table_name"] = table_name
+        table.attrs["year"] = year
+        table = self._apply_schema(table)
+        return table
+
+    def _collect_schema_tables(self, table_names: list[str], year: int) -> list[pd.DataFrame]:
+        original_table_names = [
+            name for name in table_names if (name in get_args(_OriginalTable))
+        ]
+        schema_based_table_names = [
+            name for name in table_names if name not in original_table_names
+        ]
+        table_list = []
+        for name in original_table_names:
+            table_list.append(self._load_original_table(name, year))
+        for name in schema_based_table_names:
+            table_list.append(self._construct_schema_based_table(name, year))
+        return table_list
 
 
 def load_table(
@@ -780,7 +847,7 @@ def _get_weights_from_household_info(years: int | list[int]) -> pd.Series:
         years = [years]
     weight_list = []
     for year in years:
-        hh_info = read_table("household_information", year)
+        hh_info = TableLoader("household_information", year).load()
         hh_info = hh_info.set_index("ID")
         weight_list.append(hh_info["Weight"])
     weights = pd.concat(weight_list, axis="index", keys=years, names=["Year", "ID"])
