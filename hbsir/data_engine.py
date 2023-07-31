@@ -205,7 +205,7 @@ class TableLoader:
         table = pd.concat(table_list, ignore_index=True)
         if len(self.table_names) == 1:
             schema = self._get_schema(self.table_names[0], self.years[-1])
-            table = SchemaApplier(table, schema).apply()
+            table = SchemaApplier(table, schema).apply_order()
         return table
 
     def _get_schema(self, table_name: str, year: int) -> dict:
