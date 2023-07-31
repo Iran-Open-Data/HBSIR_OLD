@@ -5,18 +5,24 @@ class MetaReader:
     def __init__(
         self,
         metadata: dict,
-        year: int,
+        year: int | None = None,
         year_range: tuple[int, int] = (1350, 1450),
+        year_keyword: str = "year",
         version_keyword: str = "versions",
         category_keyword: str = "categories",
     ):
         self.metadata = metadata
-        self.year = year
+        if year is not None:
+            self.year = year
+        elif year_keyword in metadata:
+            self.year = metadata[year_keyword]
+        elif self._is_versioned(metadata):
+            raise TypeError("Versioned metadata requires year parameter.")
         self.year_range = year_range
         self.version_keyword = version_keyword
         self.category_keyword = category_keyword
 
-    def retrieve(self):
+    def retrieve(self) -> dict:
         return self._retrive_version(self.metadata)
 
     @overload
@@ -43,6 +49,15 @@ class MetaReader:
         if isinstance(element, dict):
             element = self._retrieve_dictionaty_verion(element)
             return {key: self._retrive_version(value) for key, value in element.items()}
+        raise TypeError
+
+    def _is_versioned(self, element):
+        if isinstance(element, (int, str)):
+            return False
+        if isinstance(element, list):
+            return not all(not self._is_versioned(value) for value in element)
+        if isinstance(element, dict):
+            return not all(not self._is_versioned(value) for value in element.values())
         raise TypeError
 
     def _retrieve_dictionaty_verion(self, dictionaty: dict) -> dict:

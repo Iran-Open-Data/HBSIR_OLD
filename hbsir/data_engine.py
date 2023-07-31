@@ -5,6 +5,8 @@ Main file for ordinary use
 import re
 from collections import defaultdict
 from typing import Iterable, Literal, get_args
+from types import ModuleType
+import importlib
 
 import pandas as pd
 
@@ -16,6 +18,113 @@ _Attributes = metadata.Attributes
 _OriginalTable = metadata.OriginalTable
 _StandardTables = metadata.StandardTable
 _Table = metadata.Table
+
+
+class ParquetHandler:
+    """A class for loading parquet files"""
+    def __init__(
+        self,
+        table_name: str,
+        year: int,
+        download_if_missing: bool = True,
+        save_if_download: bool = True,
+    ) -> None:
+        self.table_name = table_name
+        self.year = year
+        self.file_name = f"{year}_{table_name}.parquet"
+        self.local_path = defaults.processed_data.joinpath(self.file_name)
+        self.file_url = f"{defaults.online_dir}/parquet_files/{self.file_name}"
+        self.download_if_missing = download_if_missing
+        self.save_if_download = save_if_download
+
+    def read(self) -> pd.DataFrame:
+        """Read the parquet file"""
+        if not self.local_path.exists() and not self.download_if_missing:
+            raise FileNotFoundError
+        if not self.local_path.exists() and self.download_if_missing:
+            table = self.download()
+            if self.save_if_download:
+                self.local_path.parent.mkdir(exist_ok=True, parents=True)
+                table.to_parquet(self.local_path)
+        else:
+            table = self.read_local_file()
+        return table
+
+    def download(self) -> pd.DataFrame:
+        """Download parquet file to memory"""
+        return pd.read_parquet(self.file_url)
+
+    def read_local_file(self) -> pd.DataFrame:
+        """Load parquet file from local hard drive"""
+        return pd.read_parquet(self.local_path)
+
+class SchemaApplier:
+    def __init__(self, table: pd.DataFrame, schema: dict):
+        self.table = table
+        self.schema = schema
+        self.schema: dict = utils.MetaReader(self.schema).retrieve()
+        self.modules: dict[str, ModuleType] = {}
+
+    def apply(self) -> pd.DataFrame:
+        self._apply_settings()
+        if "preprocess" in self.schema:
+            self._apply_instructions(self.schema["preprocess"])
+        if "postprocess" in self.schema:
+            self._apply_instructions(self.schema["postprocess"])
+        return self.table
+
+    def _apply_settings(self):
+        settings: dict = metadatas.schema["default_settings"]
+        if "settings" in self.schema:
+            settings.update(self.schema["settings"])
+        if settings["add_table_names"]:
+            self.table["table_name"] = self.schema["table_name"]
+        if settings["add_year"]:
+            self.table["year"] = self.schema["year"]
+
+    def _apply_instructions(self, instructions: str | list[str]):
+        instructions = [instructions] if isinstance(instructions, str) else instructions
+        module_name_list = []
+        func_name_list = []
+        for instruction in instructions:
+            module_name, func_name = instruction.rsplit(".", 1)
+            module_name_list.append(module_name)
+            func_name_list.append(func_name)
+        module_list = self._load_modules(module_name_list)
+        for func_name, module in zip(func_name_list, module_list):
+            func = getattr(module, func_name)
+            self.table = func(self.table)
+
+    def _load_modules(self, module_name_list: list[str]) -> Iterable[ModuleType]:
+        for name in module_name_list:
+            if name not in self.modules:
+                complete_name = "hbsir.schema_functions." + name
+                self.modules[name] = importlib.import_module(complete_name)
+        module_list = map(lambda x: self.modules[x], module_name_list)
+        return module_list
+
+
+class TableLoader:
+    def __init__(self, table_names: str | list[str], years):
+        table_names = [table_names] if isinstance(table_names, str) else table_names
+        self.original_tables = [name for name in table_names if name in get_args(_OriginalTable)]
+        self.other_tables = [name for name in table_names if name not in self.original_tables]
+        self.tables: list[pd.DataFrame] = []
+
+        self.years = years
+
+    def load_original_tables(self):
+        table_years = utils.construct_table_year_pairs(self.original_tables, self.years)
+        for table_name, year in table_years:
+            self._load_original_table(table_name, year)
+
+    def _load_original_table(self, table_name, year):
+        table = ParquetHandler(table_name, year).read()
+        if table_name in metadatas.schema:
+            schema: dict = metadatas.schema[table_name]
+            schema.update({"table_name": table_name, "year": year})
+            table = SchemaApplier(table, schema).apply()
+            self.tables.append(table)
 
 
 def load_table(
