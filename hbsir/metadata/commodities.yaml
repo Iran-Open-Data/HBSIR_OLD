@@ -290,6 +290,11 @@ ORIGINAL1383:
       level: 3
       code: {start: 11_410, end: 11_420}
 
+    #                               # LEVEL 4 #                               #
+    dried_milk:
+      level: 4
+      code: 11_413
+
     #                              ## LEVEL 3 ##                              #
     other_dairy_product_excluding_butter:
       level: 3
