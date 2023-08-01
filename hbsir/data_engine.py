@@ -171,10 +171,11 @@ class SchemaApplier:
         return filt
 
     def apply_order(self) -> pd.DataFrame:
-        new_columns = [
-            column for column in self.schema["order"] if column in self.table.columns
-        ]
-        self.table = self.table[new_columns]
+        if "order" in self.schema:
+            new_columns = [
+                column for column in self.schema["order"] if column in self.table.columns
+            ]
+            self.table = self.table[new_columns]
         return self.table
 
 
