@@ -91,7 +91,7 @@ class SchemaApplier:
         if "settings" in self.schema:
             settings.update(self.schema["settings"])
         if settings["add_table_names"]:
-            self.table["table_name"] = self.schema["table_name"]
+            self.table["Table_Name"] = self.schema["table_name"]
         if settings["add_year"]:
             self.table["Year"] = self.schema["year"]
 
