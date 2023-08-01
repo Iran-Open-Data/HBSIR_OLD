@@ -61,12 +61,17 @@ class ParquetHandler:
         """Load parquet file from local hard drive"""
         return pd.read_parquet(self.local_path)
 
-
+# pylint: disable=unsubscriptable-object
+# pylint: disable=unsupported-membership-test
 class SchemaApplier:
     def __init__(self, table: pd.DataFrame, schema: dict):
         self.table = table
-        self.schema = schema
-        self.schema: dict = utils.MetaReader(self.schema).retrieve()
+        schema_version = utils.MetadataVersionResolver(schema).get_version()
+        # TODO(mohammad_ali): Add schema validation here.
+        if isinstance(schema_version, dict):
+            self.schema = schema_version
+        else:
+            raise ValueError("Schema is not valid")
         self.modules: dict[str, ModuleType] = {}
 
     def apply(self) -> pd.DataFrame:

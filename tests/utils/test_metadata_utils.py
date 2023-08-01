@@ -1,7 +1,7 @@
 import pytest
 
 from hbsir import metadata
-from hbsir.utils.metadata_utils import MetaReader
+from hbsir.utils.metadata_utils import MetadataVersionResolver
 
 inst = metadata.metadatas.instruction
 
@@ -50,38 +50,38 @@ categorized_metadata = {
 
 class TestLocalCases:
     def test_not_versioned(self):
-        assert simple_metadata == MetaReader(simple_metadata).retrieve()
+        assert simple_metadata == MetadataVersionResolver(simple_metadata).get_version()
         for year in range(1360, 1380):
-            assert simple_metadata == MetaReader(simple_metadata, year).retrieve()
+            assert simple_metadata == MetadataVersionResolver(simple_metadata, year).get_version()
 
     def test_simple_versioned(self):
         with pytest.raises(NameError):
-            MetaReader(simple_versioned)
+            MetadataVersionResolver(simple_versioned)
         for year in range(1350, 1363):
-            assert MetaReader(simple_versioned, year).retrieve() is None
+            assert MetadataVersionResolver(simple_versioned, year).get_version() is None
         for year in range(1363, 1383):
             assert (
-                MetaReader(simple_versioned, year).retrieve() == simple_versioned_63_82
+                MetadataVersionResolver(simple_versioned, year).get_version() == simple_versioned_63_82
             )
         for year in range(1383, 1395):
-            assert MetaReader(simple_versioned, year).retrieve() == simple_versioned_83
+            assert MetadataVersionResolver(simple_versioned, year).get_version() == simple_versioned_83
 
     def test_keyword_versioned(self):
         with pytest.raises(NameError):
-            MetaReader(keyword_versioned)
+            MetadataVersionResolver(keyword_versioned)
         for year in range(1350, 1363):
             assert (
-                MetaReader(keyword_versioned, year).retrieve()
+                MetadataVersionResolver(keyword_versioned, year).get_version()
                 == keyword_versioned_50_62
             )
         for year in range(1363, 1383):
             assert (
-                MetaReader(keyword_versioned, year).retrieve()
+                MetadataVersionResolver(keyword_versioned, year).get_version()
                 == keyword_versioned_63_82
             )
         for year in range(1383, 1395):
             assert (
-                MetaReader(keyword_versioned, year).retrieve() == keyword_versioned_83
+                MetadataVersionResolver(keyword_versioned, year).get_version() == keyword_versioned_83
             )
 
 
@@ -89,77 +89,77 @@ class TestInstruction:
     def test_simple_versioned(self):
         for year in range(1350, 1360):
             assert (
-                MetaReader(inst["simple_versioned"], year).retrieve()
+                MetadataVersionResolver(inst["simple_versioned"], year).get_version()
                 == inst["simple_versioned_0"]
             )
         for year in range(1360, 1380):
             assert (
-                MetaReader(inst["simple_versioned"], year).retrieve()
+                MetadataVersionResolver(inst["simple_versioned"], year).get_version()
                 == inst["simple_versioned_1360"]
             )
         for year in range(1380, 1400):
             assert (
-                MetaReader(inst["simple_versioned"], year).retrieve()
+                MetadataVersionResolver(inst["simple_versioned"], year).get_version()
                 == inst["simple_versioned_1380"]
             )
 
     def test_keyword_versioned(self):
         for year in range(1350, 1360):
             assert (
-                MetaReader(inst["keyword_versioned"], year).retrieve()
+                MetadataVersionResolver(inst["keyword_versioned"], year).get_version()
                 == inst["keyword_versioned_0"]
             )
         for year in range(1360, 1380):
             assert (
-                MetaReader(inst["keyword_versioned"], year).retrieve()
+                MetadataVersionResolver(inst["keyword_versioned"], year).get_version()
                 == inst["keyword_versioned_1360"]
             )
         for year in range(1380, 1400):
             assert (
-                MetaReader(inst["keyword_versioned"], year).retrieve()
+                MetadataVersionResolver(inst["keyword_versioned"], year).get_version()
                 == inst["keyword_versioned_1380"]
             )
 
     def test_sample_1(self):
         for year in range(1350, 1360):
             assert (
-                MetaReader(inst["sample_1"], year).retrieve()
+                MetadataVersionResolver(inst["sample_1"], year).get_version()
                 == inst["sample_1_0"]
             )
         for year in range(1360, 1370):
             assert (
-                MetaReader(inst["sample_1"], year).retrieve()
+                MetadataVersionResolver(inst["sample_1"], year).get_version()
                 == inst["sample_1_1360"]
             )
         for year in range(1370, 1380):
             assert (
-                MetaReader(inst["sample_1"], year).retrieve()
+                MetadataVersionResolver(inst["sample_1"], year).get_version()
                 == inst["sample_1_1370"]
             )
         for year in range(1380, 1400):
             assert (
-                MetaReader(inst["sample_1"], year).retrieve()
+                MetadataVersionResolver(inst["sample_1"], year).get_version()
                 == inst["sample_1_1380"]
             )
 
     def test_sample_2(self):
         for year in range(1350, 1360):
             assert (
-                MetaReader(inst["sample_2"], year).retrieve()
+                MetadataVersionResolver(inst["sample_2"], year).get_version()
                 == inst["sample_2_0"]
             )
         for year in range(1360, 1370):
             assert (
-                MetaReader(inst["sample_2"], year).retrieve()
+                MetadataVersionResolver(inst["sample_2"], year).get_version()
                 == inst["sample_2_1360"]
             )
         for year in range(1370, 1380):
             assert (
-                MetaReader(inst["sample_2"], year).retrieve()
+                MetadataVersionResolver(inst["sample_2"], year).get_version()
                 == inst["sample_2_1370"]
             )
         for year in range(1380, 1400):
             assert (
-                MetaReader(inst["sample_2"], year).retrieve()
+                MetadataVersionResolver(inst["sample_2"], year).get_version()
                 == inst["sample_2_1380"]
             )
