@@ -49,8 +49,9 @@ class MetadataVersionSettings:
     year_range: tuple[int, int] = (1350, 1450)
     year_keyword: str = "year"
     version_keyword: str = "versions"
+    items_keyword: str = "items"
     category_keyword: str = "categories"
-
+    item_key_name: str = "item_key"
 
 default_settings = MetadataVersionSettings()
 
@@ -126,6 +127,82 @@ class MetadataVersionResolver:
             Resolved metadata version for provided year.
         """
         return self._retrive_version(self.metadata)
+
+    # pylint: disable=unsubscriptable-object
+    # pylint: disable=unsupported-assignment-operation
+    def categorize_metadata(self) -> dict:
+        """Categorize metadata dictionary into items list.
+
+        Parses the input metadata to build a categorized list 
+        of items under the 'items' key.
+
+        Example:
+
+        Before:
+
+        metadata:
+          key1: val1
+          key2: val2  
+
+          items:
+            item1:
+              shared1: foo
+              shared2: bar
+
+              categories:  
+                1:
+                  cat1key: catval1
+                2:
+                  cat2key: catval2
+
+        After:
+
+          items:
+            - shared1: foo
+              shared2: bar
+              cat1key: catval1
+              item_key: item1
+
+            - shared1: foo 
+              shared2: bar
+              cat2key: catval2
+              item_key: item1
+
+
+        Retrieves the latest version of the metadata using get_version().
+        Checks that metadata is a dictionary.
+
+        Loops through metadata[items_keyword] accessing each item:
+            - Checks if item has 'categories' key, splits into categories
+            - Copies over shared keys from item to categories
+            - Sets configured key_name in each category
+            - Extends item_list with list of categories
+        
+        Returns the updated metadata dict with categorized 'items' list.
+
+        Raises
+        ------
+        
+        TypeError
+            If metadata input is not a dictionary.
+
+        Returns
+        -------
+        
+        dict
+            Updated metadata with 'items' list of categorized elements.
+        """
+        metadata = self.get_version()
+        if not isinstance(metadata, dict):
+            raise TypeError
+        items = []
+        for key, item in metadata[self.settings.items_keyword].items():
+            item_list = self._get_categories(item)
+            for element in item_list:
+                element[self.settings.item_key_name] = key
+            items.extend(item_list)
+        metadata[self.settings.items_keyword] = items
+        return metadata
 
     @overload
     def _retrive_version(self, element: dict) -> dict | list | str | int | None:
@@ -226,3 +303,19 @@ class MetadataVersionResolver:
             if version <= self.year:
                 selected_version = max(selected_version, version)
         return selected_version
+
+    def _get_categories(self, item: dict) -> list:
+        if "categories" not in item:
+            categories_list = [item]
+        else:
+            categories_number = list(item["categories"].keys())
+            categories_number.sort()
+            categories_list = [
+                item["categories"][number] for number in categories_number
+            ]
+            shared_keys = [key for key in item.keys() if key != "categories"]
+            for category in categories_list:
+                for key in shared_keys:
+                    if key not in category.keys():
+                        category[key] = item[key]
+        return categories_list
