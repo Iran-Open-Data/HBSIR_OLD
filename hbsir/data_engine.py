@@ -4,9 +4,11 @@ Main file for ordinary use
 
 import re
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import Iterable, Literal, get_args
 from types import ModuleType
 import importlib
+import itertools
 
 import pandas as pd
 
@@ -270,35 +272,149 @@ class TableLoader:
         return table_list
 
 
+@dataclass
+class ClassificationSettings:
+    levels: list[int] | tuple[int, ...] = (2, 3)
+    column_names: list[str] | tuple[str, ...] = ("classification",)
+    labels: list[str] | tuple[str, ...] = ("item_key",)
+    required_columns = ("drop",)
+    code_column_name: str = "Code"
+    year_column_name: str = "Year"
+    drop_value: bool = False
+    add_duration: bool = True
+    duration_value: int = 30
+
+
 class Classification:
-    def __init__(self, name: str, year: int | None = None):
+    def __init__(
+        self,
+        name: str,
+        year: int | None = None,
+        settings: ClassificationSettings | None = None,
+        **kwargs,
+    ):
         self.name = name
         self.year = year
         versioned_info = metadatas.commodities[name]
         category_resolver = utils.MetadataCategoryResolver(versioned_info, year)
         self.classification_info = category_resolver.categorize_metadata()
+        self.settings = self.create_settings(settings, **kwargs)
+
+    def create_settings(self, settings, **kwargs):
+        classification_default_settings = {
+            key.split("_", 1)[1]: value
+            for key, value in self.classification_info.items()
+            if key.split("_", 1)[0] == "default"
+        }
+        if settings is None:
+            settings = ClassificationSettings()
+        for key, value in classification_default_settings.items():
+            setattr(settings, key, value)
+
+        for key, value in kwargs.items():
+            setattr(settings, key, value)
+
+        if isinstance(settings.levels, int):
+            settings.levels = [settings.levels]
+        if isinstance(settings.column_names, str):
+            settings.column_names = [settings.column_names]
+        if isinstance(settings.labels, str):
+            settings.labels = [settings.labels]
+        return settings
 
     @property
+    # pylint: disable=unsupported-assignment-operation
     def classification_table(self) -> pd.DataFrame:
         table = pd.DataFrame(self.classification_info["items"])
         table["code_range"] = table["code"].apply(utils.Argham)  # type: ignore
         table = table.drop(columns=["code"])
+        for column_name in self.settings.required_columns:
+            table = self._set_column(table, column_name)
         return table
 
-    def construct_transformation_table(self, table: pd.DataFrame):
-        def in_range(value, _range):
-            return value in _range
+    def _set_column(self, table: pd.DataFrame, column_name: str):
+        default_value = getattr(self.settings, f"{column_name}_value")
+        if column_name not in table.columns:
+            table[column_name] = default_value
+        elif default_value is not None:
+            table[column_name] = table[column_name].fillna(default_value)
+        return table
+
+    def construct_general_mapping_table(self, table: pd.DataFrame) -> pd.DataFrame:
         classification_codes = table["Code"].drop_duplicates()
         tables = []
         for _, row in self.classification_table.iterrows():
-            filt = classification_codes.apply(in_range, _range=row["code_range"])
-            available_codes = classification_codes.loc[filt]
-            code_table = pd.DataFrame(index=available_codes, columns=row.index).reset_index()
-            # pylint: disable=unsupported-assignment-operation
-            code_table[row.index] = row
+            code_table = self._build_code_table(classification_codes, row)
             tables.append(code_table)
-        transformation_table = pd.concat(tables, ignore_index=True)
-        return transformation_table
+        mapping_table = pd.concat(tables, ignore_index=True)
+        # Validate
+        filt = mapping_table.duplicated(["Code", "level"], keep=False)
+        if filt.sum():
+            raise ValueError("Classification is not valid")
+        mapping_table = (
+            mapping_table.drop(columns=["code_range"])
+            .set_index(["Code", "level"])
+            .unstack()
+        )
+        assert isinstance(mapping_table, pd.DataFrame)
+        return mapping_table
+
+    @staticmethod
+    def _build_code_table(
+        classification_codes: pd.Series, row: pd.Series
+    ) -> pd.DataFrame:
+        filt = classification_codes.apply(lambda x: x in row["code_range"])
+        available_codes = classification_codes.loc[filt]
+        code_table = pd.DataFrame(
+            index=available_codes, columns=row.index
+        ).reset_index()
+        # pylint: disable=unsupported-assignment-operation
+        code_table[row.index] = row
+        return code_table
+
+    def construct_mapping_table(self, table: pd.DataFrame) -> pd.DataFrame:
+        mapping_table = self.construct_general_mapping_table(table)
+        mapping_table = self._apply_drop(mapping_table)
+        if self.settings.add_duration:
+            duration = self._create_duration(mapping_table)
+        else:
+            duration = None
+        mapping_table = self._rename_columns(mapping_table)
+        if duration is not None:
+            mapping_table["duration"] = duration
+        return mapping_table
+
+    def _apply_drop(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
+        filt = mapping_table.loc[:, ("drop", slice(None))].prod(axis="columns") == 0 # type: ignore
+        mapping_table = mapping_table.loc[filt]
+        mapping_table = mapping_table.drop(columns=["drop"])
+        return mapping_table
+
+    def _create_duration(self, mapping_table: pd.DataFrame) -> pd.Series:
+        if not "duration" in mapping_table.columns:
+            duration = pd.Series(self.settings.duration_value, index= mapping_table.index)
+        else:
+            duratuin_columns = mapping_table.loc[:, ("duration", slice(None))] # type: ignore
+            duration_min = duratuin_columns.min(axis="columns")
+            duration_max = duratuin_columns.max(axis="columns")
+            if (duration_min != duration_max).sum() > 0:
+                raise ValueError("Durations are not matched")
+            duration = duration_min
+        return duration
+
+    def _rename_columns(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
+        levels = self.settings.levels
+        levels = levels if len(levels) > 0 else list(mapping_table["level"].unique())
+        column_names = list(itertools.product(self.settings.labels, levels))
+        mapping_table = mapping_table.loc[:, column_names]
+        if len(column_names) == len(self.settings.column_names):
+            mapping_table.columns = self.settings.column_names
+        elif (len(self.settings.labels) == len(self.settings.column_names)):
+            column_names = itertools.product(self.settings.column_names, levels)
+            mapping_table.columns = [f"{label}_{level}" for label, level in column_names]
+        else:
+            mapping_table.columns = [f"{label}_{level}" for label, level in column_names]
+        return mapping_table
 
 
 def load_table(
