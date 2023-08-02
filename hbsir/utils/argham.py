@@ -109,7 +109,8 @@ class Argham:
     def __repr__(self) -> str:
         representation_list = []
         if len(self.number_list) > 0:
-            representation_list.append(f"[{', '.join(self.number_list)}]")
+            str_numbers = [str(number) for number in self.number_list]
+            representation_list.append(f"[{', '.join(str_numbers)}]")
         if len(self.range_list) > 0:
             for rng in self.range_list:
                 representation_list.append(f"({min(rng)} - {max(rng)})")
