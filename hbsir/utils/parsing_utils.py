@@ -93,6 +93,6 @@ def construct_table_year_pairs(
             default_end=defaults.last_year + 1,
         )
         table_year.extend(
-            [(table_name, year) for year in years if table_argham.contains(year)]
+            [(table_name, year) for year in years if year in table_argham]
         )
     return table_year

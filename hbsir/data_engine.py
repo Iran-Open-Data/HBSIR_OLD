@@ -61,6 +61,7 @@ class ParquetHandler:
         """Load parquet file from local hard drive"""
         return pd.read_parquet(self.local_path)
 
+
 # pylint: disable=unsubscriptable-object
 # pylint: disable=unsupported-membership-test
 class SchemaApplier:
@@ -173,7 +174,9 @@ class SchemaApplier:
     def apply_order(self) -> pd.DataFrame:
         if "order" in self.schema:
             new_columns = [
-                column for column in self.schema["order"] if column in self.table.columns
+                column
+                for column in self.schema["order"]
+                if column in self.table.columns
             ]
             self.table = self.table[new_columns]
         return self.table
@@ -202,10 +205,14 @@ class TableLoader:
 
     def load(self) -> pd.DataFrame:
         table_list = []
-        table_years = utils.construct_table_year_pairs(self.original_table_names, self.years)
+        table_years = utils.construct_table_year_pairs(
+            self.original_table_names, self.years
+        )
         for table_name, year in table_years:
             table_list.append(self._load_original_table(table_name, year))
-        table_years = utils.construct_table_year_pairs(self.schema_based_table_names, self.years)
+        table_years = utils.construct_table_year_pairs(
+            self.schema_based_table_names, self.years
+        )
         for table_name, year in table_years:
             table_list.append(self._construct_schema_based_table(table_name, year))
         table = pd.concat(table_list, ignore_index=True)
@@ -246,7 +253,9 @@ class TableLoader:
         table = self._apply_schema(table)
         return table
 
-    def _collect_schema_tables(self, table_names: list[str], year: int) -> list[pd.DataFrame]:
+    def _collect_schema_tables(
+        self, table_names: list[str], year: int
+    ) -> list[pd.DataFrame]:
         original_table_names = [
             name for name in table_names if (name in get_args(_OriginalTable))
         ]
@@ -259,6 +268,37 @@ class TableLoader:
         for name in schema_based_table_names:
             table_list.append(self._construct_schema_based_table(name, year))
         return table_list
+
+
+class Classification:
+    def __init__(self, name: str, year: int | None = None):
+        self.name = name
+        self.year = year
+        versioned_info = metadatas.commodities[name]
+        category_resolver = utils.MetadataCategoryResolver(versioned_info, year)
+        self.classification_info = category_resolver.categorize_metadata()
+
+    @property
+    def classification_table(self) -> pd.DataFrame:
+        table = pd.DataFrame(self.classification_info["items"])
+        table["code_range"] = table["code"].apply(utils.Argham)  # type: ignore
+        table = table.drop(columns=["code"])
+        return table
+
+    def construct_transformation_table(self, table: pd.DataFrame):
+        def in_range(value, _range):
+            return value in _range
+        classification_codes = table["Code"].drop_duplicates()
+        tables = []
+        for _, row in self.classification_table.iterrows():
+            filt = classification_codes.apply(in_range, _range=row["code_range"])
+            available_codes = classification_codes.loc[filt]
+            code_table = pd.DataFrame(index=available_codes, columns=row.index).reset_index()
+            # pylint: disable=unsupported-assignment-operation
+            code_table[row.index] = row
+            tables.append(code_table)
+        transformation_table = pd.concat(tables, ignore_index=True)
+        return transformation_table
 
 
 def load_table(
