@@ -8,59 +8,59 @@
 tables:
   food:
     code_range: {start: 10_000, end: 20_000}
-    default_duration: 30
+    default_duration_value: 30
 
   tobacco:
     code_range: {start: 20_000, end: 30_000}
-    default_duration: 30
+    default_duration_value: 30
 
   cloth:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   home:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   furniture:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   medical:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   transportation:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   communication:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   entertainment:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   education:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   hotel:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   other:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   durable:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 360
+    default_duration_value: 360
 
   investment:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 360
+    default_duration_value: 360
 
 
 
