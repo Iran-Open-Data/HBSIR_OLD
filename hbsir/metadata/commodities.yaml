@@ -248,7 +248,7 @@ ORIGINAL1383:
     meat:
       level: 2
       farsi_name: "گوشت"
-      code: {start: 11_200, end: 11_400}
+      code: {start: 11_200, end: 11_300}
 
     #                              ## LEVEL 3 ##                              #
     red_meat:
@@ -727,8 +727,8 @@ ORIGINAL1383:
 
 
     #                              ## LEVEL 3 ##                              #
-    _accommodation_services:
-      level: 2
+    __accommodation_services:
+      level: 3
       farsi_name: ""
       code: {start: 112_010, end: 112_020}    # Yes! it is true!
 
@@ -788,7 +788,7 @@ original:
 
 Food-NonFood:
   default_levels: [1]
-  default_names: ["Food-NonFood"]
+  default_column_names: ["Food-NonFood"]
 
   items:
     1383:
@@ -807,7 +807,7 @@ Food-NonFood:
 
 Imputed_Rent:
   default_levels: [1]
-  default_names: ["Imputed_Rent"]
+  default_column_names: ["Imputed_Rent"]
 
   items:
     Imputed_Rent:
@@ -820,7 +820,7 @@ Imputed_Rent:
 
 Insurance_Benefits:
   default_levels: [1]
-  default_names: ["Insurance_Benefits"]
+  default_column_names: ["Insurance_Benefits"]
 
   items:
     Insurance_Benefits:
