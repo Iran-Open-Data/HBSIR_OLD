@@ -436,6 +436,9 @@ class Classification:
         levels = self.settings.levels
         levels = levels if len(levels) > 0 else list(mapping_table["level"].unique())
         column_names = list(itertools.product(self.settings.labels, levels))
+        for column_name in column_names:
+            if column_name not in mapping_table.columns:
+                mapping_table[column_name] = None
         mapping_table = mapping_table.loc[:, column_names]
         if len(column_names) == len(self.settings.column_names):
             mapping_table.columns = self.settings.column_names
