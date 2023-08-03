@@ -478,13 +478,18 @@ class Classification:
 
 class Attribute:
     def __init__(
-        self, year: int, attribute: _Attribute, translations: str | Iterable[str] = "names"
+        self,
+        year: int,
+        attribute: _Attribute,
+        translations: str | Iterable[str] = "names",
     ) -> None:
         self.household_metadata = utils.MetadataVersionResolver(
             metadatas.household, year
         ).get_version()
         self.attribute = attribute
-        self.translations = [translations] if isinstance(translations, str) else translations
+        self.translations = (
+            [translations] if isinstance(translations, str) else translations
+        )
 
     def construct_mapping_table(self, table: pd.DataFrame):
         household_ids = table["ID"].drop_duplicates().copy()
@@ -529,6 +534,55 @@ class Attribute:
         mapping_table = self.construct_mapping_table(table)
         table = table.merge(
             mapping_table, left_on="ID", right_index=True, how="left", validate="m:1"
+        )
+        return table
+
+
+class Weight:
+    def __init__(
+        self,
+        year: int,
+        method: Literal["default", "external", "household_info"] = "default",
+    ) -> None:
+        self.year = year
+        if method == "default":
+            if year <= 1395:
+                self.method = "external"
+            else:
+                self.method = "household_info"
+        elif method in ["external", "household_info"]:
+            self.method = method
+        else:
+            raise ValueError("Method is not valid")
+
+    def load_weights(self) -> pd.Series:
+        if self.method == "external":
+            weights = self._load_from_external_data()
+        else:
+            weights = self._load_from_household_info()
+        return weights
+
+    def _load_from_household_info(self) -> pd.Series:
+        hh_info = TableLoader("household_information", self.year).load()
+        weights = hh_info.set_index("ID")["Weight"]
+        return weights
+
+    def _load_from_external_data(self) -> pd.Series:
+        weights_path = defaults.external_data.joinpath("weights.parquet")
+        if not weights_path.exists():
+            defaults.external_data.mkdir(parents=True, exist_ok=True)
+            utils.download(
+                f"{defaults.online_dir}/external_data/weights.parquet", weights_path
+            )
+        weights = pd.read_parquet(weights_path)
+        weights = weights.loc[(self.year), "Weight"]
+        assert isinstance(weights, pd.Series)
+        return weights
+
+    def add_weights(self, table: pd.DataFrame) -> pd.DataFrame:
+        weights = self.load_weights()
+        table = table.merge(
+            weights, left_on="ID", right_index=True, how="left", validate="m:1"
         )
         return table
 
@@ -580,6 +634,20 @@ def add_attribute(
         subtable = attribute_reader.add_attribute(subtable)
         subtables.append(subtable)
     return pd.concat(subtables, ignore_index=True)
+
+
+def add_weights(table: pd.DataFrame) -> pd.DataFrame:
+    table_years = (
+        table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
+    )
+    subtables = []
+    for table_name, year in table_years:
+        filt = (table["Year"] == year) & (table["Table_Name"] == table_name)
+        subtable = table.loc[filt].copy()
+        subtable = Weight(year).add_weights(subtable)
+        subtables.append(subtable)
+    return pd.concat(subtables, ignore_index=True)
+
 
 # def load_table(
 #     table_name: _Table,
@@ -1124,72 +1192,72 @@ def add_attribute(
 #     return code_range
 
 
-def add_weights(table: pd.DataFrame, year: int | None = None, **kwargs) -> pd.DataFrame:
-    """Add weight column to dataframe"""
-    _input = table if year is None else year
-    weights = get_weights(_input, **kwargs)
-    table["Weights"] = weights
-    return table
+# def add_weights(table: pd.DataFrame, year: int | None = None, **kwargs) -> pd.DataFrame:
+#     """Add weight column to dataframe"""
+#     _input = table if year is None else year
+#     weights = get_weights(_input, **kwargs)
+#     table["Weights"] = weights
+#     return table
 
 
-def get_weights(
-    _input: int | list[int] | pd.DataFrame,
-    method: Literal["default", "external", "household_info"] = "default",
-) -> pd.Series:
-    """Return wight column for specified year(s) or dataframe"""
-    years: list[int]
-    if isinstance(_input, int):
-        years = [_input]
-    elif isinstance(_input, pd.DataFrame):
-        years = list(_input["Year"].unique())
-    elif isinstance(_input, list):
-        years = _input
+# def get_weights(
+#     _input: int | list[int] | pd.DataFrame,
+#     method: Literal["default", "external", "household_info"] = "default",
+# ) -> pd.Series:
+#     """Return wight column for specified year(s) or dataframe"""
+#     years: list[int]
+#     if isinstance(_input, int):
+#         years = [_input]
+#     elif isinstance(_input, pd.DataFrame):
+#         years = list(_input["Year"].unique())
+#     elif isinstance(_input, list):
+#         years = _input
 
-    if method == "external":
-        weights = _get_weights_from_external_data(years)
-    elif method == "household_info":
-        weights = _get_weights_from_household_info(years)
-    elif method == "default":
-        before1395 = [year for year in years if year <= 1395]
-        after1395 = [year for year in years if year > 1395]
+#     if method == "external":
+#         weights = _get_weights_from_external_data(years)
+#     elif method == "household_info":
+#         weights = _get_weights_from_household_info(years)
+#     elif method == "default":
+#         before1395 = [year for year in years if year <= 1395]
+#         after1395 = [year for year in years if year > 1395]
 
-        weight_list = []
-        if len(before1395) > 0:
-            weight_list.append(_get_weights_from_external_data(before1395))
-        if len(after1395) > 0:
-            weight_list.append(_get_weights_from_household_info(after1395))
-        weights = pd.concat(weight_list, axis="index")
-        assert isinstance(weights, pd.Series)
-    else:
-        raise KeyError
-    weights.index = weights.index.set_levels(  # type: ignore
-        [weights.index.levels[0].astype(int), weights.index.levels[1]]  # type: ignore
-    )
-    return weights
-
-
-def _get_weights_from_household_info(years: int | list[int]) -> pd.Series:
-    if isinstance(years, int):
-        years = [years]
-    weight_list = []
-    for year in years:
-        hh_info = TableLoader("household_information", year).load()
-        hh_info = hh_info.set_index("ID")
-        weight_list.append(hh_info["Weight"])
-    weights = pd.concat(weight_list, axis="index", keys=years, names=["Year", "ID"])
-    assert isinstance(weights, pd.Series)
-    return weights
+#         weight_list = []
+#         if len(before1395) > 0:
+#             weight_list.append(_get_weights_from_external_data(before1395))
+#         if len(after1395) > 0:
+#             weight_list.append(_get_weights_from_household_info(after1395))
+#         weights = pd.concat(weight_list, axis="index")
+#         assert isinstance(weights, pd.Series)
+#     else:
+#         raise KeyError
+#     weights.index = weights.index.set_levels(  # type: ignore
+#         [weights.index.levels[0].astype(int), weights.index.levels[1]]  # type: ignore
+#     )
+#     return weights
 
 
-def _get_weights_from_external_data(years: int | list[int]) -> pd.Series:
-    if isinstance(years, int):
-        years = [years]
-    weights_path = defaults.external_data.joinpath("weights.parquet")
-    if not weights_path.exists():
-        defaults.external_data.mkdir(parents=True, exist_ok=True)
-        utils.download(
-            f"{defaults.online_dir}/external_data/weights.parquet", weights_path
-        )
-    weights = pd.read_parquet(weights_path)
-    weights = weights.loc[(years), "Weight"]
-    return weights
+# def _get_weights_from_household_info(years: int | list[int]) -> pd.Series:
+#     if isinstance(years, int):
+#         years = [years]
+#     weight_list = []
+#     for year in years:
+#         hh_info = TableLoader("household_information", year).load()
+#         hh_info = hh_info.set_index("ID")
+#         weight_list.append(hh_info["Weight"])
+#     weights = pd.concat(weight_list, axis="index", keys=years, names=["Year", "ID"])
+#     assert isinstance(weights, pd.Series)
+#     return weights
+
+
+# def _get_weights_from_external_data(years: int | list[int]) -> pd.Series:
+#     if isinstance(years, int):
+#         years = [years]
+#     weights_path = defaults.external_data.joinpath("weights.parquet")
+#     if not weights_path.exists():
+#         defaults.external_data.mkdir(parents=True, exist_ok=True)
+#         utils.download(
+#             f"{defaults.online_dir}/external_data/weights.parquet", weights_path
+#         )
+#     weights = pd.read_parquet(weights_path)
+#     weights = weights.loc[(years), "Weight"]
+#     return weights

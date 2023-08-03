@@ -3,7 +3,7 @@
 default_settings:
   add_table_names: true
   add_year: true
-  add_duration: true
+  add_duration: false
 
 
 household_information:
