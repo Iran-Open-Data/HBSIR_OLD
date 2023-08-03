@@ -580,7 +580,9 @@ class Weight:
         return weights
 
     def _load_from_household_info(self) -> pd.Series:
-        hh_info = TableLoader(table_names="household_information", years=self.year).load()
+        hh_info = TableLoader(
+            table_names="household_information", years=self.year
+        ).load()
         weights = hh_info.set_index("ID")["Weight"]
         return weights
 
@@ -609,7 +611,10 @@ def add_classification(
 ):
     if "Table_Name" in table.columns:
         table_years = (
-            table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
+            table[["Table_Name", "Year"]]
+            .drop_duplicates()
+            .to_records(index=False)
+            .tolist()
         )
     else:
         table_years = [("Unknown", year) for year in table["Year"].drop_duplicates()]
