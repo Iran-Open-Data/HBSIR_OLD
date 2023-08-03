@@ -140,6 +140,7 @@ class Argham:
             for word in self.keywords:
                 if word in dictionary:
                     self._parse_argham(dictionary[word])
+                    return
         if ("start" in dictionary) or ("end" in dictionary):
             selected_range = self._parse_start_end_dict(dictionary)
             self.range_list.append(selected_range)
