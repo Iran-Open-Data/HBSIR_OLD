@@ -590,7 +590,7 @@ ORIGINAL1383:
 
     #                            #### LEVEL 2 ####                            #
     cleaning_repair_and_hire_of_footwear:
-      level: 2
+      level: 3
       farsi_name: "تعمیر و ملزومات کفش"
       code: {start: 32_100, end: 32_200}
 
@@ -708,7 +708,7 @@ ORIGINAL1383:
     _canteens_cafeterias_and_refectories:
       level: 3
       farsi_name: ""
-      code: {start: 111_110, end: 111_120}
+      code: {start: 111_210, end: 111_220}
 
 
     #                        ######## LEVEL 1 ########                        #

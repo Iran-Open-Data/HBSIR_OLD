@@ -20,6 +20,10 @@ def load_table(
     return loader.load()
 
 
+def create_table_with_schema(schema) -> pd.DataFrame:
+    return data_engine.TableLoader(schema=schema).load()
+
+
 def add_classification(
     table: pd.DataFrame, classification_name: str, **kwargs
 ) -> pd.DataFrame:

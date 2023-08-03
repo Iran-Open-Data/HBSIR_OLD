@@ -1,7 +1,7 @@
 
 
 default_settings:
-  add_table_names: true
+  add_table_names: false
   add_year: true
   add_duration: false
 
@@ -161,6 +161,8 @@ Original_Expenditures:
 
 
 Expenditures:
+  settings:
+    add_duration: true
 
   table_list:
     - Original_Expenditures

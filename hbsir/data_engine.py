@@ -80,6 +80,8 @@ class SchemaApplier:
         self._apply_settings()
         if "preprocess" in self.schema:
             self._apply_instructions(self.schema["preprocess"])
+        if "classifications" in self.schema:
+            pass
         if "columns" in self.schema:
             instructions: dict = self.schema["columns"]
             for name, instruction in instructions.items():
@@ -89,7 +91,7 @@ class SchemaApplier:
         return self.table
 
     def _apply_settings(self) -> None:
-        settings: dict = metadatas.schema["default_settings"]
+        settings: dict = metadatas.schema["default_settings"].copy()
         if "settings" in self.schema:
             settings.update(self.schema["settings"])
         if settings["add_table_names"]:
@@ -191,11 +193,19 @@ class SchemaApplier:
 class TableLoader:
     def __init__(
         self,
-        table_names: str | list[str],
-        years: int | Iterable[int] | str | None,
+        schema: dict | None = None,
+        table_names: str | list[str] | None = None,
+        years: int | Iterable[int] | str | None = None,
         apply_schema: bool = True,
     ):
+        if (schema is not None) and ("table_list" in schema):
+            table_names = schema["table_list"]
+        elif (table_names is None) and (schema is None):
+            raise NameError
         table_names = [table_names] if isinstance(table_names, str) else table_names
+        assert isinstance(table_names, list)
+        for element in table_names:
+            assert isinstance(element, str)
         self.table_names = table_names
         self.original_table_names = [
             name for name in table_names if name in get_args(_OriginalTable)
@@ -203,9 +213,13 @@ class TableLoader:
         self.schema_based_table_names = [
             name for name in table_names if name not in self.original_table_names
         ]
-
+        if (schema is not None) and ("years" in schema):
+            years = schema["years"]
+        elif years is None:
+            raise NameError
         self.years = utils.parse_years(years)
         self.apply_schema = apply_schema
+        self.schema = schema
 
         self.original_tables: dict[str, pd.DataFrame] = {}
 
@@ -216,7 +230,7 @@ class TableLoader:
             self._load_table(table_name, year) for table_name, year in table_years
         ]
         table = pd.concat(table_list, ignore_index=True)
-        if len(self.table_names) == 1:
+        if (len(self.table_names) == 1) and self.apply_schema:
             schema = self._get_schema(self.table_names[0], self.years[-1])
             table = SchemaApplier(table, schema).apply_order()
         return table
@@ -229,7 +243,7 @@ class TableLoader:
         return table
 
     def _get_schema(self, table_name: str, year: int) -> dict:
-        schema: dict = metadatas.schema[table_name]
+        schema: dict = metadatas.schema[table_name].copy()
         schema.update({"table_name": table_name, "year": year})
         return schema
 
@@ -374,7 +388,10 @@ class Classification:
         # Validate
         filt = mapping_table.duplicated(["Code", "level"], keep=False)
         if filt.sum():
-            raise ValueError("Classification is not valid")
+            invalid_case_sample = (
+                mapping_table.loc[filt].sort_values(["Code", "level"]).head(10)
+            )
+            raise ValueError(f"Classification is not valid \n{invalid_case_sample}")
         mapping_table = (
             mapping_table.drop(columns=["code_range"])
             .set_index(["Code", "level"])
@@ -405,7 +422,7 @@ class Classification:
             duration = None
         mapping_table = self._rename_columns(mapping_table)
         if duration is not None:
-            mapping_table["duration"] = duration
+            mapping_table["Duration"] = duration
         return mapping_table
 
     def _apply_drop(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
@@ -417,12 +434,12 @@ class Classification:
         return mapping_table
 
     def _create_duration(self, mapping_table: pd.DataFrame) -> pd.Series:
-        if not "duration" in mapping_table.columns:
+        if not "Duration" in mapping_table.columns:
             duration = pd.Series(
                 self.settings.duration_value, index=mapping_table.index
             )
         else:
-            duratuin_columns = mapping_table.loc[:, ("duration", slice(None))]  # type: ignore
+            duratuin_columns = mapping_table.loc[:, ("Duration", slice(None))]  # type: ignore
             duration_min = duratuin_columns.min(axis="columns")
             duration_max = duratuin_columns.max(axis="columns")
             if (duration_min != duration_max).sum() > 0:
@@ -563,7 +580,7 @@ class Weight:
         return weights
 
     def _load_from_household_info(self) -> pd.Series:
-        hh_info = TableLoader("household_information", self.year).load()
+        hh_info = TableLoader(table_names="household_information", years=self.year).load()
         weights = hh_info.set_index("ID")["Weight"]
         return weights
 
@@ -590,9 +607,12 @@ class Weight:
 def add_classification(
     table: pd.DataFrame, classification_name: str = "original", **kwargs
 ):
-    table_years = (
-        table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
-    )
+    if "Table_Name" in table.columns:
+        table_years = (
+            table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
+        )
+    else:
+        table_years = [("Unknown", year) for year in table["Year"].drop_duplicates()]
     tables_defaults = metadatas.commodities["tables"]
     subtables = []
     for table_name, year in table_years:
@@ -601,7 +621,7 @@ def add_classification(
         classificationer = Classification(
             classification_name=classification_name, year=year, **settings
         )
-        filt = (table["Year"] == year) & (table["Table_Name"] == table_name)
+        filt = table["Year"] == year
         subtable = table.loc[filt].copy()
         subtable = classificationer.add_classification(subtable)
         subtables.append(subtable)
@@ -623,13 +643,11 @@ def _extract_default_values(table_name, tables_defaults) -> dict:
 def add_attribute(
     table: pd.DataFrame, attribute_name: _Attribute, **kwargs
 ) -> pd.DataFrame:
-    table_years = (
-        table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
-    )
+    years = list(table["Year"].drop_duplicates())
     subtables = []
-    for table_name, year in table_years:
+    for year in years:
         attribute_reader = Attribute(year=year, attribute=attribute_name, **kwargs)
-        filt = (table["Year"] == year) & (table["Table_Name"] == table_name)
+        filt = table["Year"] == year
         subtable = table.loc[filt].copy()
         subtable = attribute_reader.add_attribute(subtable)
         subtables.append(subtable)
