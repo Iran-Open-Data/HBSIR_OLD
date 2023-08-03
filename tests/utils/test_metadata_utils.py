@@ -52,7 +52,10 @@ class TestLocalCases:
     def test_not_versioned(self):
         assert simple_metadata == MetadataVersionResolver(simple_metadata).get_version()
         for year in range(1360, 1380):
-            assert simple_metadata == MetadataVersionResolver(simple_metadata, year).get_version()
+            assert (
+                simple_metadata
+                == MetadataVersionResolver(simple_metadata, year).get_version()
+            )
 
     def test_simple_versioned(self):
         with pytest.raises(NameError):
@@ -61,10 +64,14 @@ class TestLocalCases:
             assert MetadataVersionResolver(simple_versioned, year).get_version() is None
         for year in range(1363, 1383):
             assert (
-                MetadataVersionResolver(simple_versioned, year).get_version() == simple_versioned_63_82
+                MetadataVersionResolver(simple_versioned, year).get_version()
+                == simple_versioned_63_82
             )
         for year in range(1383, 1395):
-            assert MetadataVersionResolver(simple_versioned, year).get_version() == simple_versioned_83
+            assert (
+                MetadataVersionResolver(simple_versioned, year).get_version()
+                == simple_versioned_83
+            )
 
     def test_keyword_versioned(self):
         with pytest.raises(NameError):
@@ -81,7 +88,8 @@ class TestLocalCases:
             )
         for year in range(1383, 1395):
             assert (
-                MetadataVersionResolver(keyword_versioned, year).get_version() == keyword_versioned_83
+                MetadataVersionResolver(keyword_versioned, year).get_version()
+                == keyword_versioned_83
             )
 
 
