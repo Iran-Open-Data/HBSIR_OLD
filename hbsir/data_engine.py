@@ -15,7 +15,7 @@ from . import metadata, utils
 
 defaults = metadata.defaults
 metadatas = metadata.metadatas
-_Attributes = metadata.Attributes
+_Attribute = metadata.Attribute
 _OriginalTable = metadata.OriginalTable
 _StandardTables = metadata.StandardTable
 _Table = metadata.Table
@@ -348,7 +348,7 @@ class Classification:
         table["code_range"] = table["code"].apply(
             utils.Argham,  # type: ignore
             default_start=defaults.first_year,
-            default_end=defaults.last_year+1,
+            default_end=defaults.last_year + 1,
             keywords=["code"],
         )
         table = table.drop(columns=["code"])
@@ -473,10 +473,66 @@ class Classification:
         return table
 
 
+class Attribute:
+    def __init__(
+        self, year: int, attribute: _Attribute, translations: str | Iterable[str] = "names"
+    ) -> None:
+        self.household_metadata = utils.MetadataVersionResolver(
+            metadatas.household, year
+        ).get_version()
+        self.attribute = attribute
+        self.translations = [translations] if isinstance(translations, str) else translations
+
+    def construct_mapping_table(self, table: pd.DataFrame):
+        household_ids = table["ID"].drop_duplicates().copy()
+        household_ids = household_ids.set_axis(household_ids)
+        mappings = []
+        for translation in self.translations:
+            translator = self._create_code_translator(translation)
+            mappings.append(translator(household_ids))
+        mapping_table = pd.concat(mappings, axis="columns")
+        return mapping_table
+
+    def _create_code_translator(self, translation):
+        assert isinstance(self.household_metadata, dict)
+        mapping = self.household_metadata[self.attribute][translation]
+        code_builder = self._create_code_builder()
+
+        def translator(household_id_column: pd.Series) -> pd.Series:
+            mapped = code_builder(household_id_column).map(mapping).astype("category")
+            mapped.name = translation
+            return mapped
+
+        return translator
+
+    def _create_code_builder(self):
+        assert isinstance(self.household_metadata, dict)
+        ld_len = self.household_metadata["ID_Length"]
+        attr_dict = self.household_metadata[self.attribute]
+        if ("position" not in attr_dict) or attr_dict["position"] is None:
+            raise ValueError("Code position is not available")
+        start, end = attr_dict["position"]["start"], attr_dict["position"]["end"]
+
+        def builder(household_id_column: pd.Series) -> pd.Series:
+            return (
+                household_id_column
+                % pow(10, (ld_len - start))
+                // pow(10, (ld_len - end))
+            )
+
+        return builder
+
+    def add_attribute(self, table: pd.DataFrame):
+        mapping_table = self.construct_mapping_table(table)
+        table = table.merge(
+            mapping_table, left_on="ID", right_index=True, how="left", validate="m:1"
+        )
+        return table
+
+
 def add_classification(
     table: pd.DataFrame, classification_name: str = "original", **kwargs
 ):
-    table = table.copy()
     table_years = (
         table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
     )
@@ -506,6 +562,21 @@ def _extract_default_values(table_name, tables_defaults) -> dict:
         default_values = {}
     return default_values
 
+
+def add_attribute(
+    table: pd.DataFrame, attribute_name: _Attribute, **kwargs
+) -> pd.DataFrame:
+    table_years = (
+        table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
+    )
+    subtables = []
+    for table_name, year in table_years:
+        attribute_reader = Attribute(year=year, attribute=attribute_name, **kwargs)
+        filt = (table["Year"] == year) & (table["Table_Name"] == table_name)
+        subtable = table.loc[filt].copy()
+        subtable = attribute_reader.add_attribute(subtable)
+        subtables.append(subtable)
+    return pd.concat(subtables, ignore_index=True)
 
 # def load_table(
 #     table_name: _Table,
@@ -737,117 +808,117 @@ def _extract_default_values(table_name, tables_defaults) -> dict:
 #     return table
 
 
-def add_attribute(
-    table: pd.DataFrame,
-    attribute: _Attributes | list[_Attributes] | tuple[_Attributes] | None,
-    **kwargs,
-) -> pd.DataFrame:
-    """docs"""
-    if attribute is None:
-        attribute_list = [attr for attr in get_args(_Attributes)]
-    elif isinstance(attribute, (list, tuple)):
-        attribute_list = [attr for attr in attribute]
-    else:
-        attribute_list: list[_Attributes] = [attribute]
+# def add_attribute(
+#     table: pd.DataFrame,
+#     attribute: _Attribute | list[_Attribute] | tuple[_Attribute] | None,
+#     **kwargs,
+# ) -> pd.DataFrame:
+#     """docs"""
+#     if attribute is None:
+#         attribute_list = [attr for attr in get_args(_Attribute)]
+#     elif isinstance(attribute, (list, tuple)):
+#         attribute_list = [attr for attr in attribute]
+#     else:
+#         attribute_list: list[_Attribute] = [attribute]
 
-    table = table.copy()
+#     table = table.copy()
 
-    for _attribute in attribute_list:
-        attribute_column = get_attribute(_input=table, attribute=_attribute, **kwargs)
-        table[_attribute] = attribute_column
-    return table
-
-
-def get_attribute(
-    _input: pd.DataFrame | pd.Series | pd.Index,
-    attribute: _Attributes,
-    year: int | None = None,
-    index_id: bool = False,
-    id_column_name: str = "ID",
-    year_column_name: str = "Year",
-    attribute_text="names",
-) -> pd.Series:
-    """docs"""
-    if isinstance(_input, (pd.Series, pd.Index)):
-        if year is not None:
-            return _get_attribute_by_id(_input, year, attribute, attribute_text)
-        if (isinstance(_input, pd.Series)) and ("year" in _input.attrs):
-            assert isinstance(_input.attrs["year"], int)
-            return _get_attribute_by_id(
-                _input, _input.attrs["year"], attribute, attribute_text
-            )
-        raise TypeError(
-            "Since the input is a Pandas series, the 'year' variable must "
-            "be specified. Please provide a year value in the format YYYY."
-        )
-
-    if not isinstance(_input, pd.DataFrame):
-        raise ValueError
-
-    _input = _input.copy()
-    years: list[int] = []
-    if year is not None:
-        years = [year]
-        _input["__Year__"] = year
-    elif year_column_name in _input.columns:
-        years = [int(_year) for _year in _input[year_column_name].unique()]
-        _input["__Year__"] = _input[year_column_name]
-    elif "year" in _input.attrs:
-        year = _input.attrs["year"]
-        assert isinstance(year, int)
-        years = [year]
-        _input["__Year__"] = year
-    else:
-        raise TypeError(
-            "DataFrame does not have a 'year' column. Please provide the "
-            "'year' column or specify a value for the 'year' variable."
-        )
-
-    attribute_column = pd.Series(None, dtype="object", index=_input.index)
-    for _year in years:
-        filt = _input["__Year__"] == _year
-        if index_id:
-            id_series = _input.loc[filt].index
-        else:
-            id_series = _input.loc[filt, id_column_name]
-        attribute_series = _get_attribute_by_id(
-            household_id_column=id_series,
-            attribute=attribute,
-            attribute_text=attribute_text,
-            year=_year,
-        )
-        attribute_column.loc[filt] = attribute_series
-
-    attribute_column = attribute_column.astype("category")
-    return attribute_column
+#     for _attribute in attribute_list:
+#         attribute_column = get_attribute(_input=table, attribute=_attribute, **kwargs)
+#         table[_attribute] = attribute_column
+#     return table
 
 
-def _get_attribute_by_id(
-    household_id_column: pd.Series | pd.Index,
-    year: int,
-    attribute: _Attributes,
-    attribute_text="names",
-) -> pd.Series:
-    attr_dict = metadatas.household[attribute]
-    text = metadata.get_metadata_version(attr_dict[attribute_text], year)
-    attr_codes = _get_attribute_code(household_id_column, year, attribute)
-    attr_codes = attr_codes.map(text)
-    attr_codes = attr_codes.astype("category")
-    return attr_codes
+# def get_attribute(
+#     _input: pd.DataFrame | pd.Series | pd.Index,
+#     attribute: _Attribute,
+#     year: int | None = None,
+#     index_id: bool = False,
+#     id_column_name: str = "ID",
+#     year_column_name: str = "Year",
+#     attribute_text="names",
+# ) -> pd.Series:
+#     """docs"""
+#     if isinstance(_input, (pd.Series, pd.Index)):
+#         if year is not None:
+#             return _get_attribute_by_id(_input, year, attribute, attribute_text)
+#         if (isinstance(_input, pd.Series)) and ("year" in _input.attrs):
+#             assert isinstance(_input.attrs["year"], int)
+#             return _get_attribute_by_id(
+#                 _input, _input.attrs["year"], attribute, attribute_text
+#             )
+#         raise TypeError(
+#             "Since the input is a Pandas series, the 'year' variable must "
+#             "be specified. Please provide a year value in the format YYYY."
+#         )
+
+#     if not isinstance(_input, pd.DataFrame):
+#         raise ValueError
+
+#     _input = _input.copy()
+#     years: list[int] = []
+#     if year is not None:
+#         years = [year]
+#         _input["__Year__"] = year
+#     elif year_column_name in _input.columns:
+#         years = [int(_year) for _year in _input[year_column_name].unique()]
+#         _input["__Year__"] = _input[year_column_name]
+#     elif "year" in _input.attrs:
+#         year = _input.attrs["year"]
+#         assert isinstance(year, int)
+#         years = [year]
+#         _input["__Year__"] = year
+#     else:
+#         raise TypeError(
+#             "DataFrame does not have a 'year' column. Please provide the "
+#             "'year' column or specify a value for the 'year' variable."
+#         )
+
+#     attribute_column = pd.Series(None, dtype="object", index=_input.index)
+#     for _year in years:
+#         filt = _input["__Year__"] == _year
+#         if index_id:
+#             id_series = _input.loc[filt].index
+#         else:
+#             id_series = _input.loc[filt, id_column_name]
+#         attribute_series = _get_attribute_by_id(
+#             household_id_column=id_series,
+#             attribute=attribute,
+#             attribute_text=attribute_text,
+#             year=_year,
+#         )
+#         attribute_column.loc[filt] = attribute_series
+
+#     attribute_column = attribute_column.astype("category")
+#     return attribute_column
 
 
-def _get_attribute_code(
-    household_id_column: pd.Series | pd.Index,
-    year: int,
-    attribute: _Attributes,
-) -> pd.Series:
-    id_length = metadata.get_metadata_version(metadatas.household["ID_Length"], year)
-    attr_dict = metadatas.household[attribute]
-    position = metadata.get_metadata_version(attr_dict["position"], year)
-    start, end = position["start"], position["end"]
-    attr_codes = household_id_column % pow(10, (id_length - start))
-    attr_codes = attr_codes // pow(10, (id_length - end))
-    return attr_codes
+# def _get_attribute_by_id(
+#     household_id_column: pd.Series | pd.Index,
+#     year: int,
+#     attribute: _Attribute,
+#     attribute_text="names",
+# ) -> pd.Series:
+#     attr_dict = metadatas.household[attribute]
+#     text = metadata.get_metadata_version(attr_dict[attribute_text], year)
+#     attr_codes = _get_attribute_code(household_id_column, year, attribute)
+#     attr_codes = attr_codes.map(text)
+#     attr_codes = attr_codes.astype("category")
+#     return attr_codes
+
+
+# def _get_attribute_code(
+#     household_id_column: pd.Series | pd.Index,
+#     year: int,
+#     attribute: _Attribute,
+# ) -> pd.Series:
+#     id_length = metadata.get_metadata_version(metadatas.household["ID_Length"], year)
+#     attr_dict = metadatas.household[attribute]
+#     position = metadata.get_metadata_version(attr_dict["position"], year)
+#     start, end = position["start"], position["end"]
+#     attr_codes = household_id_column % pow(10, (id_length - start))
+#     attr_codes = attr_codes // pow(10, (id_length - end))
+#     return attr_codes
 
 
 # def add_classification(
@@ -1030,24 +1101,24 @@ def _get_attribute_code(
 #     return translator
 
 
-def _get_code_range(code_range_info: int | dict | list) -> list[int]:
-    if isinstance(code_range_info, int):
-        code_range = [code_range_info]
-    elif isinstance(code_range_info, dict):
-        if ("start" in code_range_info) and ("end" in code_range_info):
-            code_range = list(range(code_range_info["start"], code_range_info["end"]))
-        elif "code" in code_range_info:
-            code_range = _get_code_range(code_range_info["code"])
-        else:
-            raise KeyError
-    elif isinstance(code_range_info, list):
-        code_range = []
-        for element in code_range_info:
-            code_range.extend(_get_code_range(element))
-    else:
-        raise KeyError
+# def _get_code_range(code_range_info: int | dict | list) -> list[int]:
+#     if isinstance(code_range_info, int):
+#         code_range = [code_range_info]
+#     elif isinstance(code_range_info, dict):
+#         if ("start" in code_range_info) and ("end" in code_range_info):
+#             code_range = list(range(code_range_info["start"], code_range_info["end"]))
+#         elif "code" in code_range_info:
+#             code_range = _get_code_range(code_range_info["code"])
+#         else:
+#             raise KeyError
+#     elif isinstance(code_range_info, list):
+#         code_range = []
+#         for element in code_range_info:
+#             code_range.extend(_get_code_range(element))
+#     else:
+#         raise KeyError
 
-    return code_range
+#     return code_range
 
 
 def add_weights(table: pd.DataFrame, year: int | None = None, **kwargs) -> pd.DataFrame:

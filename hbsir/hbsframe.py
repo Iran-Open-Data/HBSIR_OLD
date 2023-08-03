@@ -5,7 +5,7 @@ import pandas as pd
 
 from .data_engine import add_attribute, add_classification
 from .metadata import (
-    Attributes as _Attributes,
+    Attribute as _Attributes,
 )
 
 

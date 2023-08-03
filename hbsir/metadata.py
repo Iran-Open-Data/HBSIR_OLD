@@ -13,7 +13,7 @@ PACKAGE_DIRECTORY = Path(__file__).parent
 ROOT_DIRECTORT = Path().absolute()
 
 
-Attributes = Literal["Urban-Rural", "Province", "Region"]
+Attribute = Literal["Urban-Rural", "Province", "Region"]
 
 GeneralTable = Literal[
     "household_information",
