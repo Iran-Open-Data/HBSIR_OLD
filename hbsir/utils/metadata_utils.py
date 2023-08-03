@@ -53,6 +53,7 @@ class MetadataVersionSettings:
     category_keyword: str = "categories"
     item_key_name: str = "item_key"
 
+
 default_settings = MetadataVersionSettings()
 
 
@@ -117,8 +118,8 @@ class MetadataVersionResolver:
     def get_version(self) -> dict | list | str | int | None:
         """
         Retrieves metadata version for given year.
-        
-        Recursively traverses metadata and returns appropriate 
+
+        Recursively traverses metadata and returns appropriate
         version based on configured versioning settings and provided year.
 
         Returns
@@ -228,14 +229,14 @@ class MetadataVersionResolver:
                 selected_version = max(selected_version, version)
         return selected_version
 
-class MetadataCategoryResolver(MetadataVersionResolver):
 
+class MetadataCategoryResolver(MetadataVersionResolver):
     # pylint: disable=unsubscriptable-object
     # pylint: disable=unsupported-assignment-operation
     def categorize_metadata(self) -> dict:
         """Categorize metadata dictionary into items list.
 
-        Parses the input metadata to build a categorized list 
+        Parses the input metadata to build a categorized list
         of items under the 'items' key.
 
         Example:
@@ -244,14 +245,14 @@ class MetadataCategoryResolver(MetadataVersionResolver):
 
         metadata:
           key1: val1
-          key2: val2  
+          key2: val2
 
           items:
             item1:
               shared1: foo
               shared2: bar
 
-              categories:  
+              categories:
                 1:
                   cat1key: catval1
                 2:
@@ -265,7 +266,7 @@ class MetadataCategoryResolver(MetadataVersionResolver):
               cat1key: catval1
               item_key: item1
 
-            - shared1: foo 
+            - shared1: foo
               shared2: bar
               cat2key: catval2
               item_key: item1
@@ -279,18 +280,18 @@ class MetadataCategoryResolver(MetadataVersionResolver):
             - Copies over shared keys from item to categories
             - Sets configured key_name in each category
             - Extends item_list with list of categories
-        
+
         Returns the updated metadata dict with categorized 'items' list.
 
         Raises
         ------
-        
+
         TypeError
             If metadata input is not a dictionary.
 
         Returns
         -------
-        
+
         dict
             Updated metadata with 'items' list of categorized elements.
         """

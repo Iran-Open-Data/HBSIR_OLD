@@ -4,8 +4,8 @@ from typing import Iterable
 class Argham:
     """Flexible argument handler for numbers and ranges.
 
-    Accepts numbers, ranges, lists, and dicts to define a set 
-    of numbers and numeric ranges. Parses the input into 
+    Accepts numbers, ranges, lists, and dicts to define a set
+    of numbers and numeric ranges. Parses the input into
     number_list and range_list.
 
     Implements membership testing via 'in' operator based
@@ -24,7 +24,7 @@ class Argham:
 
     default_start : int, optional
         Default start for ranges when not specified.
-    
+
     default_end : int, optional
         Default end for ranges when not specified.
 
@@ -46,13 +46,14 @@ class Argham:
 
     Examples
     --------
-    >>> arg = Argham([1, 2, 3, 4, {'start':6, 'end':10}")  
+    >>> arg = Argham([1, 2, 3, 4, {'start':6, 'end':10}")
     >>> 2 in arg
     True
 
     >>> arg.check_contained([4, 5, 6])
-    [True, False, True] 
+    [True, False, True]
     """
+
     def __init__(
         self,
         argham: list | dict | int,
@@ -73,10 +74,10 @@ class Argham:
     def check_contained(self, values: int | Iterable[int]) -> bool | list[bool]:
         """Check membership of values in container.
 
-        For a single value, checks whether the value is a member 
+        For a single value, checks whether the value is a member
         of the container using `in` and returns a bool result.
 
-        For multiple values given as an iterable, checks each value 
+        For multiple values given as an iterable, checks each value
         individually and returns a list of boolean results.
 
         Parameters
@@ -95,7 +96,7 @@ class Argham:
         --------
         >>> container.check_membership(2)
         True
-        
+
         >>> container.check_membership([1, 2, 3])
         [False, True, False]
         """
