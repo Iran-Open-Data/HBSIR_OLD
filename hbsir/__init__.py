@@ -28,4 +28,19 @@ def add_classification(
     )
     return table
 
+
+def add_attribute(
+    table: pd.DataFrame, attribute_name: data_engine._Attribute, **kwargs
+) -> pd.DataFrame:
+    table = data_engine.add_attribute(
+        table=table, attribute_name=attribute_name, **kwargs
+    )
+    return table
+
+
+def add_weight(table: pd.DataFrame) -> pd.DataFrame:
+    table = data_engine.add_weights(table)
+    return table
+
+
 __version__ = "0.1.0"
