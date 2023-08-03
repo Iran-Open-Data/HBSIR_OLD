@@ -101,7 +101,7 @@ ORIGINAL1363:
             - {start: 17_200, end: 17_400}
             - {start: 19_000, end: 20_000}
         3:
-          drop: True
+          drop: 1
           code:
             - 18888
             - 19993
@@ -789,6 +789,7 @@ original:
 Food-NonFood:
   default_levels: [1]
   default_column_names: ["Food-NonFood"]
+  default_missing_value_replacements: {Food-NonFood: Non-Food}
 
   items:
     1383:
@@ -802,7 +803,6 @@ Food-NonFood:
       Non-Food:
         level: 1
         farsi_name: "مخارج غیر خوراکی"
-        default: True
 
 
 Imputed_Rent:

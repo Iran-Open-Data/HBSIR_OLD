@@ -100,7 +100,7 @@ class SchemaApplier:
             self._add_duration()
 
     def _add_duration(self):
-        pass
+        self.table = add_classification(self.table, labels=[], add_duration=True)
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -301,6 +301,7 @@ class ClassificationSettings:
     drop_value: bool = False
     add_duration: bool = False
     duration_value: int = 30
+    missing_value_replacements: dict[str, str] | None = None
 
 
 class Classification:
@@ -344,7 +345,12 @@ class Classification:
     # pylint: disable=unsupported-assignment-operation
     def classification_table(self) -> pd.DataFrame:
         table = pd.DataFrame(self.classification_info["items"])
-        table["code_range"] = table["code"].apply(utils.Argham)  # type: ignore
+        table["code_range"] = table["code"].apply(
+            utils.Argham,  # type: ignore
+            default_start=defaults.first_year,
+            default_end=defaults.last_year+1,
+            keywords=["code"],
+        )
         table = table.drop(columns=["code"])
         for column_name in self.settings.required_columns:
             table = self._set_column(table, column_name)
@@ -403,6 +409,8 @@ class Classification:
         return mapping_table
 
     def _apply_drop(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
+        if "drop" not in mapping_table.columns:
+            return mapping_table
         filt = mapping_table.loc[:, ("drop", slice(None))].prod(axis="columns") == 0  # type: ignore
         mapping_table = mapping_table.loc[filt]
         mapping_table = mapping_table.drop(columns=["drop"])
@@ -446,9 +454,22 @@ class Classification:
         if copy:
             table = table.copy()
         mapping_table = self.construct_mapping_table(table)
+        old_columns = table.columns
         table = table.merge(
             mapping_table, left_on="Code", right_index=True, how="left", validate="m:1"
         )
+        new_columns = [column for column in table.columns if column not in old_columns]
+        table = self._set_default_values(table, new_columns)
+        return table
+
+    def _set_default_values(self, table: pd.DataFrame, columns: list):
+        if self.settings.missing_value_replacements is None:
+            return table
+        for column_name in columns:
+            if column_name not in self.settings.missing_value_replacements:
+                continue
+            value = self.settings.missing_value_replacements[column_name]
+            table[column_name] = table[column_name].fillna(value)
         return table
 
 
@@ -472,6 +493,7 @@ def add_classification(
         subtable = classificationer.add_classification(subtable)
         subtables.append(subtable)
     return pd.concat(subtables, ignore_index=True)
+
 
 def _extract_default_values(table_name, tables_defaults) -> dict:
     if table_name in tables_defaults:
