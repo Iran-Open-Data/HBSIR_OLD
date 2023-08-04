@@ -8,10 +8,32 @@ from typing import Iterable, Literal, get_args
 from types import ModuleType
 import importlib
 import itertools
+import logging
+import logging.config
+
 
 import pandas as pd
 
 from . import metadata, utils
+
+
+# create logger
+logger = logging.getLogger("data_engine")
+logger.setLevel(logging.DEBUG)
+
+# create file handler and set level to debug
+fh = logging.FileHandler("hbsir.log", encoding="utf-8")
+fh.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+# add formatter to fh
+fh.setFormatter(formatter)
+
+# add fh to logger
+logger.addHandler(fh)
+
 
 defaults = metadata.defaults
 metadatas = metadata.metadatas
@@ -41,6 +63,7 @@ class ParquetHandler:
 
     def read(self) -> pd.DataFrame:
         """Read the parquet file"""
+        logger.debug("read table `%s` for year `%s`", self.table_name, self.year)
         if not self.local_path.exists() and not self.download_if_missing:
             raise FileNotFoundError
         if not self.local_path.exists() and self.download_if_missing:
@@ -56,10 +79,12 @@ class ParquetHandler:
 
     def download(self) -> pd.DataFrame:
         """Download parquet file to memory"""
+        logger.debug("download table `%s` for year `%s`", self.table_name, self.year)
         return pd.read_parquet(self.file_url)
 
     def read_local_file(self) -> pd.DataFrame:
         """Load parquet file from local hard drive"""
+        logger.debug("load local table `%s` for year `%s`", self.table_name, self.year)
         return pd.read_parquet(self.local_path)
 
 
@@ -77,6 +102,7 @@ class SchemaApplier:
         self.modules: dict[str, ModuleType] = {}
 
     def apply(self) -> pd.DataFrame:
+        logger.debug("SchemaApplier: start apply schema %s", self.schema)
         self._apply_settings()
         if "preprocess" in self.schema:
             self._apply_instructions(self.schema["preprocess"])
@@ -88,6 +114,7 @@ class SchemaApplier:
                 self._apply_column_instruction(name, instruction)
         if "postprocess" in self.schema:
             self._apply_instructions(self.schema["postprocess"])
+        logger.debug("SchemaApplier: end apply schema %s", self.schema)
         return self.table
 
     def _apply_settings(self) -> None:
@@ -102,6 +129,7 @@ class SchemaApplier:
             self._add_duration()
 
     def _add_duration(self):
+        logger.debug("SchemaApplier: start add duration %s", self.schema)
         assert "Year" in self.table.columns
         assert "Table_Name" in self.table.columns
         if "Dutation" in self.table.columns:
@@ -110,6 +138,7 @@ class SchemaApplier:
         columns.append("Duration")
         self.table = add_classification(self.table, levels=[], add_duration=True)
         self.table = self.table[columns]
+        logger.debug("SchemaApplier: end add duration %s", self.schema)
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -133,11 +162,13 @@ class SchemaApplier:
         return module_list
 
     def _add_classifications(self, classifications) -> None:
+        logger.debug("SchemaApplier: start add classification %s", self.schema)
         classifications = (
             [classifications] if isinstance(classifications, dict) else classifications
         )
         for classification in classifications:
             self.table = add_classification(self.table, **classification)
+        logger.debug("SchemaApplier: end add classification %s", self.schema)
 
     def _apply_column_instruction(self, column_name, instruction) -> None:
         if instruction is None:
@@ -245,10 +276,14 @@ class TableLoader:
         return table
 
     def _load_table(self, table_name: str, year: int) -> pd.DataFrame:
+        logger.debug(
+            "TableLoader: start load table `%s` for year `%s`", table_name, year
+        )
         if table_name in get_args(_OriginalTable):
             table = self._load_original_table(table_name, year)
         else:
             table = self._construct_schema_based_table(table_name, year)
+        logger.debug("TableLoader: end load table `%s` for year `%s`", table_name, year)
         return table
 
     def _get_schema(self, table_name: str, year: int) -> dict:
@@ -475,6 +510,10 @@ class Classification:
         return mapping_table
 
     def add_classification(self, table: pd.DataFrame) -> pd.DataFrame:
+        logger.debug(
+            "Classification: start add classification for year `%s`",
+            self.year,
+        )
         mapping_table = self.construct_mapping_table(table)
         old_columns = table.columns
         table = table.merge(
@@ -482,6 +521,7 @@ class Classification:
         )
         new_columns = [column for column in table.columns if column not in old_columns]
         table = self._set_default_values(table, new_columns)
+        logger.debug("Classification: end add classification")
         return table
 
     def _set_default_values(self, table: pd.DataFrame, columns: list):
@@ -611,6 +651,7 @@ class Weight:
 def add_classification(
     table: pd.DataFrame, classification_name: str = "original", **kwargs
 ):
+    logger.debug("add_classification: start classification: %s", classification_name)
     if table.empty:
         return table
     if "Table_Name" in table.columns:
@@ -625,6 +666,12 @@ def add_classification(
     tables_defaults = metadatas.commodities["tables"]
     subtables = []
     for table_name, year in table_years:
+        logger.debug(
+            "add_classification: start classification: %s, table name: %s, year: %s",
+            classification_name,
+            table_name,
+            year,
+        )
         settings = _extract_default_values(table_name, tables_defaults)
         settings.update(kwargs)
         classificationer = Classification(
@@ -633,6 +680,13 @@ def add_classification(
         filt = table["Year"] == year
         subtable = classificationer.add_classification(table.loc[filt])
         subtables.append(subtable)
+        logger.debug(
+            "add_classification: end classification: %s, table name: %s, year: %s",
+            classification_name,
+            table_name,
+            year,
+        )
+    logger.debug("add_classification: end classification: %s", classification_name)
     return pd.concat(subtables, ignore_index=True)
 
 
