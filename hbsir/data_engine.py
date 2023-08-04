@@ -108,7 +108,8 @@ class SchemaApplier:
             self.table = self.table.drop(columns=["Dutation"])
         columns = list(self.table.columns)
         columns.append("Duration")
-        self.table = add_classification(self.table, levels=[], add_duration=True)[columns]
+        self.table = add_classification(self.table, levels=[], add_duration=True)
+        self.table = self.table[columns]
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -451,7 +452,9 @@ class Classification:
 
     def _rename_columns(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
         levels = self.settings.levels
-        available_levels = list(mapping_table.columns.get_level_values("level").unique())
+        available_levels = list(
+            mapping_table.columns.get_level_values("level").unique()
+        )
         levels = levels if len(levels) > 0 else available_levels
         column_names = list(itertools.product(self.settings.labels, levels))
         for column_name in column_names:
