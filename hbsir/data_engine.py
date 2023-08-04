@@ -98,18 +98,6 @@ class SchemaApplier:
             self.table["Table_Name"] = self.schema["table_name"]
         if settings["add_year"]:
             self.table["Year"] = self.schema["year"]
-        if settings["add_duration"]:
-            self._add_duration()
-
-    def _add_duration(self):
-        assert "Year" in self.table.columns
-        assert "Table_Name" in self.table.columns
-        if "Dutation" in self.table.columns:
-            self.table = self.table.drop(columns=["Dutation"])
-        columns = list(self.table.columns)
-        columns.append("Duration")
-        self.table = add_classification(self.table, levels=[], add_duration=True)
-        self.table = self.table[columns]
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -317,8 +305,6 @@ class ClassificationSettings:
     code_column_name: str = "Code"
     year_column_name: str = "Year"
     drop_value: bool = False
-    add_duration: bool = False
-    duration_value: int = 30
     missing_value_replacements: dict[str, str] | None = None
 
 
@@ -420,13 +406,7 @@ class Classification:
     def construct_mapping_table(self, table: pd.DataFrame) -> pd.DataFrame:
         mapping_table = self.construct_general_mapping_table(table)
         mapping_table = self._apply_drop(mapping_table)
-        if self.settings.add_duration:
-            duration = self._create_duration(mapping_table)
-        else:
-            duration = None
         mapping_table = self._rename_columns(mapping_table)
-        if duration is not None:
-            mapping_table["Duration"] = duration
         return mapping_table
 
     def _apply_drop(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
@@ -436,22 +416,6 @@ class Classification:
         mapping_table = mapping_table.loc[filt]
         mapping_table = mapping_table.drop(columns=["drop"])
         return mapping_table
-
-    def _create_duration(self, mapping_table: pd.DataFrame) -> pd.Series:
-        if not "Duration" in mapping_table.columns:
-            duration = pd.Series(
-                self.settings.duration_value, index=mapping_table.index
-            )
-        else:
-            duratuin_columns = mapping_table.loc[:, ("Duration", slice(None))]  # type: ignore
-            duration_min = duratuin_columns.min(axis="columns")
-            duration_max = duratuin_columns.max(axis="columns")
-            if (duration_min != duration_max).sum() > 0:
-                raise ValueError(
-                    "Expected duration columns to be equal for each row, but found unequal values."
-                )
-            duration = duration_min
-        return duration
 
     def _rename_columns(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
         levels = self.settings.levels
@@ -616,39 +580,16 @@ def add_classification(
 ):
     if table.empty:
         return table
-    if "Table_Name" in table.columns:
-        table_years = (
-            table[["Table_Name", "Year"]]
-            .drop_duplicates()
-            .to_records(index=False)
-            .tolist()
-        )
-    else:
-        table_years = [("Unknown", year) for year in table["Year"].drop_duplicates()]
-    tables_defaults = metadatas.commodities["tables"]
+    years = table["Year"].drop_duplicates().to_list()
     subtables = []
-    for table_name, year in table_years:
-        settings = _extract_default_values(table_name, tables_defaults)
-        settings.update(kwargs)
+    for year in years:
         classificationer = Classification(
-            classification_name=classification_name, year=year, **settings
+            classification_name=classification_name, year=year, **kwargs
         )
         filt = table["Year"] == year
         subtable = classificationer.add_classification(table.loc[filt])
         subtables.append(subtable)
     return pd.concat(subtables, ignore_index=True)
-
-
-def _extract_default_values(table_name, tables_defaults) -> dict:
-    if table_name in tables_defaults:
-        default_values = {
-            key.split("_", 1)[1]: value
-            for key, value in tables_defaults[table_name].items()
-            if key.split("_", 1)[0] == "default"
-        }
-    else:
-        default_values = {}
-    return default_values
 
 
 def add_attribute(
