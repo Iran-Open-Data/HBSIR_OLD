@@ -148,6 +148,9 @@ class SchemaApplier:
             self._apply_categorical_instruction(column_name, instruction)
 
     def _apply_numerical_instruction(self, column_name, instruction: dict) -> None:
+        if isinstance(instruction["expression"], int):
+            self.table[column_name] = instruction["expression"]
+            return
         columns_names = re.split(r"[\+\-\*\/\s\.]+", instruction["expression"])
         columns_names = [name for name in columns_names if not name.isnumeric()]
         self.table[column_name] = (
