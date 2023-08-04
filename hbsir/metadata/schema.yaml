@@ -29,7 +29,6 @@ common_order: &common_order
 _expenditure_tables_settings: &expenditure_tables_settings
   add_table_names: true
   add_year: true
-  add_duration: false
 
 food:
   settings: *expenditure_tables_settings
@@ -59,76 +58,156 @@ food:
         type: numerical
         expression: "0.001 * Grams + Kilos"
 
+    Duration:
+      type: numerical
+      expression: 30
+
 
 tobacco:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 cloth:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 home:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 furniture:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 medical:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 transportation:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 communication:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 entertainment:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 education:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 hotel:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 other:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 30
+
   order: *common_order
 
 
 durable:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 360
+
   order: *common_order
 
 
 investment:
   settings: *expenditure_tables_settings
+
+  columns:
+    Duration:
+      type: numerical
+      expression: 360
+
   order: *common_order
 
 
 
 Original_Expenditures:
-  settings:
-    add_duration: true
 
   table_list:
     - food
@@ -277,7 +356,6 @@ other_income:
 _long_other_incomes:
   settings:
     add_table_names: false
-    add_duration: false
 
   table_list:
     - other_income
