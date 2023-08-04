@@ -69,6 +69,8 @@ class Argham:
         self.default_start = default_start
         self.default_end = default_end
         self.default_step = default_step
+        self.min: int | None = None
+        self.max: int | None = None
         self._parse_argham(argham)
 
     def check_contained(self, values: int | Iterable[int]) -> bool | list[bool]:
@@ -118,6 +120,8 @@ class Argham:
         return ", ".join(representation_list)
 
     def __contains__(self, value: int):
+        if (value < self.min) or (value > self.max): # type: ignore
+            return False
         for number_range in self.range_list:
             if value in number_range:
                 return True
@@ -133,6 +137,8 @@ class Argham:
             self._parse_dict(argham)
         elif isinstance(argham, int):
             self.number_list.append(argham)
+            self._update_min(argham)
+            self._update_max(argham)
         else:
             pass
 
@@ -143,12 +149,11 @@ class Argham:
                     self._parse_argham(dictionary[word])
                     return
         if ("start" in dictionary) or ("end" in dictionary):
-            selected_range = self._parse_start_end_dict(dictionary)
-            self.range_list.append(selected_range)
+            self._parse_start_end_dict(dictionary)
         else:
             raise ValueError("Start or end must be specified")
 
-    def _parse_start_end_dict(self, dictionary: dict):
+    def _parse_start_end_dict(self, dictionary: dict) -> None:
         start = self.default_start
         end = self.default_end
         step = self.default_step
@@ -163,4 +168,18 @@ class Argham:
         if end is None:
             raise ValueError("End must be specified")
 
-        return range(start, end, step)
+        self.range_list.append(range(start, end, step))
+        self._update_min(start)
+        self._update_max(end -1)
+
+    def _update_min(self, number) -> None:
+        if self.min is None:
+            self.min = number
+        elif number < self.min:
+            self.min = number
+
+    def _update_max(self, number) -> None:
+        if self.max is None:
+            self.max = number
+        elif self.max < number:
+            self.max = number
