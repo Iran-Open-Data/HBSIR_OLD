@@ -81,7 +81,7 @@ class SchemaApplier:
         if "preprocess" in self.schema:
             self._apply_instructions(self.schema["preprocess"])
         if "classifications" in self.schema:
-            pass
+            self._add_classifications(self.schema["classifications"])
         if "columns" in self.schema:
             instructions: dict = self.schema["columns"]
             for name, instruction in instructions.items():
@@ -102,7 +102,13 @@ class SchemaApplier:
             self._add_duration()
 
     def _add_duration(self):
-        self.table = add_classification(self.table, labels=[], add_duration=True)
+        assert "Year" in self.table.columns
+        assert "Table_Name" in self.table.columns
+        if "Dutation" in self.table.columns:
+            self.table = self.table.drop(columns=["Dutation"])
+        columns = list(self.table.columns)
+        columns.append("Duration")
+        self.table = add_classification(self.table, levels=[], add_duration=True)[columns]
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -124,6 +130,13 @@ class SchemaApplier:
                 self.modules[name] = importlib.import_module(complete_name)
         module_list = map(lambda x: self.modules[x], module_name_list)
         return module_list
+
+    def _add_classifications(self, classifications) -> None:
+        classifications = (
+            [classifications] if isinstance(classifications, dict) else classifications
+        )
+        for classification in classifications:
+            self.table = add_classification(self.table, **classification)
 
     def _apply_column_instruction(self, column_name, instruction) -> None:
         if instruction is None:
@@ -198,8 +211,8 @@ class TableLoader:
         years: int | Iterable[int] | str | None = None,
         apply_schema: bool = True,
     ):
-        if (schema is not None) and ("table_list" in schema):
-            table_names = schema["table_list"]
+        if schema is not None:
+            table_names = ["Input_Table"]
         elif (table_names is None) and (schema is None):
             raise NameError
         table_names = [table_names] if isinstance(table_names, str) else table_names
@@ -207,19 +220,14 @@ class TableLoader:
         for element in table_names:
             assert isinstance(element, str)
         self.table_names = table_names
-        self.original_table_names = [
-            name for name in table_names if name in get_args(_OriginalTable)
-        ]
-        self.schema_based_table_names = [
-            name for name in table_names if name not in self.original_table_names
-        ]
         if (schema is not None) and ("years" in schema):
             years = schema["years"]
         elif years is None:
             raise NameError
         self.years = utils.parse_years(years)
         self.apply_schema = apply_schema
-        self.schema = schema
+        self.tables_schema = metadatas.schema.copy()
+        self.tables_schema["Input_Table"] = schema
 
         self.original_tables: dict[str, pd.DataFrame] = {}
 
@@ -236,14 +244,14 @@ class TableLoader:
         return table
 
     def _load_table(self, table_name: str, year: int) -> pd.DataFrame:
-        if table_name in self.original_table_names:
+        if table_name in get_args(_OriginalTable):
             table = self._load_original_table(table_name, year)
         else:
             table = self._construct_schema_based_table(table_name, year)
         return table
 
     def _get_schema(self, table_name: str, year: int) -> dict:
-        schema: dict = metadatas.schema[table_name].copy()
+        schema: dict = self.tables_schema[table_name].copy()
         schema.update({"table_name": table_name, "year": year})
         return schema
 
@@ -271,15 +279,15 @@ class TableLoader:
         if f"{table_name}_{year}" in self.original_tables:
             return self.original_tables[f"{table_name}_{year}"]
         table = ParquetHandler(table_name, year).read()
-        if self.apply_schema and (table_name in metadatas.schema):
+        if self.apply_schema and (table_name in self.tables_schema):
             table = self._apply_schema(table)
         self.original_tables[f"{table_name}_{year}"] = table
         return table
 
     def _construct_schema_based_table(self, table_name: str, year: int) -> pd.DataFrame:
-        if table_name not in metadatas.schema:
+        if table_name not in self.tables_schema:
             raise KeyError("Table name is not available in schema")
-        table_names = metadatas.schema[table_name]["table_list"]
+        table_names = self.tables_schema[table_name]["table_list"]
 
         table_list = self._collect_schema_tables(table_names, year)
 
@@ -290,17 +298,9 @@ class TableLoader:
     def _collect_schema_tables(
         self, table_names: list[str], year: int
     ) -> list[pd.DataFrame]:
-        original_table_names = [
-            name for name in table_names if (name in get_args(_OriginalTable))
-        ]
-        schema_based_table_names = [
-            name for name in table_names if name not in original_table_names
-        ]
         table_list = []
-        for name in original_table_names:
-            table_list.append(self._load_original_table(name, year))
-        for name in schema_based_table_names:
-            table_list.append(self._construct_schema_based_table(name, year))
+        for name in table_names:
+            table_list.append(self._load_table(name, year))
         return table_list
 
 
@@ -451,7 +451,8 @@ class Classification:
 
     def _rename_columns(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
         levels = self.settings.levels
-        levels = levels if len(levels) > 0 else list(mapping_table["level"].unique())
+        available_levels = list(mapping_table.columns.get_level_values("level").unique())
+        levels = levels if len(levels) > 0 else available_levels
         column_names = list(itertools.product(self.settings.labels, levels))
         for column_name in column_names:
             if column_name not in mapping_table.columns:
@@ -470,9 +471,7 @@ class Classification:
             ]
         return mapping_table
 
-    def add_classification(self, table: pd.DataFrame, copy=False) -> pd.DataFrame:
-        if copy:
-            table = table.copy()
+    def add_classification(self, table: pd.DataFrame) -> pd.DataFrame:
         mapping_table = self.construct_mapping_table(table)
         old_columns = table.columns
         table = table.merge(
@@ -609,6 +608,8 @@ class Weight:
 def add_classification(
     table: pd.DataFrame, classification_name: str = "original", **kwargs
 ):
+    if table.empty:
+        return table
     if "Table_Name" in table.columns:
         table_years = (
             table[["Table_Name", "Year"]]
@@ -627,8 +628,7 @@ def add_classification(
             classification_name=classification_name, year=year, **settings
         )
         filt = table["Year"] == year
-        subtable = table.loc[filt].copy()
-        subtable = classificationer.add_classification(subtable)
+        subtable = classificationer.add_classification(table.loc[filt])
         subtables.append(subtable)
     return pd.concat(subtables, ignore_index=True)
 

@@ -26,8 +26,13 @@ common_order: &common_order
   - Expenditure
   - Secondhand_Sale
 
+_expenditure_tables_settings: &expenditure_tables_settings
+  add_table_names: true
+  add_year: true
+  add_duration: false
 
 food:
+  settings: *expenditure_tables_settings
 
   columns:
 
@@ -56,72 +61,74 @@ food:
 
 
 tobacco:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 cloth:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 home:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 furniture:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 medical:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 transportation:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 communication:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 entertainment:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 education:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 hotel:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 other:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 durable:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 investment:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 
 Original_Expenditures:
+  settings:
+    add_duration: true
 
   table_list:
     - food
@@ -150,6 +157,7 @@ Original_Expenditures:
   order:
     - Year
     - ID
+    - Table_Name
     - Code
     - Provision_Method
     - Price_System
@@ -161,8 +169,6 @@ Original_Expenditures:
 
 
 Expenditures:
-  settings:
-    add_duration: true
 
   table_list:
     - Original_Expenditures

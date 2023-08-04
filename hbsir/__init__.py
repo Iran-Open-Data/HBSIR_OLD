@@ -25,7 +25,7 @@ def create_table_with_schema(schema) -> pd.DataFrame:
 
 
 def add_classification(
-    table: pd.DataFrame, classification_name: str, **kwargs
+    table: pd.DataFrame, classification_name: str = "original", **kwargs
 ) -> pd.DataFrame:
     table = data_engine.add_classification(
         table=table, classification_name=classification_name, **kwargs
