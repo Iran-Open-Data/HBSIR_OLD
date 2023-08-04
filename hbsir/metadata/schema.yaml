@@ -1,5 +1,11 @@
 
 
+default_settings:
+  add_table_names: false
+  add_year: true
+  add_duration: false
+
+
 household_information:
   order:
     - Year
@@ -20,106 +26,109 @@ common_order: &common_order
   - Expenditure
   - Secondhand_Sale
 
+_expenditure_tables_settings: &expenditure_tables_settings
+  add_table_names: true
+  add_year: true
+  add_duration: false
 
 food:
+  settings: *expenditure_tables_settings
 
-  yearly_schema:
+  columns:
 
-    columns:
+    Price_System:
+      1363:
+        type: categorical
+        categories:
+          Free_Price:       {Provision_Method: Purchase_Free_Price}
+          Subsidised_Price: {Provision_Method: Purchase_Subsidised_Price}
+      1369: null
 
-      Price_System:
-        1363:
-          type: categorical
-          categories:
-            Free_Price:       {Provision_Method: Purchase_Free_Price}
-            Subsidised_Price: {Provision_Method: Purchase_Subsidised_Price}
-        1369: null
+    Provision_Method:
+      1363:
+        type: categorical
+        categories:
+          Purchase: [Purchase_Free_Price, Purchase_Subsidised_Price]
+      1369: null
 
-      Provision_Method:
-        1363:
-          type: categorical
-          categories:
-            Purchase: [Purchase_Free_Price, Purchase_Subsidised_Price]
-        1369: null
-
-      Amount:
-        1363:
-          type: numerical
-          expression: "Kilos"
-        1383:
-          type: numerical
-          expression: "0.001 * Grams + Kilos"
-
-  order: *common_order
+    Amount:
+      1363:
+        type: numerical
+        expression: "Kilos"
+      1383:
+        type: numerical
+        expression: "0.001 * Grams + Kilos"
 
 
 tobacco:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 cloth:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 home:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 furniture:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 medical:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 transportation:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 communication:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 entertainment:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 education:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 hotel:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 other:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 durable:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 investment:
-
+  settings: *expenditure_tables_settings
   order: *common_order
 
 
 
 Original_Expenditures:
+  settings:
+    add_duration: true
 
   table_list:
     - food
@@ -148,6 +157,7 @@ Original_Expenditures:
   order:
     - Year
     - ID
+    - Table_Name
     - Code
     - Provision_Method
     - Price_System

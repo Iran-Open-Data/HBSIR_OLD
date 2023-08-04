@@ -22,13 +22,17 @@ simple_versioned:
 
 ############################# - Interpretation - ##############################
 
-# from 1360 - 1379:
-simple_versioned_1360-1379:
+# before 1360
+simple_versioned_0:
+  null
+
+# from 1360 to 1379
+simple_versioned_1360:
   1360-1: 60-1
   1360-2: 60-2
   1360-3: 60-3
 
-# after 1380:
+# after 1380
 simple_versioned_1380:
   1380-1: 80-1
   1380-2: 80-2
@@ -61,8 +65,14 @@ keyword_versioned:
 
 ############################# - Interpretation - ##############################
 
-# from 1360 - 1379:
-keyword_versioned_1360-1379:
+# before 1360
+keyword_versioned_0:
+  shared-1: sh-1
+  shared-2: sh-2
+  shared-3: sh-3
+
+# from 1360 to 1379
+keyword_versioned_1360:
   shared-1: sh-1
   shared-2: sh-2
   shared-3: sh-3
@@ -71,7 +81,7 @@ keyword_versioned_1360-1379:
   1360-2: 60-2
   1360-3: 60-3
 
-# after 1380:
+# after 1380
 keyword_versioned_1380:
   shared-1: sh-1
   shared-2: sh-2
@@ -89,34 +99,235 @@ keyword_versioned_1380:
 ################################ - Notation - #################################
 
 categorized:
-  shared-1: sh-1
-  shared-2: sh-2
-  shared-3: sh-3
+  key1: k1
+  key2: k2
+  key3: k3
 
-  categories:
-    1:
-      category1-1: cat1-1
-      category1-2: cat1-2
-      category1-3: cat1-3
-    2:
-      category2-1: cat2-1
-      category2-2: cat2-2
-      category2-3: cat2-3
+  items:
+    item_1:
+      shared-1: sh-1
+      shared-2: sh-2
+      shared-3: sh-3
+
+      categories:
+        1:
+          category1-1: cat1-1
+          category1-2: cat1-2
+          category1-3: cat1-3
+        2:
+          category2-1: cat2-1
+          category2-2: cat2-2
+          category2-3: cat2-3
 
 
 ############################# - Interpretation - ##############################
 
 categorized_opened:
-  - shared-1: sh-1
-    shared-2: sh-2
-    shared-3: sh-3
-    category1-1: cat1-1
-    category1-2: cat1-2
-    category1-3: cat1-3
+  key1: k1
+  key2: k2
+  key3: k3
 
-  - shared-1: sh-1
-    shared-2: sh-2
-    shared-3: sh-3
-    category2-1: cat2-1
-    category2-2: cat2-2
-    category2-3: cat2-3
+  items:
+    - shared-1: sh-1
+      shared-2: sh-2
+      shared-3: sh-3
+      category1-1: cat1-1
+      category1-2: cat1-2
+      category1-3: cat1-3
+      item_key: item_1
+
+    - shared-1: sh-1
+      shared-2: sh-2
+      shared-3: sh-3
+      category2-1: cat2-1
+      category2-2: cat2-2
+      category2-3: cat2-3
+      item_key: item_1
+
+
+###############################################################################
+##                         - - -    Sample 1   - - -                         ##
+###############################################################################
+
+################################ - Notation - #################################
+
+sample_1:
+  key1: val1
+  key2:
+    versions:
+      1360: val2-60
+      1370: val2-70
+      1380: val2-80
+  key3:
+    1360: val3-60
+    1370: val3-70
+    1380: val3-80
+  key4:
+    key4-1: val4-1
+    key4-2:
+      versions:
+        1360: val4-2-60
+        1370: val4-2-70
+        1380: val4-2-80
+    key4-3:
+      1360: val4-3-60
+      1370: val4-3-70
+      1380: val4-3-80
+  key5:
+    key5-1: val5-1
+    key5-2: val5-2
+    key5-3: val5-3
+    versions:
+      1360:
+        key5-4: val5-4-60
+        key5-5: val5-5-60
+        key5-6: val5-6-60
+      1370:
+        key5-4: val5-4-70
+        key5-5: val5-5-70
+        key5-6: val5-6-70
+      1380:
+        key5-4: val5-4-80
+        key5-5: val5-5-80
+        key5-6: val5-6-80
+  key6:
+    1360:
+      key6-1: val6-1-60
+      key6-2: val6-2-60
+      key6-3: val6-3-60
+    1370:
+      key6-1: val6-1-70
+      key6-2: val6-2-70
+      key6-3: val6-3-70
+    1380:
+      key6-1: val6-1-80
+      key6-2: val6-2-80
+      key6-3: val6-3-80
+
+############################# - Interpretation - ##############################
+
+# before 1360
+sample_1_0:
+  key1: val1
+  key2: null
+  key3: null
+  key4:
+    key4-1: val4-1
+    key4-2: null
+    key4-3: null
+  key5:
+    key5-1: val5-1
+    key5-2: val5-2
+    key5-3: val5-3
+  key6: null
+
+# from 1360 to 1369
+sample_1_1360:
+  key1: val1
+  key2: val2-60
+  key3: val3-60
+  key4:
+    key4-1: val4-1
+    key4-2: val4-2-60
+    key4-3: val4-3-60
+  key5:
+    key5-1: val5-1
+    key5-2: val5-2
+    key5-3: val5-3
+    key5-4: val5-4-60
+    key5-5: val5-5-60
+    key5-6: val5-6-60
+  key6:
+    key6-1: val6-1-60
+    key6-2: val6-2-60
+    key6-3: val6-3-60
+
+# from 1370 to 1379
+sample_1_1370:
+  key1: val1
+  key2: val2-70
+  key3: val3-70
+  key4:
+    key4-1: val4-1
+    key4-2: val4-2-70
+    key4-3: val4-3-70
+  key5:
+    key5-1: val5-1
+    key5-2: val5-2
+    key5-3: val5-3
+    key5-4: val5-4-70
+    key5-5: val5-5-70
+    key5-6: val5-6-70
+  key6:
+    key6-1: val6-1-70
+    key6-2: val6-2-70
+    key6-3: val6-3-70
+
+# after 1380
+sample_1_1380:
+  key1: val1
+  key2: val2-80
+  key3: val3-80
+  key4:
+    key4-1: val4-1
+    key4-2: val4-2-80
+    key4-3: val4-3-80
+  key5:
+    key5-1: val5-1
+    key5-2: val5-2
+    key5-3: val5-3
+    key5-4: val5-4-80
+    key5-5: val5-5-80
+    key5-6: val5-6-80
+  key6:
+    key6-1: val6-1-80
+    key6-2: val6-2-80
+    key6-3: val6-3-80
+
+
+###############################################################################
+##                         - - -    Sample 2   - - -                         ##
+###############################################################################
+
+################################ - Notation - #################################
+
+sample_2:
+  key1:
+    key1-1:
+      1360: val1-1-60
+      1370:
+        key1-1-1: val1-1-1-1-70
+        key1-1-2: val1-1-1-2-70
+        key1-1-3: val1-1-1-3-70
+      1380:
+        - elm1-1-1-80
+        - elm1-1-2-80
+        - elm1-1-3-80
+
+############################# - Interpretation - ##############################
+
+# before 1360
+sample_2_0:
+  key1:
+    key1-1: null
+
+# from 1360 to 1369
+sample_2_1360:
+  key1:
+    key1-1: val1-1-60
+
+# from 1370 to 1379
+sample_2_1370:
+  key1:
+    key1-1:
+      key1-1-1: val1-1-1-1-70
+      key1-1-2: val1-1-1-2-70
+      key1-1-3: val1-1-1-3-70
+
+# after 1380
+sample_2_1380:
+  key1:
+    key1-1:
+      - elm1-1-1-80
+      - elm1-1-2-80
+      - elm1-1-3-80

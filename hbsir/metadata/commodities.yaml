@@ -8,59 +8,59 @@
 tables:
   food:
     code_range: {start: 10_000, end: 20_000}
-    default_duration: 30
+    default_duration_value: 30
 
   tobacco:
     code_range: {start: 20_000, end: 30_000}
-    default_duration: 30
+    default_duration_value: 30
 
   cloth:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   home:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   furniture:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   medical:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   transportation:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   communication:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   entertainment:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   education:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   hotel:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   other:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 30
+    default_duration_value: 30
 
   durable:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 360
+    default_duration_value: 360
 
   investment:
     code_range: {start: _0_000, end: _0_000}
-    default_duration: 360
+    default_duration_value: 360
 
 
 
@@ -101,7 +101,7 @@ ORIGINAL1363:
             - {start: 17_200, end: 17_400}
             - {start: 19_000, end: 20_000}
         3:
-          drop: True
+          drop: 1
           code:
             - 18888
             - 19993
@@ -248,7 +248,7 @@ ORIGINAL1383:
     meat:
       level: 2
       farsi_name: "گوشت"
-      code: {start: 11_200, end: 11_400}
+      code: {start: 11_200, end: 11_300}
 
     #                              ## LEVEL 3 ##                              #
     red_meat:
@@ -289,6 +289,11 @@ ORIGINAL1383:
     milk:
       level: 3
       code: {start: 11_410, end: 11_420}
+
+    #                               # LEVEL 4 #                               #
+    dried_milk:
+      level: 4
+      code: 11_413
 
     #                              ## LEVEL 3 ##                              #
     other_dairy_product_excluding_butter:
@@ -585,7 +590,7 @@ ORIGINAL1383:
 
     #                            #### LEVEL 2 ####                            #
     cleaning_repair_and_hire_of_footwear:
-      level: 2
+      level: 3
       farsi_name: "تعمیر و ملزومات کفش"
       code: {start: 32_100, end: 32_200}
 
@@ -703,7 +708,7 @@ ORIGINAL1383:
     _canteens_cafeterias_and_refectories:
       level: 3
       farsi_name: ""
-      code: {start: 111_110, end: 111_120}
+      code: {start: 111_210, end: 111_220}
 
 
     #                        ######## LEVEL 1 ########                        #
@@ -722,8 +727,8 @@ ORIGINAL1383:
 
 
     #                              ## LEVEL 3 ##                              #
-    _accommodation_services:
-      level: 2
+    __accommodation_services:
+      level: 3
       farsi_name: ""
       code: {start: 112_010, end: 112_020}    # Yes! it is true!
 
@@ -783,7 +788,8 @@ original:
 
 Food-NonFood:
   default_levels: [1]
-  default_names: ["Food-NonFood"]
+  default_column_names: ["Food-NonFood"]
+  default_missing_value_replacements: {Food-NonFood: Non-Food}
 
   items:
     1383:
@@ -797,12 +803,11 @@ Food-NonFood:
       Non-Food:
         level: 1
         farsi_name: "مخارج غیر خوراکی"
-        default: True
 
 
 Imputed_Rent:
   default_levels: [1]
-  default_names: ["Imputed_Rent"]
+  default_column_names: ["Imputed_Rent"]
 
   items:
     Imputed_Rent:
@@ -815,7 +820,7 @@ Imputed_Rent:
 
 Insurance_Benefits:
   default_levels: [1]
-  default_names: ["Insurance_Benefits"]
+  default_column_names: ["Insurance_Benefits"]
 
   items:
     Insurance_Benefits:

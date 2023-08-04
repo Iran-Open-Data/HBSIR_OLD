@@ -81,18 +81,21 @@ def _parse_year_str(year: str) -> list[int]:
 
 
 def construct_table_year_pairs(
-    table_names: _Table | Iterable[_Table], years: int | Iterable[int] | str | None
+    table_names: str | Iterable[str], years: int | Iterable[int] | str | None
 ) -> list[tuple[str, int]]:
     years = parse_years(years)
     table_names = [table_names] if isinstance(table_names, str) else table_names
     table_year = []
     for table_name in table_names:
-        table_argham = Argham(
-            metadatas.tables["yearly_table_availability"][table_name],
-            default_start=defaults.first_year,
-            default_end=defaults.last_year + 1,
-        )
+        if table_name in metadatas.tables["yearly_table_availability"]:
+            available_years = Argham(
+                metadatas.tables["yearly_table_availability"][table_name],
+                default_start=defaults.first_year,
+                default_end=defaults.last_year + 1,
+            )
+        else:
+            available_years = range(defaults.first_year, defaults.last_year + 1)
         table_year.extend(
-            [(table_name, year) for year in years if table_argham.contains(year)]
+            [(table_name, year) for year in years if year in available_years]
         )
     return table_year
