@@ -117,7 +117,7 @@ members_properties:
 
     items:
         member_number: &member_number
-            new_name: "ID"
+            new_name: "ID_Inner"
             type: "unsigned"     
 
         member_relationship: &member_relationship
@@ -818,7 +818,7 @@ INCOME_ITEMS:
 
     income_job_code: &income_job_code
         new_name: "Job_Code"
-        type: "string"
+        type: "int"
     
     income_activity_status: &income_activity_status
         new_name: "Activity_Status"
@@ -826,7 +826,7 @@ INCOME_ITEMS:
 
     income_workplace_activity: &income_workplace_activity
         new_name: "Workplace_Activity"
-        type: "string"
+        type: "int"
 
     income_sector_base: &income_sector_base
         new_name: "Sector"

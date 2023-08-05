@@ -13,6 +13,23 @@ household_information:
     - Season
     - Weight	
 
+members_education:
+  table_list:
+    - members_properties
+  order:
+    - ID
+    - Year
+    - Education_Level
+    - Edu_Years
+  columns:
+
+    Edu_Years:
+      1363:
+        type: categorical
+        categories:
+          6:  {Education_Level: Primary}
+          11: {Education_Level: Pre_University}
+
 
 common_order: &common_order
   - Year
