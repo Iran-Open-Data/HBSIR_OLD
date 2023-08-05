@@ -19,17 +19,33 @@ members_education:
   order:
     - ID
     - Year
+    - Relationship
+    - Age
     - Education_Level
-    - Edu_Years
+    - Education_Years
   columns:
 
-    Edu_Years:
+    Education_Years:
+      # TODO Fix this. Category should be numerical,
+      # years are not complete in tables.yaml 
       1363:
         type: categorical
         categories:
           6:  {Education_Level: Primary}
           11: {Education_Level: Pre_University}
-
+          5:  {Education_Level: Primary}
+          8:  {Education_Level: Secondary}
+          11: {Education_Level: Tertiary}
+          12: {Education_Level: Pre_University}
+          14: {Education_Level: College}
+          16: {Education_Level: Bachelors}
+          18: {Education_Level: Masters}
+          23: {Education_Level: PhD}
+          3:  {Education_Level: Unofficial}
+    # Kid_Under_15:
+    #   1363:
+    #     type: numerical
+    #     expression: "Age < 15"
 
 common_order: &common_order
   - Year

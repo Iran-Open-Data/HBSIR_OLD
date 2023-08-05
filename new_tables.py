@@ -1,5 +1,3 @@
-%load_ext autoreload
-%autoreload 3
 import hbsir
 from hbsir import data_engine, data_cleaner, archive_handler, utils
 from hbsir.metadata import metadatas, open_yaml
@@ -34,28 +32,48 @@ final = data_engine.add_classification(final, levels=[4]).dropna()
 final
 ################################################################################
 # 113 Member properties
+# TODO this table should be completed based on possible use in later scripts.
 raw = data_cleaner.load_table_data("members_properties", 1396)
+data_cleaner.parquet_clean_data("members_properties", [1396, 1397])
+df = hbsir.create_table_with_schema(
+    {"table_list": ["members_education"], "years": [1396, 1397]}
+)
+df["Education_Years"] = (
+    df["Education_Years"].cat.add_categories(0).fillna(0).astype(int)
+)
+final = df.assign(
+    Kid_Under_15=df["Age"] < 15,
+    Kid_Under_11=df["Age"] < 11,
+    Infant=df["Age"] <= 2,
+    Newborn=df["Age"] == 0,
+    Potential_Student=(df["Age"] >= 6) & (df["Age"] <= 18),
+    Under_18=df["Age"] <= 18,
+    Educated_Parent=(df["Relationship"].isin(["Head", "Spouse"]))
+    & (df["Education_Years"] > 11),
+    Educated_Other=(
+        df["Relationship"].isin(
+            ["Parent", "Sister/Brother", "Other Family", "Non-Family"]
+        )
+    )
+    & (df["Education_Years"] > 11),
+    Mother=df["Relationship"] == "Spouse",
+    Unemployed=df["Activity_State"] == "Unemployed",
+)
+final = final[["ID", *final.columns.difference(df.columns)]]
+df["Age_Cut"] = pd.cut(df.Age, [-1, 0, 1, 2, 3, 4, 9, 14, 19, 59, 120])
+Age_groups = pd.get_dummies(
+    (df["Sex"].astype(str) + "_" + df["Age_Cut"].astype(str)).astype("category")
+)
+final = pd.concat([final, Age_groups], axis=1)
+final.groupby("ID").sum().add_prefix("N")
+
+################################################################################
+# 113 UnEmployted
 data_cleaner.parquet_clean_data("members_properties", [1396, 1397])
 final = hbsir.create_table_with_schema(
     {"table_list": ["members_properties"], "years": [1396, 1397]}
 )
-df = final
-final.assign(
-    Kid_Under_15 = df['Age'] < 15,
-    Kid_Under_11 = df['Age'] < 11,
-    Infant = df['Age'] <= 2,
-    Newborn = df['Age'] == 0,
-    Potential_Student = (df['Age'] >= 6) & (df['Age'] <= 18),
-    Under_18 = df['Age'] <= 18,
-    Educated_Parent = (df['Relationship'].isin(['Head', 'Spouse'])) & (df['EduYears'] > 11)
-)
-################################################################################
-# 113 UnEmployted
-data_cleaner.parquet_clean_data('members_properties', [1396, 1397])
-final = hbsir.create_table_with_schema(
-    {"table_list": ["members_properties"], "years": [1396, 1397]}
-)
-data_engine.TableLoader(table_names = ['members_education'], years = [1396, 1397]).load()
+data_engine.TableLoader(table_names=["members_education"], years=[1396, 1397]).load()
 
 final = (
     final[["ID", "Activity_State"]]
