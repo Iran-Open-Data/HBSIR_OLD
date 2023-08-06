@@ -14,7 +14,12 @@ household_information:
     - Weight	
 
 
-common_order: &common_order
+_expenditure_tables_settings: &expenditure_tables_settings
+  add_table_names: true
+  add_year: true
+
+
+common_expenditure_order: &common_expenditure_order
   - Year
   - ID
   - Code
@@ -26,9 +31,6 @@ common_order: &common_order
   - Expenditure
   - Secondhand_Sale
 
-_expenditure_tables_settings: &expenditure_tables_settings
-  add_table_names: true
-  add_year: true
 
 food:
   settings: *expenditure_tables_settings
@@ -71,7 +73,7 @@ tobacco:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 cloth:
@@ -82,7 +84,7 @@ cloth:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 home:
@@ -93,7 +95,7 @@ home:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 furniture:
@@ -104,7 +106,7 @@ furniture:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 medical:
@@ -115,7 +117,7 @@ medical:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 transportation:
@@ -126,7 +128,7 @@ transportation:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 communication:
@@ -137,7 +139,7 @@ communication:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 entertainment:
@@ -148,7 +150,7 @@ entertainment:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 education:
@@ -159,7 +161,7 @@ education:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 hotel:
@@ -170,7 +172,7 @@ hotel:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 other:
@@ -181,7 +183,7 @@ other:
       type: numerical
       expression: 30
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 durable:
@@ -192,7 +194,7 @@ durable:
       type: numerical
       expression: 360
 
-  order: *common_order
+  order: *common_expenditure_order
 
 
 investment:
@@ -203,8 +205,7 @@ investment:
       type: numerical
       expression: 360
 
-  order: *common_order
-
+  order: *common_expenditure_order
 
 
 Original_Expenditures:

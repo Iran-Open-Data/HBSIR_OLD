@@ -82,6 +82,8 @@ class SchemaApplier:
             self._apply_instructions(self.schema["preprocess"])
         if "classifications" in self.schema:
             self._add_classifications(self.schema["classifications"])
+        if "attributes" in self.schema:
+            self._add_attribute(self.schema["attributes"])
         if "columns" in self.schema:
             instructions: dict = self.schema["columns"]
             for name, instruction in instructions.items():
@@ -98,6 +100,8 @@ class SchemaApplier:
             self.table["Table_Name"] = self.schema["table_name"]
         if settings["add_year"]:
             self.table["Year"] = self.schema["year"]
+        if ("add_weights" in settings) and settings["add_weights"]:
+            self.table = add_weights(self.table)
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -126,6 +130,11 @@ class SchemaApplier:
         )
         for classification in classifications:
             self.table = add_classification(self.table, **classification)
+
+    def _add_attribute(self, attributes: dict | list[dict]) -> None:
+        attributes = [attributes] if isinstance(attributes, dict) else attributes
+        for attribute in attributes:
+            self.table = add_attribute(self.table, **attribute)
 
     def _apply_column_instruction(self, column_name, instruction) -> None:
         if instruction is None:
@@ -226,9 +235,9 @@ class TableLoader:
     def load(self) -> pd.DataFrame:
         table_list = []
         table_years = utils.construct_table_year_pairs(self.table_names, self.years)
-        table_list = [
-            self._load_table(table_name, year) for table_name, year in table_years
-        ]
+        table_list = []
+        for table_name, year in table_years:
+            table_list.append(self._load_table(table_name, year))
         table = pd.concat(table_list, ignore_index=True)
         if (len(self.table_names) == 1) and self.apply_schema:
             schema = self._get_schema(self.table_names[0], self.years[-1])
@@ -278,7 +287,7 @@ class TableLoader:
 
     def _construct_schema_based_table(self, table_name: str, year: int) -> pd.DataFrame:
         if table_name not in self.tables_schema:
-            raise KeyError("Table name is not available in schema")
+            raise KeyError(f"Table name {table_name} is not available in schema")
         table_names = self.tables_schema[table_name]["table_list"]
 
         table_list = self._collect_schema_tables(table_names, year)
@@ -288,8 +297,9 @@ class TableLoader:
         return table
 
     def _collect_schema_tables(
-        self, table_names: list[str], year: int
+        self, table_names: str | list[str], year: int
     ) -> list[pd.DataFrame]:
+        table_names = [table_names] if isinstance(table_names, str) else table_names
         table_list = []
         for name in table_names:
             table_list.append(self._load_table(name, year))
@@ -465,17 +475,26 @@ class Classification:
 class Attribute:
     def __init__(
         self,
+        attribute_name: _Attribute,
         year: int,
-        attribute: _Attribute,
         translations: str | Iterable[str] = "names",
+        columns_labels: Iterable[str] | None = None,
     ) -> None:
         self.household_metadata = utils.MetadataVersionResolver(
             metadatas.household, year
         ).get_version()
-        self.attribute = attribute
+        self.attribute_name = attribute_name
         self.translations = (
-            [translations] if isinstance(translations, str) else translations
+            [translations] if isinstance(translations, str) else list(translations)
         )
+        if columns_labels is None:
+            if len(self.translations) == 1:
+                self.columns_labels = [attribute_name]
+            else:
+                self.columns_labels = [
+                    f"{attribute_name}_{translation}"
+                    for translation in self.translations
+                ]
 
     def construct_mapping_table(self, table: pd.DataFrame):
         household_ids = table["ID"].drop_duplicates().copy()
@@ -484,12 +503,12 @@ class Attribute:
         for translation in self.translations:
             translator = self._create_code_translator(translation)
             mappings.append(translator(household_ids))
-        mapping_table = pd.concat(mappings, axis="columns")
+        mapping_table = pd.concat(mappings, axis="columns", keys=self.columns_labels)
         return mapping_table
 
     def _create_code_translator(self, translation):
         assert isinstance(self.household_metadata, dict)
-        mapping = self.household_metadata[self.attribute][translation]
+        mapping = self.household_metadata[self.attribute_name][translation]
         code_builder = self._create_code_builder()
 
         def translator(household_id_column: pd.Series) -> pd.Series:
@@ -502,7 +521,7 @@ class Attribute:
     def _create_code_builder(self):
         assert isinstance(self.household_metadata, dict)
         ld_len = self.household_metadata["ID_Length"]
-        attr_dict = self.household_metadata[self.attribute]
+        attr_dict = self.household_metadata[self.attribute_name]
         if ("position" not in attr_dict) or attr_dict["position"] is None:
             raise ValueError("Code position is not available")
         start, end = attr_dict["position"]["start"], attr_dict["position"]["end"]
@@ -598,7 +617,7 @@ def add_attribute(
     years = list(table["Year"].drop_duplicates())
     subtables = []
     for year in years:
-        attribute_reader = Attribute(year=year, attribute=attribute_name, **kwargs)
+        attribute_reader = Attribute(year=year, attribute_name=attribute_name, **kwargs)
         filt = table["Year"] == year
         subtable = table.loc[filt].copy()
         subtable = attribute_reader.add_attribute(subtable)
@@ -607,12 +626,10 @@ def add_attribute(
 
 
 def add_weights(table: pd.DataFrame) -> pd.DataFrame:
-    table_years = (
-        table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
-    )
+    years = table["Year"].drop_duplicates().to_list()
     subtables = []
-    for table_name, year in table_years:
-        filt = (table["Year"] == year) & (table["Table_Name"] == table_name)
+    for year in years:
+        filt = table["Year"] == year
         subtable = table.loc[filt].copy()
         subtable = Weight(year).add_weights(subtable)
         subtables.append(subtable)
