@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, get_args
 
+from pydantic import BaseModel
 import yaml
 
 
@@ -81,6 +82,16 @@ def open_yaml(path):
     return yaml_content
 
 
+if ROOT_DIRECTORT.joinpath("hbsir-settings.yaml").exists():
+    settings = open_yaml(ROOT_DIRECTORT.joinpath("hbsir-settings.yaml"))
+elif PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml").exists():
+    settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml"))
+elif PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml").exists():
+    settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml"))
+else:
+    raise FileNotFoundError
+
+
 @dataclass
 class Metadatas:
     """
@@ -126,18 +137,6 @@ class Defaults:
     """
 
     # TODO need to change this to just settings.
-    if ROOT_DIRECTORT.joinpath("hbsir-settings.yaml").exists():
-        settings = open_yaml(ROOT_DIRECTORT.joinpath("hbsir-settings.yaml"))
-    elif PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml").exists():
-        settings = open_yaml(
-            PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml")
-        )
-    elif PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml").exists():
-        settings = open_yaml(
-            PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml")
-        )
-    else:
-        raise FileNotFoundError
 
     # online directory
     online_dir = settings["online_directory"]
