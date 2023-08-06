@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from ..metadata import defaults, metadatas, Table as _Table
+from ..metadata_reader import defaults, metadatas, Table as _Table
 from .argham import Argham
 
 

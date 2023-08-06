@@ -4,7 +4,7 @@ DataFrame extention
 import pandas as pd
 
 from .data_engine import add_attribute, add_classification
-from .metadata import (
+from .metadata_reader import (
     Attribute as _Attributes,
 )
 

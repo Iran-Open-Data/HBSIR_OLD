@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 import platform
 
-from ..metadata import defaults
+from ..metadata_reader import defaults
 from .download_utils import download_7zip
 
 

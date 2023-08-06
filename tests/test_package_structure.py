@@ -1,4 +1,4 @@
-from hbsir import archive_handler, data_cleaner, data_engine, metadata
+from hbsir import archive_handler, data_cleaner, data_engine, metadata_reader
 import pytest
 
 

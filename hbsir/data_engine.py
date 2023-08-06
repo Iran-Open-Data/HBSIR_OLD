@@ -11,14 +11,14 @@ import itertools
 
 import pandas as pd
 
-from . import metadata, utils
+from . import metadata_reader, utils
 
-defaults = metadata.defaults
-metadatas = metadata.metadatas
-_Attribute = metadata.Attribute
-_OriginalTable = metadata.OriginalTable
-_StandardTables = metadata.StandardTable
-_Table = metadata.Table
+defaults = metadata_reader.defaults
+metadatas = metadata_reader.metadatas
+_Attribute = metadata_reader.Attribute
+_OriginalTable = metadata_reader.OriginalTable
+_StandardTables = metadata_reader.StandardTable
+_Table = metadata_reader.Table
 
 
 class ParquetHandler:

@@ -9,9 +9,9 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 
-from . import metadata, utils
+from . import metadata_reader, utils
 
-from .metadata import (
+from .metadata_reader import (
     OriginalTable as _OriginalTable,
     defaults,
     metadatas,
@@ -62,7 +62,7 @@ def _build_file_path(table_name: str, year: int, is_urban: bool) -> Path:
     urban_rural = "U" if is_urban else "R"
     year_string = year % 100 if year < 1400 else year
     table_metadata = _get_table_metadata(table_name, year, is_urban)
-    file_code = metadata.get_metadata_version(table_metadata["file_code"], year)
+    file_code = metadata_reader.get_metadata_version(table_metadata["file_code"], year)
     file_name = f"{urban_rural}{year_string}{file_code}.csv"
     file_path = defaults.extracted_data.joinpath(str(year), file_name)
     return file_path
@@ -72,7 +72,7 @@ def _get_table_metadata(
     table_name: str, year: int, is_urban: bool | None = None
 ) -> dict:
     table_metadata = metadatas.tables[table_name]
-    table_metadata = metadata.get_metadata_version(table_metadata, year)
+    table_metadata = metadata_reader.get_metadata_version(table_metadata, year)
 
     if is_urban is True:
         if "urban" in table_metadata:
@@ -126,13 +126,13 @@ def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
     table_settings = _get_table_settings(table_metadata)
     year = table_metadata["year"]
     columns_metadata = table_metadata["columns"]
-    columns_metadata = metadata.get_metadata_version(columns_metadata, year)
+    columns_metadata = metadata_reader.get_metadata_version(columns_metadata, year)
     try:
         column_metadata = columns_metadata[column_name]
     except KeyError:
         column_metadata = table_settings["missings"]
     else:
-        column_metadata = metadata.get_metadata_version(column_metadata, year)
+        column_metadata = metadata_reader.get_metadata_version(column_metadata, year)
     return column_metadata
 
 
