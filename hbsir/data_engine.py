@@ -226,9 +226,9 @@ class TableLoader:
     def load(self) -> pd.DataFrame:
         table_list = []
         table_years = utils.construct_table_year_pairs(self.table_names, self.years)
-        table_list = [
-            self._load_table(table_name, year) for table_name, year in table_years
-        ]
+        table_list = []
+        for table_name, year in table_years:
+            table_list.append(self._load_table(table_name, year))
         table = pd.concat(table_list, ignore_index=True)
         if (len(self.table_names) == 1) and self.apply_schema:
             schema = self._get_schema(self.table_names[0], self.years[-1])
