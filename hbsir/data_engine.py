@@ -100,6 +100,8 @@ class SchemaApplier:
             self.table["Table_Name"] = self.schema["table_name"]
         if settings["add_year"]:
             self.table["Year"] = self.schema["year"]
+        if ("add_weights" in settings) and settings["add_weights"]:
+            self.table = add_weights(self.table)
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
