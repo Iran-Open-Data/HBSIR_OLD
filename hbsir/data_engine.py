@@ -466,17 +466,26 @@ class Classification:
 class Attribute:
     def __init__(
         self,
+        attribute_name: _Attribute,
         year: int,
-        attribute: _Attribute,
         translations: str | Iterable[str] = "names",
+        columns_labels: Iterable[str] | None = None,
     ) -> None:
         self.household_metadata = utils.MetadataVersionResolver(
             metadatas.household, year
         ).get_version()
-        self.attribute = attribute
+        self.attribute_name = attribute_name
         self.translations = (
-            [translations] if isinstance(translations, str) else translations
+            [translations] if isinstance(translations, str) else list(translations)
         )
+        if columns_labels is None:
+            if len(self.translations) == 1:
+                self.columns_labels = [attribute_name]
+            else:
+                self.columns_labels = [
+                    f"{attribute_name}_{translation}"
+                    for translation in self.translations
+                ]
 
     def construct_mapping_table(self, table: pd.DataFrame):
         household_ids = table["ID"].drop_duplicates().copy()
@@ -485,12 +494,12 @@ class Attribute:
         for translation in self.translations:
             translator = self._create_code_translator(translation)
             mappings.append(translator(household_ids))
-        mapping_table = pd.concat(mappings, axis="columns")
+        mapping_table = pd.concat(mappings, axis="columns", keys=self.columns_labels)
         return mapping_table
 
     def _create_code_translator(self, translation):
         assert isinstance(self.household_metadata, dict)
-        mapping = self.household_metadata[self.attribute][translation]
+        mapping = self.household_metadata[self.attribute_name][translation]
         code_builder = self._create_code_builder()
 
         def translator(household_id_column: pd.Series) -> pd.Series:
@@ -503,7 +512,7 @@ class Attribute:
     def _create_code_builder(self):
         assert isinstance(self.household_metadata, dict)
         ld_len = self.household_metadata["ID_Length"]
-        attr_dict = self.household_metadata[self.attribute]
+        attr_dict = self.household_metadata[self.attribute_name]
         if ("position" not in attr_dict) or attr_dict["position"] is None:
             raise ValueError("Code position is not available")
         start, end = attr_dict["position"]["start"], attr_dict["position"]["end"]
