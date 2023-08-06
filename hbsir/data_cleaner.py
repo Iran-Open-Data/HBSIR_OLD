@@ -18,7 +18,7 @@ from .metadata import (
 )
 
 
-def load_table_data(
+def read_table_csv(
     table_name: str, year: int, urban: bool | None = None
 ) -> pd.DataFrame:
     """
@@ -44,17 +44,12 @@ def load_table_data(
 
     >>> load_table_data("food", 1393, urban=True)
     """
-
-    if urban is None:
-        urban_stats = [True, False]
-    else:
-        urban_stats = [urban]
-
+    urban_stats = [True, False] if urban is None else [urban]
     tables = []
     for is_urban in urban_stats:
         file_path = _build_file_path(table_name, year, is_urban)
         tables.append(pd.read_csv(file_path, low_memory=False))
-    table = pd.concat(tables, axis="index", ignore_index=True)
+    table = pd.concat(tables, ignore_index=True)
     return table
 
 
@@ -62,17 +57,22 @@ def _build_file_path(table_name: str, year: int, is_urban: bool) -> Path:
     urban_rural = "U" if is_urban else "R"
     year_string = year % 100 if year < 1400 else year
     table_metadata = _get_table_metadata(table_name, year, is_urban)
-    file_code = metadata.get_metadata_version(table_metadata["file_code"], year)
+    file_code = utils.MetadataVersionResolver(
+        table_metadata["file_code"], year
+    ).get_version()
     file_name = f"{urban_rural}{year_string}{file_code}.csv"
     file_path = defaults.extracted_data.joinpath(str(year), file_name)
     return file_path
 
 
+# pylint: disable=unsubscriptable-object
+# pylint: disable=unsupported-membership-test
 def _get_table_metadata(
     table_name: str, year: int, is_urban: bool | None = None
 ) -> dict:
     table_metadata = metadatas.tables[table_name]
-    table_metadata = metadata.get_metadata_version(table_metadata, year)
+    table_metadata = utils.MetadataVersionResolver(table_metadata, year).get_version()
+    assert isinstance(table_metadata, dict)
 
     if is_urban is True:
         if "urban" in table_metadata:
@@ -88,7 +88,7 @@ def _get_table_metadata(
     return table_metadata
 
 
-def clean_table_with_metadata(table_name: str, year: int) -> pd.DataFrame:
+def open_and_clean_table(table_name: str, year: int) -> pd.DataFrame:
     """
     Clean the specified table using metadata and return a cleaned pandas DataFrame.
 
@@ -102,7 +102,7 @@ def clean_table_with_metadata(table_name: str, year: int) -> pd.DataFrame:
     """
     cleaned_table_list = []
     for is_urban in [True, False]:
-        table = load_table_data(table_name, year, is_urban)
+        table = read_table_csv(table_name, year, is_urban)
         table_metadata = _get_table_metadata(table_name, year, is_urban)
         cleaned_table = _apply_metadata_to_table(table, table_metadata)
         cleaned_table_list.append(cleaned_table)
@@ -177,7 +177,7 @@ def _general_cleaning(column: pd.Series):
     return column
 
 
-def parquet_clean_data(
+def save_cleaned_tables_as_parquet(
     table_names: _OriginalTable | Iterable[_OriginalTable] | None = None,
     years: int | Iterable[int] | str | None = None,
 ) -> None:
@@ -214,7 +214,7 @@ def parquet_clean_data(
     for _table_name, year in table_year:
         pbar.update()
         pbar.desc = f"Table: {_table_name}, Year: {year}"
-        table = clean_table_with_metadata(_table_name, year)
+        table = open_and_clean_table(_table_name, year)
         Path(defaults.processed_data).mkdir(exist_ok=True)
         table.to_parquet(
             defaults.processed_data.joinpath(f"{year}_{_table_name}.parquet"),
