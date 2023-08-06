@@ -607,12 +607,10 @@ def add_attribute(
 
 
 def add_weights(table: pd.DataFrame) -> pd.DataFrame:
-    table_years = (
-        table[["Table_Name", "Year"]].drop_duplicates().to_records(index=False).tolist()
-    )
+    years = table["Year"].drop_duplicates().to_list()
     subtables = []
-    for table_name, year in table_years:
-        filt = (table["Year"] == year) & (table["Table_Name"] == table_name)
+    for year in years:
+        filt = table["Year"] == year
         subtable = table.loc[filt].copy()
         subtable = Weight(year).add_weights(subtable)
         subtables.append(subtable)
