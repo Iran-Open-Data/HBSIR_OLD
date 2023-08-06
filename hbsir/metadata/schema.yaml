@@ -208,7 +208,6 @@ investment:
   order: *common_expenditure_order
 
 
-
 Original_Expenditures:
 
   table_list:
