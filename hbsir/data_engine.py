@@ -288,8 +288,9 @@ class TableLoader:
         return table
 
     def _collect_schema_tables(
-        self, table_names: list[str], year: int
+        self, table_names: str | list[str], year: int
     ) -> list[pd.DataFrame]:
+        table_names = [table_names] if isinstance(table_names, str) else table_names
         table_list = []
         for name in table_names:
             table_list.append(self._load_table(name, year))
