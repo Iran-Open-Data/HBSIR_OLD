@@ -120,7 +120,7 @@ class Argham:
         return ", ".join(representation_list)
 
     def __contains__(self, value: int):
-        if (value < self.min) or (value > self.max): # type: ignore
+        if (value < self.min) or (value > self.max):  # type: ignore
             return False
         for number_range in self.range_list:
             if value in number_range:
@@ -170,7 +170,7 @@ class Argham:
 
         self.range_list.append(range(start, end, step))
         self._update_min(start)
-        self._update_max(end -1)
+        self._update_max(end - 1)
 
     def _update_min(self, number) -> None:
         if self.min is None:
