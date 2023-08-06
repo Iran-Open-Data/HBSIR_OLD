@@ -608,7 +608,7 @@ def add_attribute(
     years = list(table["Year"].drop_duplicates())
     subtables = []
     for year in years:
-        attribute_reader = Attribute(year=year, attribute=attribute_name, **kwargs)
+        attribute_reader = Attribute(year=year, attribute_name=attribute_name, **kwargs)
         filt = table["Year"] == year
         subtable = table.loc[filt].copy()
         subtable = attribute_reader.add_attribute(subtable)
