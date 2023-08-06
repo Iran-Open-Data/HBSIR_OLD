@@ -82,6 +82,8 @@ class SchemaApplier:
             self._apply_instructions(self.schema["preprocess"])
         if "classifications" in self.schema:
             self._add_classifications(self.schema["classifications"])
+        if "attributes" in self.schema:
+            self._add_attribute(self.schema["attributes"])
         if "columns" in self.schema:
             instructions: dict = self.schema["columns"]
             for name, instruction in instructions.items():
@@ -126,6 +128,11 @@ class SchemaApplier:
         )
         for classification in classifications:
             self.table = add_classification(self.table, **classification)
+
+    def _add_attribute(self, attributes: dict | list[dict]) -> None:
+        attributes = [attributes] if isinstance(attributes, dict) else attributes
+        for attribute in attributes:
+            self.table = add_attribute(self.table, **attribute)
 
     def _apply_column_instruction(self, column_name, instruction) -> None:
         if instruction is None:
