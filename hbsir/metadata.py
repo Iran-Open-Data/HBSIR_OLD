@@ -97,6 +97,20 @@ class Metadatas:
     other = open_yaml("metadata/other.yaml")
 
 
+load_table_defaults = settings["functions_defaults"]["load_table"]
+
+
+class LoadTable(BaseModel):
+    data_type: Literal["processed", "cleaned", "original"] = load_table_defaults[
+        "data_type"
+    ]
+    on_missing: Literal["error", "download", "create"] = load_table_defaults[
+        "on_missing"
+    ]
+    save_downloaded: bool = load_table_defaults["save_downloaded"]
+    save_created: bool = load_table_defaults["save_created"]
+
+
 @dataclass
 class Defaults:
     """
