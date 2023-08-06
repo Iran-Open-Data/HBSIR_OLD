@@ -278,7 +278,7 @@ class TableLoader:
 
     def _construct_schema_based_table(self, table_name: str, year: int) -> pd.DataFrame:
         if table_name not in self.tables_schema:
-            raise KeyError("Table name is not available in schema")
+            raise KeyError(f"Table name {table_name} is not available in schema")
         table_names = self.tables_schema[table_name]["table_list"]
 
         table_list = self._collect_schema_tables(table_names, year)
