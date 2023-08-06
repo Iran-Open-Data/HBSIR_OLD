@@ -96,6 +96,9 @@ class Metadatas:
     schema = open_yaml("metadata/schema.yaml")
     other = open_yaml("metadata/other.yaml")
 
+    def reload_schema(self):
+        self.schema = open_yaml("metadata/schema.yaml")
+
 
 load_table_defaults = settings["functions_defaults"]["load_table"]
 
