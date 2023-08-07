@@ -217,22 +217,22 @@ def setup(
     replace: bool = False,
 ) -> None:
     """Set up data by downloading and extracting archive files.
-    
-    This function handles downloading the archived data files, 
-    extracting the CSV tables from the MS Access databases, and 
+
+    This function handles downloading the archived data files,
+    extracting the CSV tables from the MS Access databases, and
     saving them locally.
-    
+
     It calls archive_handler.setup() to download and extract the
     archive files for the specified years.
-    
+
     It also calls data_cleaner.save_cleaned_tables_as_parquet()
     to clean the specified tables and save them to Parquet format.
-    
+
     Args:
         years (int|list|str|None): Year(s) to download and extract.
         table_names (list|None): Tables to clean and convert to Parquet.
         replace (bool): Whether to overwrite existing files.
-        
+
     Examples:
         setup(1399)
         setup([1390,1400], ['food'], True)
