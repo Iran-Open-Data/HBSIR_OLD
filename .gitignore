@@ -9,6 +9,7 @@ dist/
 Data/*
 hbsir/Data/*
 7-Zip/*
+hbsir/7-Zip/*
 temp/*
 
 *.pdf

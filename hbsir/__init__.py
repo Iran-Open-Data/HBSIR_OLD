@@ -1,12 +1,41 @@
-"""init file"""
+"""Main API for Household Budget Survey of Iran (HBSIR) data.
+
+This module exposes the main functions for loading, processing, and  
+analyzing the household survey data.
+
+The key functions are:
+
+- load_table: Load data for a given table name and year range
+- add_classification: Add COICOP commodity classification codes  
+- add_attribute: Add household attributes like urban/rural
+- add_weight: Add sampling weights
+
+The load_table function handles fetching data from different sources
+like original CSVs or preprocessed Parquet files. It provides options 
+for configuring behavior when data is missing.
+
+Sample usage:
+
+    import hbsir
+    
+    df = hbsir.load_table('food', [1399, 1400])
+    df = hbsir.add_classification(df, 'original')
+    df = hbsir.add_attribute(df, 'Urban_Rural')
+    
+See API documentation for more details.
+"""
 
 from typing import Iterable, Literal
 
 import pandas as pd
 
-from . import data_engine, data_cleaner, metadata_reader, utils
+from . import metadata_reader, archive_handler, data_cleaner, data_engine
+from .utils import parse_years
+
+_OriginalTable = metadata_reader.OriginalTable
 
 
+# pylint: disable=too-many-arguments
 # pylint: disable=unused-argument
 def load_table(
     table_name: str,
@@ -44,13 +73,13 @@ def load_table(
     optional_vars = {key: value for key, value in locals().items() if value is not None}
     settings = metadata_reader.LoadTable(**optional_vars)
     if settings.data_type == "original":
-        years = utils.parse_years(years)
+        years = parse_years(years)
         table_parts = []
         for year in years:
             table_parts.append(data_cleaner.read_table_csv(table_name, year))
         table = pd.concat(table_parts)
     elif settings.data_type == "cleaned":
-        years = utils.parse_years(years)
+        years = parse_years(years)
         table_parts = []
         for year in years:
             table_parts.append(
@@ -180,6 +209,36 @@ def add_weight(table: pd.DataFrame) -> pd.DataFrame:
     """
     table = data_engine.add_weights(table)
     return table
+
+
+def setup(
+    years: int | Iterable[int] | str | None = None,
+    table_names: _OriginalTable | Iterable[_OriginalTable] | None = None,
+    replace: bool = False,
+) -> None:
+    """Set up data by downloading and extracting archive files.
+
+    This function handles downloading the archived data files,
+    extracting the CSV tables from the MS Access databases, and
+    saving them locally.
+
+    It calls archive_handler.setup() to download and extract the
+    archive files for the specified years.
+
+    It also calls data_cleaner.save_cleaned_tables_as_parquet()
+    to clean the specified tables and save them to Parquet format.
+
+    Args:
+        years (int|list|str|None): Year(s) to download and extract.
+        table_names (list|None): Tables to clean and convert to Parquet.
+        replace (bool): Whether to overwrite existing files.
+
+    Examples:
+        setup(1399)
+        setup([1390,1400], ['food'], True)
+    """
+    archive_handler.setup(years, replace)
+    data_cleaner.save_cleaned_tables_as_parquet(table_names, years)
 
 
 __version__ = "0.1.0"

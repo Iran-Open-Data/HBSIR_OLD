@@ -4,7 +4,6 @@ Configuration file for pytest
 import pytest
 
 import hbsir
-from hbsir import archive_handler
 
 
 @pytest.fixture(scope="session")
@@ -16,7 +15,7 @@ def food_1400():
 @pytest.fixture(scope="session")
 def expenditures_1400():
     """Loads 1400 Expenditures Table"""
-    archive_handler.setup(1400)
+    hbsir.setup(1400, replace=True)
     return hbsir.load_table("Expenditures", 1400, on_missing="error")
 
 
