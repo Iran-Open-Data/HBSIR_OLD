@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install unixodbc
-      run: apt install unixodbc
+      run: sudo apt-get install unixodbc
 
     - name: Install poetry
       run: pip install poetry
