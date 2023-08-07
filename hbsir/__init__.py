@@ -14,20 +14,20 @@ def load_table(
 ) -> pd.DataFrame:
     """Load DataFrame for given table name and year range.
 
-    Loads data for specified table, handles different data types, 
+    Loads data for specified table, handles different data types,
     and provides options for configuring behavior when data is missing.
 
     Args:
         table_name: Name of table to load.
         years: Year or years to load data for.
         data_type: What data type to load - 'original', 'cleaned' or 'processed'.
-        on_missing: Action if data is missing - 'error', 'download', or 'create'. 
+        on_missing: Action if data is missing - 'error', 'download', or 'create'.
         save_downloaded: Whether to save downloaded data.
         save_created: Whether to save newly created data.
 
     Returns:
         pd.DataFrame: Loaded data for the specified table and year range.
-    
+
     Raises:
         FileNotFoundError: If data is missing and on_missing='error'.
 
@@ -52,12 +52,12 @@ def create_table_with_schema(schema) -> pd.DataFrame:
 
     Args:
         schema: Dictionary defining schema for output DataFrame.
-        data_type: What data type to load or create - 'original', 
-            'cleaned' or 'processed'.  
+        data_type: What data type to load or create - 'original',
+            'cleaned' or 'processed'.
         on_missing: Action if data is missing - 'error', 'download', or 'create'.
         save_downloaded: Whether to save downloaded data.
         save_created: Whether to save newly created data.
-    
+
     Returns:
         pd.DataFrame: Loaded or created DataFrame matching schema.
 
@@ -97,7 +97,7 @@ def add_attribute(
 ) -> pd.DataFrame:
     """Add household attributes to DataFrame based on ID.
 
-    Takes a DataFrame containing a 'ID' column, and adds columns for the 
+    Takes a DataFrame containing a 'ID' column, and adds columns for the
     specified household attribute such as urban/rural, province, or region.
 
     The attribute is joined based on matching the 'ID' column.
@@ -106,16 +106,16 @@ def add_attribute(
 
     - 'Urban_Rural': Urban or rural classification
     - 'Province': Province name
-    - 'Region': Region name  
+    - 'Region': Region name
 
     Args:
-        table: DataFrame containing 'ID' column. 
+        table: DataFrame containing 'ID' column.
         attribute_name: Name of attribute to add.
         **kwargs: Additional arguments passed to internal adder.
 
     Returns:
         pd.DataFrame: Input DataFrame with added attribute columns.
-    
+
     """
     table = data_engine.add_attribute(
         table=table, attribute_name=attribute_name, **kwargs
@@ -126,8 +126,8 @@ def add_attribute(
 def add_weight(table: pd.DataFrame) -> pd.DataFrame:
     """Add sampling weights to DataFrame based on household ID and year.
 
-    Takes a DataFrame containing 'ID' and 'Year' columns, joins the 
-    appropriate sampling weight for each household based on year, and 
+    Takes a DataFrame containing 'ID' and 'Year' columns, joins the
+    appropriate sampling weight for each household based on year, and
     adds a 'Weight' column.
 
     Weights for years prior to 1395 are loaded from external parquet data,
