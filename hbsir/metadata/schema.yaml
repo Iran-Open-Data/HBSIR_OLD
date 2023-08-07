@@ -35,8 +35,6 @@ common_expenditure_order: &common_expenditure_order
 food:
   settings: *expenditure_tables_settings
   views:
-   - ORIGINAL1363
-   - ORIGINAL1383
    - original
 
   columns:
