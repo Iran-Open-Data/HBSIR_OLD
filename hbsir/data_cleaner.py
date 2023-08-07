@@ -9,9 +9,9 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 
-from . import metadata, utils
+from . import metadata_reader, utils
 
-from .metadata import (
+from .metadata_reader import (
     OriginalTable as _OriginalTable,
     defaults,
     metadatas,
@@ -126,13 +126,13 @@ def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
     table_settings = _get_table_settings(table_metadata)
     year = table_metadata["year"]
     columns_metadata = table_metadata["columns"]
-    columns_metadata = metadata.get_metadata_version(columns_metadata, year)
+    columns_metadata = metadata_reader.get_metadata_version(columns_metadata, year)
     try:
         column_metadata = columns_metadata[column_name]
     except KeyError:
         column_metadata = table_settings["missings"]
     else:
-        column_metadata = metadata.get_metadata_version(column_metadata, year)
+        column_metadata = metadata_reader.get_metadata_version(column_metadata, year)
     return column_metadata
 
 

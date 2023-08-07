@@ -11,22 +11,22 @@ import itertools
 
 import pandas as pd
 
-from . import metadata, utils
+from . import metadata_reader, utils
 from .data_cleaner import open_and_clean_table
 
-defaults = metadata.defaults
-metadatas = metadata.metadatas
-_Attribute = metadata.Attribute
-_OriginalTable = metadata.OriginalTable
-_StandardTables = metadata.StandardTable
-_Table = metadata.Table
+defaults = metadata_reader.defaults
+metadatas = metadata_reader.metadatas
+_Attribute = metadata_reader.Attribute
+_OriginalTable = metadata_reader.OriginalTable
+_StandardTables = metadata_reader.StandardTable
+_Table = metadata_reader.Table
 
 
 class TableHandler:
     """A class for loading parquet files"""
 
     def __init__(
-        self, table_name: str, year: int, settings: metadata.LoadTable
+        self, table_name: str, year: int, settings: metadata_reader.LoadTable
     ) -> None:
         self.table_name = table_name
         self.year = year
@@ -212,7 +212,7 @@ class TableLoader:
         self,
         table_name: str,
         years: int | Iterable[int] | str | None,
-        settings: metadata.LoadTable,
+        settings: metadata_reader.LoadTable,
     ):
         self.table_name = table_name
         self.years = utils.parse_years(years)
@@ -551,7 +551,7 @@ class Weight:
         return weights
 
     def _load_from_household_info(self) -> pd.Series:
-        settings = metadata.LoadTable()
+        settings = metadata_reader.LoadTable()
         loader = TableLoader("household_information", self.year, settings)
         hh_info = loader.load()
         weights = hh_info.set_index("ID")["Weight"]

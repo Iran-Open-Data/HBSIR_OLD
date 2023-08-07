@@ -4,7 +4,7 @@ from typing import Iterable, Literal
 
 import pandas as pd
 
-from . import data_engine, metadata, data_cleaner, utils
+from . import data_engine, data_cleaner, metadata_reader, utils
 
 
 # pylint: disable=unused-argument
@@ -40,9 +40,9 @@ def load_table(
         >>> load_table('Expenditures', [1399, 1400])
 
     """
-    metadata.metadatas.reload_schema()
+    metadata_reader.metadatas.reload_schema()
     optional_vars = {key: value for key, value in locals().items() if value is not None}
-    settings = metadata.LoadTable(**optional_vars)
+    settings = metadata_reader.LoadTable(**optional_vars)
     if settings.data_type == "original":
         years = utils.parse_years(years)
         table_parts = []
@@ -96,12 +96,12 @@ def create_table_with_schema(
         >>> df = create_table_with_schema(schema)
 
     """
-    metadata.metadatas.reload_schema()
+    metadata_reader.metadatas.reload_schema()
     optional_vars = {key: value for key, value in locals().items() if value is not None}
-    settings = metadata.LoadTable(**optional_vars)
+    settings = metadata_reader.LoadTable(**optional_vars)
     if "table_list" in schema:
         years = schema["years"]
-        metadata.metadatas.schema["_Input_Table"] = schema
+        metadata_reader.metadatas.schema["_Input_Table"] = schema
     else:
         raise NameError
     return data_engine.TableLoader("_Input_Table", years, settings).load()

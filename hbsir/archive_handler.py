@@ -13,10 +13,10 @@ from tqdm import tqdm
 import pandas as pd
 import pyodbc
 
-from . import metadata, utils
+from . import metadata_reader, utils
 
 
-defaults = metadata.defaults
+defaults = metadata_reader.defaults
 
 
 def setup(
@@ -325,8 +325,8 @@ def _extract_table(
 
 def _change_1380_table_names(year: int, table_name: str):
     if year == 1380:
-        if table_name in metadata.metadatas.other["unusual_names_of_1380"]:
-            table_name = metadata.metadatas.other["unusual_names_of_1380"][table_name]
+        if table_name in metadata_reader.metadatas.other["unusual_names_of_1380"]:
+            table_name = metadata_reader.metadatas.other["unusual_names_of_1380"][table_name]
     return table_name
 
 

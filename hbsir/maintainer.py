@@ -7,7 +7,7 @@ from tqdm import tqdm
 from typing import Iterable
 import boto3
 
-from .metadata import (
+from .metadata_reader import (
     defaults,
     OriginalTable as _OriginalTable,
 )
