@@ -39,3 +39,28 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest tests/
+
+  windows:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install poetry
+      run: pip install poetry
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: 'poetry'
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Install pytest
+      run: poetry add pytest
+
+    - name: Test with pytest
+      run: poetry run pytest tests
