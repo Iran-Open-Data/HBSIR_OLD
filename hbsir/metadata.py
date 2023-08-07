@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, get_args
 
+from pydantic import BaseModel
 import yaml
 
 
@@ -81,6 +82,16 @@ def open_yaml(path):
     return yaml_content
 
 
+if ROOT_DIRECTORT.joinpath("hbsir-settings.yaml").exists():
+    settings = open_yaml(ROOT_DIRECTORT.joinpath("hbsir-settings.yaml"))
+elif PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml").exists():
+    settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml"))
+elif PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml").exists():
+    settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml"))
+else:
+    raise FileNotFoundError
+
+
 @dataclass
 class Metadatas:
     """
@@ -96,6 +107,23 @@ class Metadatas:
     schema = open_yaml("metadata/schema.yaml")
     other = open_yaml("metadata/other.yaml")
 
+    def reload_schema(self):
+        self.schema = open_yaml("metadata/schema.yaml")
+
+
+load_table_defaults = settings["functions_defaults"]["load_table"]
+
+
+class LoadTable(BaseModel):
+    data_type: Literal["processed", "cleaned", "original"] = load_table_defaults[
+        "data_type"
+    ]
+    on_missing: Literal["error", "download", "create"] = load_table_defaults[
+        "on_missing"
+    ]
+    save_downloaded: bool = load_table_defaults["save_downloaded"]
+    save_created: bool = load_table_defaults["save_created"]
+
 
 @dataclass
 class Defaults:
@@ -109,18 +137,6 @@ class Defaults:
     """
 
     # TODO need to change this to just settings.
-    if ROOT_DIRECTORT.joinpath("hbsir-settings.yaml").exists():
-        settings = open_yaml(ROOT_DIRECTORT.joinpath("hbsir-settings.yaml"))
-    elif PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml").exists():
-        settings = open_yaml(
-            PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml")
-        )
-    elif PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml").exists():
-        settings = open_yaml(
-            PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml")
-        )
-    else:
-        raise FileNotFoundError
 
     # online directory
     online_dir = settings["online_directory"]
