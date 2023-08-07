@@ -1,4 +1,29 @@
-"""init file"""
+"""Main API for Household Budget Survey of Iran (HBSIR) data.
+
+This module exposes the main functions for loading, processing, and  
+analyzing the household survey data.
+
+The key functions are:
+
+- load_table: Load data for a given table name and year range
+- add_classification: Add COICOP commodity classification codes  
+- add_attribute: Add household attributes like urban/rural
+- add_weight: Add sampling weights
+
+The load_table function handles fetching data from different sources
+like original CSVs or preprocessed Parquet files. It provides options 
+for configuring behavior when data is missing.
+
+Sample usage:
+
+    import hbsir
+    
+    df = hbsir.load_table('food', [1399, 1400])
+    df = hbsir.add_classification(df, 'original')
+    df = hbsir.add_attribute(df, 'Urban_Rural')
+    
+See API documentation for more details.
+"""
 
 from typing import Iterable, Literal
 
@@ -7,6 +32,7 @@ import pandas as pd
 from . import data_engine, data_cleaner, metadata_reader, utils
 
 
+# pylint: disable=too-many-arguments
 # pylint: disable=unused-argument
 def load_table(
     table_name: str,
