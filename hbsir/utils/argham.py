@@ -120,6 +120,8 @@ class Argham:
         return ", ".join(representation_list)
 
     def __contains__(self, value: int):
+        if self.min is None:
+            return False
         if (value < self.min) or (value > self.max):  # type: ignore
             return False
         for number_range in self.range_list:
