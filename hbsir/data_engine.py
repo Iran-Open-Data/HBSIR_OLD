@@ -79,6 +79,8 @@ class SchemaApplier:
         self.modules: dict[str, ModuleType] = {}
 
     def apply(self) -> pd.DataFrame:
+        if self.table.empty:
+            return self.table
         self._apply_settings()
         if "preprocess" in self.schema:
             self._apply_instructions(self.schema["preprocess"])
@@ -92,6 +94,7 @@ class SchemaApplier:
                 self._apply_column_instruction(name, instruction)
         if "postprocess" in self.schema:
             self._apply_instructions(self.schema["postprocess"])
+        self._apply_order()
         return self.table
 
     def _apply_settings(self) -> None:
@@ -104,7 +107,6 @@ class SchemaApplier:
             self.table["Year"] = self.schema["year"]
         if ("add_weights" in settings) and settings["add_weights"]:
             self.table = add_weights(self.table)
-        self._apply_order()
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -149,7 +151,7 @@ class SchemaApplier:
 
     def _apply_numerical_instruction(self, column_name, instruction: dict) -> None:
         if isinstance(instruction["expression"], int):
-            self.table[column_name] = instruction["expression"]
+            self.table.loc[:, column_name] = instruction["expression"]
             return
         columns_names = re.split(r"[\+\-\*\/\s\.]+", instruction["expression"])
         columns_names = [name for name in columns_names if not name.isnumeric()]
@@ -264,7 +266,7 @@ class TableLoader:
             return self.original_tables[f"{table_name}_{year}"]
         table = TableHandler(table_name, year, self.settings).read()
         if table_name in self.tables_schema:
-            table = self._apply_schema(table)
+            table = self._apply_schema(table, table_name, year)
         self.original_tables[f"{table_name}_{year}"] = table
         return table
 
