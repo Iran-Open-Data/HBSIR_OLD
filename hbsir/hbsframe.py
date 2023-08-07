@@ -4,9 +4,35 @@ DataFrame extention
 import pandas as pd
 
 from .data_engine import add_attribute, add_classification
-from .metadata_reader import (
+from .data_engine import (
     Attribute as _Attributes,
 )
+
+
+@pd.api.extensions.register_dataframe_accessor("view")
+class ViewAccessor:
+    def __init__(self, pandas_obj: pd.DataFrame):
+        self._validate(pandas_obj)
+        self._obj = pandas_obj
+        self._views = None
+
+    @staticmethod
+    def _validate(obj):
+        pass
+
+    @property
+    def views(self) -> list[str] | None:
+        return self._views
+
+    @views.setter
+    def views(self, value: list[str]):
+        self._views = value
+
+    def __getitem__(self, value: str) -> pd.DataFrame:
+        if self._views is not None and value in self._views:
+            return add_classification(self._obj, classification_name=value)
+        else:
+            raise KeyError(f"{value} is not a view of the current table")
 
 
 @pd.api.extensions.register_dataframe_accessor("hbs")
