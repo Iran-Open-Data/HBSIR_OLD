@@ -12,6 +12,7 @@ import itertools
 import pandas as pd
 
 from . import metadata_reader, utils
+from .data_cleaner import open_and_clean_table
 
 defaults = metadata_reader.defaults
 metadatas = metadata_reader.metadatas
@@ -21,35 +22,37 @@ _StandardTables = metadata_reader.StandardTable
 _Table = metadata_reader.Table
 
 
-class ParquetHandler:
+
+class TableHandler:
     """A class for loading parquet files"""
 
     def __init__(
-        self,
-        table_name: str,
-        year: int,
-        download_if_missing: bool = True,
-        save_if_download: bool = True,
+        self, table_name: str, year: int, settings: metadata_reader.LoadTable
     ) -> None:
         self.table_name = table_name
         self.year = year
         self.file_name = f"{year}_{table_name}.parquet"
         self.local_path = defaults.processed_data.joinpath(self.file_name)
         self.file_url = f"{defaults.online_dir}/parquet_files/{self.file_name}"
-        self.download_if_missing = download_if_missing
-        self.save_if_download = save_if_download
+        self.settings = settings
 
     def read(self) -> pd.DataFrame:
         """Read the parquet file"""
-        if not self.local_path.exists() and not self.download_if_missing:
-            raise FileNotFoundError
-        if not self.local_path.exists() and self.download_if_missing:
+        if self.local_path.exists():
+            table = self.read_local_file()
+        elif self.settings.on_missing == "create":
+            table = open_and_clean_table(self.table_name, self.year)
+            if self.settings.save_created:
+                self.local_path.parent.mkdir(exist_ok=True, parents=True)
+                table.to_parquet(self.local_path)
+        elif self.settings.on_missing == "download":
             table = self.download()
-            if self.save_if_download:
+            if self.settings.save_downloaded:
                 self.local_path.parent.mkdir(exist_ok=True, parents=True)
                 table.to_parquet(self.local_path)
         else:
-            table = self.read_local_file()
+            raise FileNotFoundError
+
         table.attrs["table_name"] = self.table_name
         table.attrs["year"] = self.year
         return table
@@ -102,6 +105,7 @@ class SchemaApplier:
             self.table["Year"] = self.schema["year"]
         if ("add_weights" in settings) and settings["add_weights"]:
             self.table = add_weights(self.table)
+        self._apply_order()
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -193,7 +197,7 @@ class SchemaApplier:
             raise KeyError
         return filt
 
-    def apply_order(self) -> pd.DataFrame:
+    def _apply_order(self) -> pd.DataFrame:
         if "order" in self.schema:
             new_columns = [
                 column
@@ -207,41 +211,21 @@ class SchemaApplier:
 class TableLoader:
     def __init__(
         self,
-        schema: dict | None = None,
-        table_names: str | list[str] | None = None,
-        years: int | Iterable[int] | str | None = None,
-        apply_schema: bool = True,
+        table_name: str,
+        years: int | Iterable[int] | str | None,
+        settings: metadata_reader.LoadTable,
     ):
-        if schema is not None:
-            table_names = ["Input_Table"]
-        elif (table_names is None) and (schema is None):
-            raise NameError
-        table_names = [table_names] if isinstance(table_names, str) else table_names
-        assert isinstance(table_names, list)
-        for element in table_names:
-            assert isinstance(element, str)
-        self.table_names = table_names
-        if (schema is not None) and ("years" in schema):
-            years = schema["years"]
-        elif years is None:
-            raise NameError
+        self.table_name = table_name
         self.years = utils.parse_years(years)
-        self.apply_schema = apply_schema
+        self.settings = settings
         self.tables_schema = metadatas.schema.copy()
-        self.tables_schema["Input_Table"] = schema
-
         self.original_tables: dict[str, pd.DataFrame] = {}
 
     def load(self) -> pd.DataFrame:
         table_list = []
-        table_years = utils.construct_table_year_pairs(self.table_names, self.years)
-        table_list = []
-        for table_name, year in table_years:
-            table_list.append(self._load_table(table_name, year))
+        for year in self.years:
+            table_list.append(self._load_table(self.table_name, year))
         table = pd.concat(table_list, ignore_index=True)
-        if (len(self.table_names) == 1) and self.apply_schema:
-            schema = self._get_schema(self.table_names[0], self.years[-1])
-            table = SchemaApplier(table, schema).apply_order()
         return table
 
     def _load_table(self, table_name: str, year: int) -> pd.DataFrame:
@@ -279,8 +263,8 @@ class TableLoader:
     def _load_original_table(self, table_name: str, year: int) -> pd.DataFrame:
         if f"{table_name}_{year}" in self.original_tables:
             return self.original_tables[f"{table_name}_{year}"]
-        table = ParquetHandler(table_name, year).read()
-        if self.apply_schema and (table_name in self.tables_schema):
+        table = TableHandler(table_name, year, self.settings).read()
+        if table_name in self.tables_schema:
             table = self._apply_schema(table)
         self.original_tables[f"{table_name}_{year}"] = table
         return table
@@ -568,9 +552,9 @@ class Weight:
         return weights
 
     def _load_from_household_info(self) -> pd.Series:
-        hh_info = TableLoader(
-            table_names="household_information", years=self.year
-        ).load()
+        settings = metadata_reader.LoadTable()
+        loader = TableLoader("household_information", self.year, settings)
+        hh_info = loader.load()
         weights = hh_info.set_index("ID")["Weight"]
         return weights
 

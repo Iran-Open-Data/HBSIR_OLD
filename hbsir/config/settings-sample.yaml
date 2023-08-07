@@ -19,3 +19,12 @@ external_data: 'external_data'
 
 # Map
 default_map: humandata
+
+# Functions
+functions_defaults:
+  # Load Table
+  load_table:
+    data_type: processed
+    on_missing: download
+    save_downloaded: true
+    save_created: true
