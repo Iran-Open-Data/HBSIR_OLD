@@ -17,6 +17,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install unixodbc
+      run: sudo apt-get install unixodbc-dev
+
+    - name: install odbc-mdbtools
+      run: sudo apt install odbc-mdbtools
+
     - name: Install poetry
       run: pip install poetry
 
@@ -27,12 +33,10 @@ jobs:
         cache: 'poetry'
 
     - name: Install dependencies
-      run: |
-        poetry install
+      run: poetry install
 
     - name: Install pytest
       run: poetry add pytest
 
     - name: Test with pytest
-      run: |
-        poetry run pytest tests/
+      run: poetry run pytest tests/
