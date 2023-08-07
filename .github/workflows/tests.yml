@@ -18,7 +18,10 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install unixodbc
-      run: sudo apt-get install unixodbc
+      run: sudo apt-get install unixodbc-dev
+
+    - name: install odbc-mdbtools
+      run: apt install odbc-mdbtools
 
     - name: Install poetry
       run: pip install poetry
