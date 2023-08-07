@@ -104,6 +104,7 @@ class SchemaApplier:
             self.table["Year"] = self.schema["year"]
         if ("add_weights" in settings) and settings["add_weights"]:
             self.table = add_weights(self.table)
+        self._apply_order()
 
     def _apply_instructions(self, instructions: str | list[str]) -> None:
         instructions = [instructions] if isinstance(instructions, str) else instructions
@@ -195,7 +196,7 @@ class SchemaApplier:
             raise KeyError
         return filt
 
-    def apply_order(self) -> pd.DataFrame:
+    def _apply_order(self) -> pd.DataFrame:
         if "order" in self.schema:
             new_columns = [
                 column
