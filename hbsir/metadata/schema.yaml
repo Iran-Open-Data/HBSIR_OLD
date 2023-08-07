@@ -208,6 +208,18 @@ investment:
   order: *common_expenditure_order
 
 
+Weights:
+  settings:
+    add_weights: true
+  table_list:
+    - house_specifications
+
+  order:
+    - Year
+    - ID
+    - Weight
+
+
 Original_Expenditures:
 
   table_list:
