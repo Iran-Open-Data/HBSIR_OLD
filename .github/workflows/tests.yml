@@ -21,7 +21,7 @@ jobs:
       run: sudo apt-get install unixodbc-dev
 
     - name: install odbc-mdbtools
-      run: apt install odbc-mdbtools
+      run: sudo apt install odbc-mdbtools
 
     - name: Install poetry
       run: pip install poetry
