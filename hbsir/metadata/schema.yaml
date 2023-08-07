@@ -64,6 +64,8 @@ food:
       type: numerical
       expression: 30
 
+  order: *common_expenditure_order
+
 
 tobacco:
   settings: *expenditure_tables_settings
