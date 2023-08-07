@@ -17,6 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install unixodbc
+      run: brew install unixodbc
+
     - name: Install poetry
       run: pip install poetry
 
