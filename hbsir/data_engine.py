@@ -22,7 +22,6 @@ _StandardTables = metadata_reader.StandardTable
 _Table = metadata_reader.Table
 
 
-
 class TableHandler:
     """A class for loading parquet files"""
 
