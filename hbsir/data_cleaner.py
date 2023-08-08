@@ -126,7 +126,9 @@ def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
     table_settings = _get_table_settings(table_metadata)
     year = table_metadata["year"]
     columns_metadata = table_metadata["columns"]
-    columns_metadata = utils.MetadataVersionResolver(columns_metadata, year).get_version()
+    columns_metadata = utils.MetadataVersionResolver(
+        columns_metadata, year
+    ).get_version()
     if not isinstance(columns_metadata, dict):
         raise ValueError("Unvalid metadata")
     if column_name in columns_metadata:

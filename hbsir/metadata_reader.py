@@ -159,6 +159,7 @@ class Metadata:
     A dataclass for accessing metadata used in other parts of the project.
 
     """
+
     metadata_files = [
         "instruction",
         "tables",
