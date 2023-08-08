@@ -69,7 +69,7 @@ def load_table(
         >>> load_table('Expenditures', [1399, 1400])
 
     """
-    metadata_reader.metadatas.reload_schema()
+    metadata_reader.metadata.reload_file("schema")
     optional_vars = {key: value for key, value in locals().items() if value is not None}
     settings = metadata_reader.LoadTable(**optional_vars)
     if settings.data_type == "original":
@@ -125,12 +125,12 @@ def create_table_with_schema(
         >>> df = create_table_with_schema(schema)
 
     """
-    metadata_reader.metadatas.reload_schema()
+    metadata_reader.metadata.reload_file("schema")
     optional_vars = {key: value for key, value in locals().items() if value is not None}
     settings = metadata_reader.LoadTable(**optional_vars)
     if "table_list" in schema:
         years = schema["years"]
-        metadata_reader.metadatas.schema["_Input_Table"] = schema
+        metadata_reader.metadata.schema["_Input_Table"] = schema
     else:
         raise NameError
     return data_engine.TableLoader("_Input_Table", years, settings).load()

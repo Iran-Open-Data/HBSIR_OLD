@@ -55,7 +55,7 @@ def download(
 
 def _get_name_and_path(url: str, path: str | Path | None) -> tuple[str, Path]:
     if path is None:
-        temp_folder = defaults.pack_dir.joinpath("temp")
+        temp_folder = defaults.package_dir.joinpath("temp")
         temp_folder.mkdir(exist_ok=True)
         file_name = url.split("/")[-1]
         path = temp_folder.joinpath(file_name)
@@ -85,8 +85,8 @@ def download_7zip():
         show_progress_bar=True,
     )
     with ZipFile(file_path) as zip_file:
-        zip_file.extractall(defaults.pack_dir)
+        zip_file.extractall(defaults.package_dir)
     file_path.unlink()
 
     if platform.system() == "Linux":
-        defaults.pack_dir.joinpath("7-Zip", "7zz").chmod(0o771)
+        defaults.package_dir.joinpath("7-Zip", "7zz").chmod(0o771)

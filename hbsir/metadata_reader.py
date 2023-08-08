@@ -2,9 +2,8 @@
 Metadata module
 """
 
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, get_args
+from typing import Any, Literal, get_args
 
 from pydantic import BaseModel
 import yaml
@@ -38,7 +37,6 @@ ExpenditureTable = Literal[
     "durable",
     "investment",
 ]
-expenditure_tables: tuple[ExpenditureTable, ...] = get_args(ExpenditureTable)
 
 IncomeTable = Literal[
     "employment_income",
@@ -50,7 +48,6 @@ IncomeTable = Literal[
 ]
 
 OriginalTable = Literal[GeneralTable, ExpenditureTable, IncomeTable]
-original_tables: tuple[OriginalTable, ...] = get_args(OriginalTable)
 
 StandardTable = Literal[
     "Original_Expenditures",
@@ -58,12 +55,17 @@ StandardTable = Literal[
     "Imputed_Rent",
     "Incomes",
 ]
-standard_tables: tuple[StandardTable, ...] = get_args(StandardTable)
 
 Table = Literal[OriginalTable, StandardTable]
 
 
-def open_yaml(path):
+general_tables: tuple[GeneralTable] = get_args(GeneralTable)
+expenditure_tables: tuple[ExpenditureTable] = get_args(ExpenditureTable)
+original_tables: tuple[OriginalTable] = get_args(OriginalTable)
+standard_tables: tuple[StandardTable] = get_args(StandardTable)
+
+
+def open_yaml(path: Path | str, location: Literal["package", "root"] = "package"):
     """
     Read the contents of a YAML file relative to the root directory and return it as a dictionary.
 
@@ -76,190 +78,135 @@ def open_yaml(path):
     :raises yaml.YAMLError: If there is an error parsing the YAML file.
 
     """
-    path = PACKAGE_DIRECTORY.joinpath(path)
+    path = Path(path) if isinstance(path, str) else path
+    if path.is_absolute():
+        pass
+    elif location == "root":
+        path = ROOT_DIRECTORT.joinpath(path)
+    else:
+        path = PACKAGE_DIRECTORY.joinpath(path)
+
     with open(path, mode="r", encoding="utf8") as yaml_file:
         yaml_content = yaml.load(yaml_file, Loader=yaml.CLoader)
     return yaml_content
 
 
-if ROOT_DIRECTORT.joinpath("hbsir-settings.yaml").exists():
-    settings = open_yaml(ROOT_DIRECTORT.joinpath("hbsir-settings.yaml"))
-elif PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml").exists():
-    settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "hbsir-settings.yaml"))
-elif PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml").exists():
-    settings = open_yaml(PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml"))
-else:
-    raise FileNotFoundError
+def flatten_dict(dictionary: dict) -> dict[tuple[Any, ...], Any]:
+    flattened_dict = {}
+    for key, value in dictionary.items():
+        if isinstance(value, dict):
+            flattend_value = flatten_dict(value)
+            for sub_key, sub_value in flattend_value.items():
+                flattened_dict[(key,) + sub_key] = sub_value
+        else:
+            flattened_dict[(key,)] = value
+    return flattened_dict
 
 
-@dataclass
-class Metadatas:
+def collect_settings() -> dict[tuple[Any, ...], Any]:
+    sample_settings_path = PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml")
+    _settings = flatten_dict(open_yaml(sample_settings_path))
+
+    package_settings_path = PACKAGE_DIRECTORY.joinpath(_settings[("package_settings",)])
+    if package_settings_path.exists():
+        package_settings = flatten_dict(open_yaml(package_settings_path))
+        _update_settings(_settings, package_settings)
+
+    root_setting_path = ROOT_DIRECTORT.joinpath(_settings[("local_settings",)])
+    if root_setting_path.exists():
+        root_settings = flatten_dict(open_yaml(root_setting_path))
+        _update_settings(_settings, root_settings)
+
+    return _settings
+
+
+def _update_settings(_settings, new_settings):
+    for key, value in new_settings.items():
+        if key in _settings:
+            _settings[key] = value
+
+
+settings = collect_settings()
+
+
+class Defaults(BaseModel):
+    # online directory
+    online_dir: str = settings[("online_directory",)]
+
+    # local directory
+    package_dir: Path = PACKAGE_DIRECTORY
+    root_dir: Path = ROOT_DIRECTORT
+
+    if Path(settings[("local_directory",)]).is_absolute():
+        local_dir: Path = Path(settings[("local_directory",)])
+    elif settings[("in_root",)]:
+        local_dir: Path = root_dir.joinpath(settings[("local_directory",)])
+    else:
+        local_dir: Path = package_dir.joinpath(settings[("local_directory",)])
+
+    archive_files: Path = local_dir.joinpath(settings[("archive_files",)])
+    unpacked_data: Path = local_dir.joinpath(settings[("unpacked_data",)])
+    extracted_data: Path = local_dir.joinpath(settings[("extracted_data",)])
+    processed_data: Path = local_dir.joinpath(settings[("processed_data",)])
+    external_data: Path = local_dir.joinpath(settings[("external_data",)])
+
+    first_year: int = settings[("first_year",)]
+    last_year: int = settings[("last_year",)]
+
+
+class Metadata:
     """
     A dataclass for accessing metadata used in other parts of the project.
 
     """
+    metadata_files = [
+        "instruction",
+        "tables",
+        "maps",
+        "household",
+        "commodities",
+        "schema",
+        "other",
+    ]
+    instruction: dict[str, Any]
+    tables: dict[str, Any]
+    maps: dict[str, Any]
+    household: dict[str, Any]
+    commodities: dict[str, Any]
+    schema: dict[str, Any]
+    other: dict[str, Any]
 
-    instruction = open_yaml("metadata/_instruction.yaml")
-    tables = open_yaml("metadata/tables.yaml")
-    maps = open_yaml("metadata/maps.yaml")
-    household = open_yaml("metadata/household.yaml")
-    commodities = open_yaml("metadata/commodities.yaml")
-    schema = open_yaml("metadata/schema.yaml")
-    other = open_yaml("metadata/other.yaml")
+    def __init__(self) -> None:
+        self.reload()
 
-    def reload_schema(self):
-        self.schema = open_yaml("metadata/schema.yaml")
+    def reload(self):
+        for file_name in self.metadata_files:
+            self.reload_file(file_name)
 
-
-load_table_defaults = settings["functions_defaults"]["load_table"]
+    def reload_file(self, file_name):
+        package_metadata_path = settings[("package_metadata", file_name)]
+        local_metadata_path = ROOT_DIRECTORT.joinpath(
+            settings[("local_metadata", file_name)]
+        )
+        _metadata = open_yaml(package_metadata_path)
+        if local_metadata_path.exists():
+            local_metadata = open_yaml(local_metadata_path)
+            _metadata.update(local_metadata)
+        setattr(self, file_name, _metadata)
 
 
 class LoadTable(BaseModel):
-    data_type: Literal["processed", "cleaned", "original"] = load_table_defaults[
-        "data_type"
+    data_type: Literal["processed", "cleaned", "original"] = settings[
+        ("functions_defaults", "load_table", "data_type")
     ]
-    on_missing: Literal["error", "download", "create"] = load_table_defaults[
-        "on_missing"
+    on_missing: Literal["error", "download", "create"] = settings[
+        ("functions_defaults", "load_table", "on_missing")
     ]
-    save_downloaded: bool = load_table_defaults["save_downloaded"]
-    save_created: bool = load_table_defaults["save_created"]
+    save_downloaded: bool = settings[
+        ("functions_defaults", "load_table", "save_downloaded")
+    ]
+    save_created: bool = settings[("functions_defaults", "load_table", "save_created")]
 
 
-@dataclass
-class Defaults:
-    """
-    This dataclass provides access to default values that are used in other
-    parts of the project. It first attempts to load the settings from a local
-    `hbsir-settings.yaml` file in the root directory. If the file is not found,
-    it loads the settings from the sample file named `settings-sample.yaml`
-    located in config folder in library directory.
-
-    """
-
-    # TODO need to change this to just settings.
-
-    # online directory
-    online_dir = settings["online_directory"]
-
-    # local directory
-    pack_dir: Path = PACKAGE_DIRECTORY
-    root_dir: Path = ROOT_DIRECTORT
-    if Path(settings["local_directory"]).is_absolute():
-        local_dir = Path(settings["local_directory"])
-    elif settings["in_root"]:
-        local_dir = root_dir.joinpath(settings["local_directory"])
-    else:
-        local_dir = pack_dir.joinpath(settings["local_directory"])
-    archive_files = local_dir.joinpath(settings["archive_files"])
-    unpacked_data = local_dir.joinpath(settings["unpacked_data"])
-    extracted_data = local_dir.joinpath(settings["extracted_data"])
-    processed_data = local_dir.joinpath(settings["processed_data"])
-    external_data = local_dir.joinpath(settings["external_data"])
-
-    first_year: int = settings["first_year"]
-    last_year: int = settings["last_year"]
-
-
-metadatas = Metadatas()
+metadata = Metadata()
 defaults = Defaults()
-
-
-def get_latest_version_year(metadata_dict: dict, year: int) -> int | bool:
-    """
-    Retrieve the most recent available version of metadata that matches or
-    precedes the given year, provided that the metadata is versioned.
-
-    :param metadata_dict: A dictionary representing the metadata.
-    :type metadata_dict: dict
-
-    :param year: The year to which the version of the metadata should match or
-        precede.
-    :type year: int
-
-    :return: The version number of the most recent metadata version that
-        matches or precedes the given year, or None if the metadata is not
-        versioned.
-    :rtype: int or None
-
-    """
-    if not isinstance(metadata_dict, dict):
-        return False
-    if "versions" in metadata_dict:
-        return True
-    version_list = list(metadata_dict.keys())
-    for element in version_list:
-        if not isinstance(element, int):
-            return False
-        if (element < 1300) or (element > 1500):
-            return False
-
-    selected_version = 0
-    for version in version_list:
-        if version <= year:
-            selected_version = max(selected_version, version)
-    return selected_version
-
-
-def get_metadata_version(metadata_dict: dict, year: int) -> dict:
-    """
-    Retrieve the metadata version that matches or precedes the given year,
-    returning the complete metadata for that version.
-
-    :param metadata_dict: A dictionary representing the metadata.
-    :type metadata_dict: dict
-
-    :param year: The year to which the version of the metadata should match or
-        precede.
-    :type year: int
-
-    :return: A dictionary containing the complete metadata for the version that
-        matches or precedes the given year. If the metadata is not versioned, the
-        function returns the original metadata dictionary.
-    :rtype: dict
-
-    """
-    selected_version = get_latest_version_year(metadata_dict, year)
-    if selected_version is True:
-        selected_version = get_latest_version_year(metadata_dict["versions"], year)
-        metadata_version = {
-            key: value for key, value in metadata_dict.items() if key != "versions"
-        }
-        for key, value in metadata_dict["versions"][selected_version].items():
-            metadata_version[key] = value
-
-    elif selected_version is False:
-        metadata_version = metadata_dict
-
-    else:
-        metadata_version = metadata_dict[selected_version]
-
-    return metadata_version
-
-
-def get_categories(metadata_dict: dict) -> list:
-    """_summary_
-
-    Parameters
-    ----------
-    metadata_dict : dict
-        _description_
-
-    Returns
-    -------
-    _type_
-        _description_
-    """
-    if "categories" not in metadata_dict:
-        categories_list = [metadata_dict]
-    else:
-        categories_number = list(metadata_dict["categories"].keys())
-        categories_number.sort()
-        categories_list = [
-            metadata_dict["categories"][number] for number in categories_number
-        ]
-        shared_infos = [key for key in metadata_dict.keys() if key != "categories"]
-        for category in categories_list:
-            for info in shared_infos:
-                if info not in category.keys():
-                    category[info] = metadata_dict[info]
-    return categories_list
