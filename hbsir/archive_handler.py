@@ -325,7 +325,7 @@ def _extract_table(
 
 def _change_1380_table_names(year: int, table_name: str):
     if year == 1380:
-        unusual_names = metadata_reader.metadatas.other["unusual_names_of_1380"]
+        unusual_names = metadata_reader.metadata.other["unusual_names_of_1380"]
         if table_name in unusual_names:
             table_name = unusual_names[table_name]
     return table_name

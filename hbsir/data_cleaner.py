@@ -14,7 +14,7 @@ from . import metadata_reader, utils
 from .metadata_reader import (
     OriginalTable as _OriginalTable,
     defaults,
-    metadatas,
+    metadata,
 )
 
 
@@ -70,7 +70,7 @@ def _build_file_path(table_name: str, year: int, is_urban: bool) -> Path:
 def _get_table_metadata(
     table_name: str, year: int, is_urban: bool | None = None
 ) -> dict:
-    table_metadata = metadatas.tables[table_name]
+    table_metadata = metadata.tables[table_name]
     table_metadata = utils.MetadataVersionResolver(table_metadata, year).get_version()
     assert isinstance(table_metadata, dict)
 
@@ -126,18 +126,20 @@ def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
     table_settings = _get_table_settings(table_metadata)
     year = table_metadata["year"]
     columns_metadata = table_metadata["columns"]
-    columns_metadata = metadata_reader.get_metadata_version(columns_metadata, year)
-    try:
+    columns_metadata = utils.MetadataVersionResolver(
+        columns_metadata, year
+    ).get_version()
+    if not isinstance(columns_metadata, dict):
+        raise ValueError("Unvalid metadata")
+    if column_name in columns_metadata:
         column_metadata = columns_metadata[column_name]
-    except KeyError:
-        column_metadata = table_settings["missings"]
     else:
-        column_metadata = metadata_reader.get_metadata_version(column_metadata, year)
+        column_metadata = table_settings["missings"]
     return column_metadata
 
 
 def _get_table_settings(table_metadata: dict) -> dict:
-    default_table_settings = metadatas.tables["default_table_settings"]
+    default_table_settings = metadata.tables["default_table_settings"]
     try:
         table_settings = table_metadata["settings"]
     except KeyError:

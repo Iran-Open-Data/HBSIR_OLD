@@ -1,6 +1,32 @@
 
+# Package Settings
+package_settings: "config/settings.yaml"
+
+# Local Settings
+local_settings: settings.yaml
+
+# Package Metadata
+package_metadata:
+  instruction: "metadata/_instruction.yaml"
+  tables: "metadata/tables.yaml"
+  maps: "metadata/maps.yaml"
+  household: "metadata/household.yaml"
+  commodities: "metadata/commodities.yaml"
+  schema: "metadata/schema.yaml"
+  other: "metadata/other.yaml"
+
+# Local Metadata
+local_metadata:
+  instruction: "metadata/_instruction.yaml"
+  tables: "metadata/tables.yaml"
+  maps: "metadata/maps.yaml"
+  household: "metadata/household.yaml"
+  commodities: "metadata/commodities.yaml"
+  schema: "metadata/schema.yaml"
+  other: "metadata/other.yaml"
+
 # Local Directorie
-local_directory: "Data"
+local_directory: Data
 in_root: False
 
 # Online Directory
@@ -11,11 +37,11 @@ first_year: 1363
 last_year: 1400
 
 # Folder Names
-archive_files: '1_archive_files'
-unpacked_data: '2_unpacked_data'
-extracted_data: '3_extracted_data'
-processed_data: 'processed_data'
-external_data: 'external_data'
+archive_files: 1_archive_files
+unpacked_data: 2_unpacked_data
+extracted_data: 3_extracted_data
+processed_data: processed_data
+external_data: external_data
 
 # Map
 default_map: humandata

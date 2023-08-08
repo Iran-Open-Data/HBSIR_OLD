@@ -26,7 +26,7 @@ def extract(compressed_file_path: str | Path, output_directory: str | Path) -> N
 
 
 def _windows_extract(compressed_file_path: str | Path, output_directory: str | Path):
-    seven_zip_file_path = defaults.pack_dir.joinpath("7-Zip", "7z.exe")
+    seven_zip_file_path = defaults.package_dir.joinpath("7-Zip", "7z.exe")
     if not seven_zip_file_path.exists():
         download_7zip()
     subprocess.run(
@@ -43,7 +43,7 @@ def _windows_extract(compressed_file_path: str | Path, output_directory: str | P
 
 
 def _linux_extract(compressed_file_path: str | Path, output_directory: str | Path):
-    seven_zip_file_path = defaults.pack_dir.joinpath("7-Zip", "7zz")
+    seven_zip_file_path = defaults.package_dir.joinpath("7-Zip", "7zz")
     if not seven_zip_file_path.exists():
         download_7zip()
     subprocess.run(

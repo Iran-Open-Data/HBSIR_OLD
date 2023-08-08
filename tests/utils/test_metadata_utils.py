@@ -3,7 +3,7 @@ import pytest
 from hbsir import metadata_reader
 from hbsir.utils.metadata_utils import MetadataVersionResolver
 
-inst = metadata_reader.metadatas.instruction
+inst = metadata_reader.metadata.instruction
 
 simple_metadata = {"key": 1380, "other_key": "other_value"}
 

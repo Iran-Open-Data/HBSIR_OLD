@@ -15,7 +15,7 @@ from . import metadata_reader, utils
 from .data_cleaner import open_and_clean_table
 
 defaults = metadata_reader.defaults
-metadatas = metadata_reader.metadatas
+metadatas = metadata_reader.metadata
 _Attribute = metadata_reader.Attribute
 _OriginalTable = metadata_reader.OriginalTable
 _StandardTables = metadata_reader.StandardTable
