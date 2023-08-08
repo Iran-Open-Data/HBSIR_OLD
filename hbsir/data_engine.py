@@ -227,6 +227,8 @@ class TableLoader:
         for year in self.years:
             table_list.append(self._load_table(self.table_name, year))
         table = pd.concat(table_list, ignore_index=True)
+        if "views" in self.tables_schema[self.table_name]:
+            table.view.views = self.tables_schema[self.table_name]["views"]
         return table
 
     def _load_table(self, table_name: str, year: int) -> pd.DataFrame:

@@ -29,7 +29,7 @@ from typing import Iterable, Literal
 
 import pandas as pd
 
-from . import metadata_reader, archive_handler, data_cleaner, data_engine
+from . import metadata_reader, archive_handler, data_cleaner, data_engine, hbsframe
 from .utils import parse_years
 
 _OriginalTable = metadata_reader.OriginalTable
