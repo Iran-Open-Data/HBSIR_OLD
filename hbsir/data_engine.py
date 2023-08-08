@@ -65,101 +65,70 @@ class TableHandler:
         return pd.read_parquet(self.local_path)
 
 
-# pylint: disable=unsubscriptable-object
-# pylint: disable=unsupported-membership-test
-class SchemaApplier:
-    def __init__(self, table: pd.DataFrame, schema: dict):
+class Applier:
+    def __init__(
+        self, table: pd.DataFrame, instructions: list, properties: dict | None = None
+    ) -> None:
         self.table = table
-        schema_version = utils.MetadataVersionResolver(schema).get_version()
-        # TODO(mohammad_ali): Add schema validation here.
-        if isinstance(schema_version, dict):
-            self.schema = schema_version
-        else:
-            raise ValueError("Schema is not valid")
+        self.properties = properties if properties is not None else {}
         self.modules: dict[str, ModuleType] = {}
-
-    def apply(self) -> pd.DataFrame:
-        if self.table.empty:
-            return self.table
-        self._apply_settings()
-        if "preprocess" in self.schema:
-            self._apply_instructions(self.schema["preprocess"])
-        if "classifications" in self.schema:
-            self._add_classifications(self.schema["classifications"])
-        if "attributes" in self.schema:
-            self._add_attribute(self.schema["attributes"])
-        if "columns" in self.schema:
-            instructions: dict = self.schema["columns"]
-            for name, instruction in instructions.items():
-                self._apply_column_instruction(name, instruction)
-        if "postprocess" in self.schema:
-            self._apply_instructions(self.schema["postprocess"])
-        self._apply_order()
-        return self.table
-
-    def _apply_settings(self) -> None:
-        settings: dict = metadatas.schema["default_settings"].copy()
-        if "settings" in self.schema:
-            settings.update(self.schema["settings"])
-        if settings["add_table_names"]:
-            self.table["Table_Name"] = self.schema["table_name"]
-        if settings["add_year"]:
-            self.table["Year"] = self.schema["year"]
-        if ("add_weights" in settings) and settings["add_weights"]:
-            self.table = add_weights(self.table)
-
-    def _apply_instructions(self, instructions: str | list[str]) -> None:
-        instructions = [instructions] if isinstance(instructions, str) else instructions
-        module_name_list = []
-        func_name_list = []
         for instruction in instructions:
-            module_name, func_name = instruction.rsplit(".", 1)
-            module_name_list.append(module_name)
-            func_name_list.append(func_name)
-        module_list = self._load_modules(module_name_list)
-        for func_name, module in zip(func_name_list, module_list):
-            func = getattr(module, func_name)
-            self.table = func(self.table)
+            method_name, method_input = self.extract_method_name(instruction)
+            if method_input is None:
+                getattr(self, f"_{method_name}")()
+            else:
+                getattr(self, f"_{method_name}")(method_input)
 
-    def _load_modules(self, module_name_list: list[str]) -> Iterable[ModuleType]:
-        for name in module_name_list:
-            if name not in self.modules:
-                complete_name = "hbsir.schema_functions." + name
-                self.modules[name] = importlib.import_module(complete_name)
-        module_list = map(lambda x: self.modules[x], module_name_list)
-        return module_list
+    def extract_method_name(self, instruction):
+        if isinstance(instruction, str):
+            method_name = instruction
+            method_input = None
+        elif isinstance(instruction, dict):
+            method_name, method_input = list(instruction.items())[0]
+        else:
+            raise TypeError
+        return method_name, method_input
 
-    def _add_classifications(self, classifications) -> None:
-        classifications = (
-            [classifications] if isinstance(classifications, dict) else classifications
-        )
-        for classification in classifications:
-            self.table = add_classification(self.table, **classification)
+    def _add_year(self) -> None:
+        self.table["Year"] = self.properties["year"]
 
-    def _add_attribute(self, attributes: dict | list[dict]) -> None:
-        attributes = [attributes] if isinstance(attributes, dict) else attributes
-        for attribute in attributes:
-            self.table = add_attribute(self.table, **attribute)
+    def _add_table_name(self) -> None:
+        self.table["Table_Name"] = self.properties["table_name"]
 
-    def _apply_column_instruction(self, column_name, instruction) -> None:
-        if instruction is None:
-            pass
-        elif instruction["type"] == "numerical":
-            self._apply_numerical_instruction(column_name, instruction)
-        elif instruction["type"] == "categorical":
-            self._apply_categorical_instruction(column_name, instruction)
+    def _add_weights(self) -> None:
+        self.table = add_weights(self.table)
 
-    def _apply_numerical_instruction(self, column_name, instruction: dict) -> None:
-        if isinstance(instruction["expression"], int):
-            self.table.loc[:, column_name] = instruction["expression"]
+    def _add_classification(self, method_input: dict) -> None:
+        self.table = add_classification(self.table, **method_input)
+
+    def _add_attribute(self, method_input: dict) -> None:
+        self.table = add_attribute(self.table, **method_input)
+
+    def _apply_order(self, method_input):
+        new_columns = [
+            column for column in method_input if column in self.table.columns
+        ]
+        self.table = self.table[new_columns]
+
+    def _create_column(self, method_input=None) -> None:
+        if method_input is None:
             return
-        columns_names = re.split(r"[\+\-\*\/\s\.]+", instruction["expression"])
-        columns_names = [name for name in columns_names if not name.isnumeric()]
-        self.table[column_name] = (
-            self.table[columns_names].fillna(0).eval(instruction["expression"])
-        )
+        column_name = method_input["name"]
+        expression = method_input["expression"]
+        if method_input["type"] == "numerical":
+            self.__apply_numerical_instruction(column_name, expression)
+        elif method_input["type"] == "categorical":
+            self.__apply_categorical_instruction(column_name, expression)
 
-    def _apply_categorical_instruction(
+    def __apply_numerical_instruction(self, column_name, expression: int | str) -> None:
+        if isinstance(expression, int):
+            self.table.loc[:, column_name] = expression
+            return
+        columns_names = re.split(r"[\+\-\*\/\s\.]+", expression)
+        columns_names = [name for name in columns_names if not name.isnumeric()]
+        self.table[column_name] = self.table[columns_names].fillna(0).eval(expression)
+
+    def __apply_categorical_instruction(
         self, column_name: str, instruction: dict
     ) -> None:
         categories: dict = instruction["categories"]
@@ -170,13 +139,13 @@ class SchemaApplier:
             categorical_column = pd.Series(index=self.table.index, dtype="category")
 
         for category, condition in categories.items():
-            filt = self._construct_filter(column_name, condition)
+            filt = self.__construct_filter(column_name, condition)
             categorical_column = categorical_column.cat.add_categories([category])
             categorical_column.loc[filt] = category
 
         self.table[column_name] = categorical_column
 
-    def _construct_filter(self, column_name, condition) -> pd.Series:
+    def __construct_filter(self, column_name, condition) -> pd.Series:
         if condition is None:
             filt = self.table.index.to_series()
         elif isinstance(condition, str):
@@ -198,15 +167,15 @@ class SchemaApplier:
             raise KeyError
         return filt
 
-    def _apply_order(self) -> pd.DataFrame:
-        if "order" in self.schema:
-            new_columns = [
-                column
-                for column in self.schema["order"]
-                if column in self.table.columns
-            ]
-            self.table = self.table[new_columns]
-        return self.table
+    def _apply_external_function(self, method_input: str) -> None:
+        module_name, func_name = method_input.rsplit(".", 1)
+        self.__load_module(module_name)
+        func = getattr(self.modules[module_name], func_name)
+        self.table = func(self.table)
+
+    def __load_module(self, module_name: str) -> None:
+        if module_name not in self.modules:
+            self.modules[module_name] = importlib.import_module(module_name)
 
 
 class TableLoader:
@@ -219,16 +188,21 @@ class TableLoader:
         self.table_name = table_name
         self.years = utils.parse_years(years)
         self.settings = settings
-        self.tables_schema = metadatas.schema.copy()
-        self.original_tables: dict[str, pd.DataFrame] = {}
+        self.schema: dict = metadatas.schema.copy()
+        if table_name in self.schema:
+            self.table_schema: dict = self.schema[table_name]
+        else:
+            self.table_schema = {}
+        self.original_tables_cache: dict[str, pd.DataFrame] = {}
 
     def load(self) -> pd.DataFrame:
         table_list = []
         for year in self.years:
-            table_list.append(self._load_table(self.table_name, year))
+            table = self._load_table(self.table_name, year)
+            table_list.append(table)
         table = pd.concat(table_list, ignore_index=True)
-        if "views" in self.tables_schema[self.table_name]:
-            table.view.views = self.tables_schema[self.table_name]["views"]
+        if "views" in self.table_schema:
+            table.view.views = self.table_schema["views"]
         return table
 
     def _load_table(self, table_name: str, year: int) -> pd.DataFrame:
@@ -238,44 +212,38 @@ class TableLoader:
             table = self._construct_schema_based_table(table_name, year)
         return table
 
-    def _get_schema(self, table_name: str, year: int) -> dict:
-        schema: dict = self.tables_schema[table_name].copy()
-        schema.update({"table_name": table_name, "year": year})
-        return schema
-
     def _apply_schema(
         self,
         table: pd.DataFrame,
         table_name: str | None = None,
         year: int | None = None,
     ):
-        if table_name is None:
-            if "table_name" in table.attrs:
-                table_name = table.attrs["table_name"]
-            else:
-                raise ValueError("Table name not provided")
-        if year is None:
-            if "year" in table.attrs:
-                year = table.attrs["year"]
-            else:
-                raise ValueError("Year not provided")
-        schema = self._get_schema(table_name, year)  # type: ignore
-        table = SchemaApplier(table, schema).apply()
+        if (table_name is None) and ("table_name" in table.attrs):
+            table_name = table.attrs["table_name"]
+
+        if (year is None) and ("year" in table.attrs):
+            year = table.attrs["year"]
+        instructions = utils.MetadataVersionResolver(
+            self.schema[table_name]["instructions"], year
+        ).get_version()
+        assert isinstance(instructions, list)
+        props = {"year": year, "table_name": table_name}
+        table = Applier(table, instructions, props).table
         return table
 
     def _load_original_table(self, table_name: str, year: int) -> pd.DataFrame:
-        if f"{table_name}_{year}" in self.original_tables:
-            return self.original_tables[f"{table_name}_{year}"]
+        if f"{table_name}_{year}" in self.original_tables_cache:
+            return self.original_tables_cache[f"{table_name}_{year}"]
         table = TableHandler(table_name, year, self.settings).read()
-        if table_name in self.tables_schema:
+        if not table.empty and (table_name in self.schema):
             table = self._apply_schema(table, table_name, year)
-        self.original_tables[f"{table_name}_{year}"] = table
+        self.original_tables_cache[f"{table_name}_{year}"] = table
         return table
 
     def _construct_schema_based_table(self, table_name: str, year: int) -> pd.DataFrame:
-        if table_name not in self.tables_schema:
+        if table_name not in self.schema:
             raise KeyError(f"Table name {table_name} is not available in schema")
-        table_names = self.tables_schema[table_name]["table_list"]
+        table_names = self.schema[table_name]["table_list"]
 
         table_list = self._collect_schema_tables(table_names, year)
 
@@ -289,7 +257,9 @@ class TableLoader:
         table_names = [table_names] if isinstance(table_names, str) else table_names
         table_list = []
         for name in table_names:
-            table_list.append(self._load_table(name, year))
+            table = self._load_table(name, year)
+            if not table.empty:
+                table_list.append(table)
         return table_list
 
 
@@ -343,8 +313,8 @@ class Classification:
         return settings
 
     @property
-    # pylint: disable=unsupported-assignment-operation
     def classification_table(self) -> pd.DataFrame:
+        # pylint: disable=unsubscriptable-object
         table = pd.DataFrame(self.classification_info["items"])
         table["code_range"] = table["code"].apply(
             utils.Argham,  # type: ignore
@@ -396,8 +366,7 @@ class Classification:
         code_table = pd.DataFrame(
             index=available_codes, columns=row.index
         ).reset_index()
-        # pylint: disable=unsupported-assignment-operation
-        code_table[row.index] = row
+        code_table[row.index] = row  # pylint: disable=unsupported-assignment-operation
         return code_table
 
     def construct_mapping_table(self, table: pd.DataFrame) -> pd.DataFrame:
@@ -495,6 +464,7 @@ class Attribute:
 
     def _create_code_translator(self, translation):
         assert isinstance(self.household_metadata, dict)
+        # pylint: disable=unsubscriptable-object
         mapping = self.household_metadata[self.attribute_name][translation]
         code_builder = self._create_code_builder()
 
@@ -507,6 +477,7 @@ class Attribute:
 
     def _create_code_builder(self):
         assert isinstance(self.household_metadata, dict)
+        # pylint: disable=unsubscriptable-object
         ld_len = self.household_metadata["ID_Length"]
         attr_dict = self.household_metadata[self.attribute_name]
         if ("position" not in attr_dict) or attr_dict["position"] is None:

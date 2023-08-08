@@ -1,22 +1,21 @@
 
 
-default_settings:
-  add_table_names: false
-  add_year: true
-  add_duration: false
-
-
 household_information:
-  order:
-    - Year
-    - ID
-    - Season
-    - Weight	
+
+  instructions:
+
+    - apply_order:
+      - Year
+      - ID
+      - Season
+      - Weight	
 
 
-_expenditure_tables_settings: &expenditure_tables_settings
-  add_table_names: true
-  add_year: true
+house_specifications:
+
+  instructions:
+
+    - add_year
 
 
 common_expenditure_order: &common_expenditure_order
@@ -33,195 +32,313 @@ common_expenditure_order: &common_expenditure_order
 
 
 food:
-  settings: *expenditure_tables_settings
+
+  instructions:
+
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        1363:
+          name: Price_System
+          type: categorical
+          categories:
+            Free_Price:       {Provision_Method: Purchase_Free_Price}
+            Subsidised_Price: {Provision_Method: Purchase_Subsidised_Price}
+        1369: null
+
+    - create_column:
+        1363:
+          name: Price_System
+          type: categorical
+          categories:
+            Purchase: [Purchase_Free_Price, Purchase_Subsidised_Price]
+        1369: null
+
+    - create_column:
+        name: Amount
+        type: numerical
+        versions:
+          1363:
+            expression: "Kilos"
+          1383:
+            expression: "Kilos + 0.001 * Grams"
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
   views:
    - original
 
-  columns:
-
-    Price_System:
-      1363:
-        type: categorical
-        categories:
-          Free_Price:       {Provision_Method: Purchase_Free_Price}
-          Subsidised_Price: {Provision_Method: Purchase_Subsidised_Price}
-      1369: null
-
-    Provision_Method:
-      1363:
-        type: categorical
-        categories:
-          Purchase: [Purchase_Free_Price, Purchase_Subsidised_Price]
-      1369: null
-
-    Amount:
-      1363:
-        type: numerical
-        expression: "Kilos"
-      1383:
-        type: numerical
-        expression: "0.001 * Grams + Kilos"
-
-    Duration:
-      type: numerical
-      expression: 30
-
-  order: *common_expenditure_order
 
 
 tobacco:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
+
 
 
 cloth:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 home:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 furniture:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 medical:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 transportation:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 communication:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 entertainment:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 education:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 hotel:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 other:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 30
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 30
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 durable:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 360
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 360
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 investment:
-  settings: *expenditure_tables_settings
 
-  columns:
-    Duration:
-      type: numerical
-      expression: 360
+  instructions:
 
-  order: *common_expenditure_order
+    - add_year
+
+    - add_table_name
+
+    - create_column:
+        name: Duration
+        type: numerical
+        expression: 360
+
+    - apply_order: *common_expenditure_order
+
+  views:
+   - original
 
 
 Weights:
-  settings:
-    add_weights: true
+
   table_list:
+
     - house_specifications
 
-  order:
-    - Year
-    - ID
-    - Weight
+  instructions:
+
+    - add_weights
+
+    - apply_order:
+      - Year
+      - ID
+      - Weight
 
 
 Original_Expenditures:
@@ -241,27 +358,29 @@ Original_Expenditures:
     - other
     - durable
 
-  columns:
-    Gross_Expenditure:
-      type: numerical
-      expression: "Expenditure"
+  instructions:
+    - create_column:
+        name: Gross_Expenditure
+        type: numerical
+        expression: "Expenditure"
 
-    Net_Expenditure:
-      type: numerical
-      expression: "Expenditure - Secondhand_Sale"
+    - create_column:
+        name: Net_Expenditure
+        type: numerical
+        expression: "Expenditure - Secondhand_Sale"
 
-  order:
-    - Year
-    - ID
-    - Table_Name
-    - Code
-    - Provision_Method
-    - Price_System
-    - Amount
-    - Duration
-    - Price
-    - Gross_Expenditure
-    - Net_Expenditure
+    - apply_order:
+      - Year
+      - ID
+      - Table_Name
+      - Code
+      - Provision_Method
+      - Price_System
+      - Amount
+      - Duration
+      - Price
+      - Gross_Expenditure
+      - Net_Expenditure
 
 
 Expenditures:
@@ -269,315 +388,317 @@ Expenditures:
   table_list:
     - Original_Expenditures
 
-  columns:
-    Gross_Expenditure:
-      type: numerical
-      expression: "Gross_Expenditure / Duration * 360"
-
-    Net_Expenditure:
-      type: numerical
-      expression: "Net_Expenditure / Duration * 360"
-
-  order:
-    - Year
-    - ID
-    - Code
-    - Provision_Method
-    - Price_System
-    - Amount
-    - Price
-    - Gross_Expenditure
-    - Net_Expenditure
-
-
-Original_Outlays:
-  table_list:
-    - food
-    - tobacco
-    - cloth
-    - home
-    - furniture
-    - medical
-    - transportation
-    - communication
-    - entertainment
-    - education
-    - hotel
-    - other
-    - durable
-    - investment
-
-  columns:
-    Gross_Expenditure:
-      type: numerical
-      expression: "Expenditure"
-
-    Net_Expenditure:
-      type: numerical
-      expression: "Expenditure - Secondhand_Sale"
-
-  order:
-    - Year
-    - ID
-    - Code
-    - Provision_Method
-    - Price_System
-    - Amount
-    - Duration
-    - Price
-    - Gross_Expenditure
-    - Net_Expenditure
-
-
-Outlays:
-  table_list:
-    - Original_Expenditures
-
-  columns:
-    Gross_Expenditure:
-      type: numerical
-      expression: "Gross_Expenditure / Duration * 360"
-
-    Net_Expenditure:
-      type: numerical
-      expression: "Net_Expenditure / Duration * 360"
-
-  order:
-    - Year
-    - ID
-    - Code
-    - Provision_Method
-    - Price_System
-    - Amount
-    - Price
-    - Gross_Expenditure
-    - Net_Expenditure
-
-
-employment_income:
-  {}
-
-
-self_employed_income:
-  {}
-
-
-other_income:
-
-  columns:
-    Other_Incomes:
-      type: numerical
-      expression: "Retirement + Rent + Interest + Aid + Home_Production + Transfer"
-
-
-_long_other_incomes:
-  settings:
-    add_table_names: false
+  instructions:
+    - create_column:
+        name: Gross_Expenditure
+        type: numerical
+        expression: "Gross_Expenditure / Duration * 360"
+
+    - create_column:
+        name: Net_Expenditure
+        type: numerical
+        expression: "Net_Expenditure / Duration * 360"
+        
+    - apply_order:
+      - Year
+      - ID
+      - Code
+      - Provision_Method
+      - Price_System
+      - Amount
+      - Price
+      - Gross_Expenditure
+      - Net_Expenditure
+
+
+# Original_Outlays:
+#   table_list:
+#     - food
+#     - tobacco
+#     - cloth
+#     - home
+#     - furniture
+#     - medical
+#     - transportation
+#     - communication
+#     - entertainment
+#     - education
+#     - hotel
+#     - other
+#     - durable
+#     - investment
+
+#   columns:
+#     Gross_Expenditure:
+#       type: numerical
+#       expression: "Expenditure"
+
+#     Net_Expenditure:
+#       type: numerical
+#       expression: "Expenditure - Secondhand_Sale"
+
+#   order:
+#     - Year
+#     - ID
+#     - Code
+#     - Provision_Method
+#     - Price_System
+#     - Amount
+#     - Duration
+#     - Price
+#     - Gross_Expenditure
+#     - Net_Expenditure
+
+
+# Outlays:
+#   table_list:
+#     - Original_Expenditures
+
+#   columns:
+#     Gross_Expenditure:
+#       type: numerical
+#       expression: "Gross_Expenditure / Duration * 360"
+
+#     Net_Expenditure:
+#       type: numerical
+#       expression: "Net_Expenditure / Duration * 360"
+
+#   order:
+#     - Year
+#     - ID
+#     - Code
+#     - Provision_Method
+#     - Price_System
+#     - Amount
+#     - Price
+#     - Gross_Expenditure
+#     - Net_Expenditure
+
+
+# employment_income:
+#   {}
+
+
+# self_employed_income:
+#   {}
+
+
+# other_income:
+
+#   columns:
+#     Other_Incomes:
+#       type: numerical
+#       expression: "Retirement + Rent + Interest + Aid + Home_Production + Transfer"
 
-  table_list:
-    - other_income
 
-  preprocessing:
-    - "table.set_index(['Year', 'ID', 'Member_Number'])"
-    - "table.stack().to_frame().reset_index()"
-    - "table.set_axis(['Year', 'ID', 'Member_Number', 'type', 'value'], axis='columns')"
+# _long_other_incomes:
+#   settings:
+#     add_table_names: false
 
-  columns:
-    Other_Incomes:
-      type: numerical
-      expression: "value"
+#   table_list:
+#     - other_income
 
-    Other_Income_Type:
-      type: categorical
-      categories:
-        Retirement:        {type: Retirement}
-        Rent:              {type: Rent}
-        Interest:          {type: Interest}
-        Aid:               {type: Aid}
-        Home_Production:   {type: Home_Production}
-        Transfer:          {type: Transfer}
+#   preprocessing:
+#     - "table.set_index(['Year', 'ID', 'Member_Number'])"
+#     - "table.stack().to_frame().reset_index()"
+#     - "table.set_axis(['Year', 'ID', 'Member_Number', 'type', 'value'], axis='columns')"
 
-  filter:
-    "Other_Incomes > 0"
+#   columns:
+#     Other_Incomes:
+#       type: numerical
+#       expression: "value"
 
-  order:
-    - Year
-    - ID
-    - Member_Number
-    - Other_Incomes
-    - Other_Income_Type
+#     Other_Income_Type:
+#       type: categorical
+#       categories:
+#         Retirement:        {type: Retirement}
+#         Rent:              {type: Rent}
+#         Interest:          {type: Interest}
+#         Aid:               {type: Aid}
+#         Home_Production:   {type: Home_Production}
+#         Transfer:          {type: Transfer}
 
+#   filter:
+#     "Other_Incomes > 0"
 
-subsidy:
-  {}
+#   order:
+#     - Year
+#     - ID
+#     - Member_Number
+#     - Other_Incomes
+#     - Other_Income_Type
 
 
-public_employment_income:
-  {}
-
-
-private_employment_income:
-  {}
-
-
-Imputed_Rent:
-
-  table_list:
-    - home
-
-  classifications:
-    - {classification: Imputed_Rent, attribute: is_imputed, dropna: true}
-
-  columns:
-    Income:
-      type: numerical
-      expression: "Expenditure * Imputed_Rent * 12"
-
-    Income_Type:
-      type: categorical
-      categories:
-        NonCash_ImputedRent: null
+# subsidy:
+#   {}
 
-  order:
-    - Year
-    - ID
-    - Income_Type
-    - Income
-
 
-NonCash_Incomes_Excluding_Imputed_Rent:
-
-  table_list:
-    - Outlays
+# public_employment_income:
+#   {}
 
-  columns:
-    Income:
-      type: numerical
-      expression: "Net_Expenditure"
-
-    Income_Type:
-      type: categorical
-      categories:
-        NonCash_Private:          {Provision_Method: Instead_of_Private_Service}
-        NonCash_Public:           {Provision_Method: Instead_of_Public_Service}
-        NonCash_Cooperative:      {Provision_Method: Instead_of_Cooperative_Service}
-        NonCash_Agricultural:     {Provision_Method: Agricultural_Work}
-        NonCash_NonAgricultural:  {Provision_Method: Non_Agricultural_Work}
-        NonCash_Donation:         {Provision_Method: Donation}   
-        NonCash_HomeProduction:   {Provision_Method: Home_Production}   
-
-  filter: "Provision_Method not in ['Purchase']"
-
-  order:
-    - Year
-    - ID
-    - Income_Type
-    - Income
-
-
-NonCash_Incomes:
-
-  table_list:
-    - Imputed_Rent
-    - NonCash_Incomes_Excluding_Imputed_Rent
-
-  order:
-    - Year
-    - ID
-    - Income_Type
-    - Income
-
-
-Direct_Cash_Incomes:
-  settings:
-    add_table_names: true
-
-  table_list:
-    - employment_income
-    - self_employed_income
-    - _long_other_incomes
-    - subsidy
-    - investment
-
-  columns:
-    Income:
-      type: numerical
-      expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy + Secondhand_Sale"
-
-    Income_Type:
-      type: categorical
-      categories:
-        Cash_Public:              {table: employment_income, Sector: Public}
-        Cash_Private:             {table: employment_income, Sector: Private}
-        Cash_Cooperative:         {table: employment_income, Sector: Cooperative}
-        Cash_Agricultural:        {table: self_employed_income, Is_Agricultural: true}
-        Cash_NonAgricultural:     {table: self_employed_income, Is_Agricultural: false}
-        Cash_Retirement:          {Other_Income_Type: Retirement}
-        Cash_Rent:                {Other_Income_Type: Rent}
-        Cash_Interest:            {Other_Income_Type: Interest}
-        Cash_Aid:                 {Other_Income_Type: Aid}
-        Cash_Home_Production:     {Other_Income_Type: Home_Production}
-        Cash_Transfer:            {Other_Income_Type: Transfer}
-        Cash_Subsidy:             {table: subsidy}
-        Cash_Investment_Disposal: {table: investment}
-
-  order:
-    - Year
-    - ID
-    - Member_Number
-    - Income_Type
-    - Income
-
-
-Indirect_Cash_Income:
-
-  table_list:
-    - durable
-
-  classifications:
-    - {classification: Insurance_Benefits, attribute: is_benefit, dropna: true}
-
-  filter: "Provision_Method in ['Purchase']"
-
-  columns:
-    Income:
-      type: numerical
-      expression: "Expenditure"
-
-    Income_Type:
-      type: categorical
-      categories:
-        Cash_Insurance_Benefits: null
-
-  order:
-    - Year
-    - ID
-    - Member_Number
-    - Income_Type
-    - Income
-
-
-Cash_Incomes:
-  table_list:
-    - Direct_Cash_Incomes
-    - Indirect_Cash_Income
-
-  order:
-    - Year
-    - ID
-    - Member_Number
-    - Income_Type
-    - Income
-
-
-Incomes:
-  table_list:
-    - NonCash_Incomes
-    - Cash_Incomes
-
-  order:
-    - Year
-    - ID
-    - Member_Number
-    - Income_Type
-    - Income
+
+# private_employment_income:
+#   {}
+
+
+# Imputed_Rent:
+
+#   table_list:
+#     - home
+
+#   classifications:
+#     - {classification: Imputed_Rent, attribute: is_imputed, dropna: true}
+
+#   columns:
+#     Income:
+#       type: numerical
+#       expression: "Expenditure * Imputed_Rent * 12"
+
+#     Income_Type:
+#       type: categorical
+#       categories:
+#         NonCash_ImputedRent: null
+
+#   order:
+#     - Year
+#     - ID
+#     - Income_Type
+#     - Income
+
+
+# NonCash_Incomes_Excluding_Imputed_Rent:
+
+#   table_list:
+#     - Outlays
+
+#   columns:
+#     Income:
+#       type: numerical
+#       expression: "Net_Expenditure"
+
+#     Income_Type:
+#       type: categorical
+#       categories:
+#         NonCash_Private:          {Provision_Method: Instead_of_Private_Service}
+#         NonCash_Public:           {Provision_Method: Instead_of_Public_Service}
+#         NonCash_Cooperative:      {Provision_Method: Instead_of_Cooperative_Service}
+#         NonCash_Agricultural:     {Provision_Method: Agricultural_Work}
+#         NonCash_NonAgricultural:  {Provision_Method: Non_Agricultural_Work}
+#         NonCash_Donation:         {Provision_Method: Donation}   
+#         NonCash_HomeProduction:   {Provision_Method: Home_Production}   
+
+#   filter: "Provision_Method not in ['Purchase']"
+
+#   order:
+#     - Year
+#     - ID
+#     - Income_Type
+#     - Income
+
+
+# NonCash_Incomes:
+
+#   table_list:
+#     - Imputed_Rent
+#     - NonCash_Incomes_Excluding_Imputed_Rent
+
+#   order:
+#     - Year
+#     - ID
+#     - Income_Type
+#     - Income
+
+
+# Direct_Cash_Incomes:
+#   settings:
+#     add_table_names: true
+
+#   table_list:
+#     - employment_income
+#     - self_employed_income
+#     - _long_other_incomes
+#     - subsidy
+#     - investment
+
+#   columns:
+#     Income:
+#       type: numerical
+#       expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy + Secondhand_Sale"
+
+#     Income_Type:
+#       type: categorical
+#       categories:
+#         Cash_Public:              {table: employment_income, Sector: Public}
+#         Cash_Private:             {table: employment_income, Sector: Private}
+#         Cash_Cooperative:         {table: employment_income, Sector: Cooperative}
+#         Cash_Agricultural:        {table: self_employed_income, Is_Agricultural: true}
+#         Cash_NonAgricultural:     {table: self_employed_income, Is_Agricultural: false}
+#         Cash_Retirement:          {Other_Income_Type: Retirement}
+#         Cash_Rent:                {Other_Income_Type: Rent}
+#         Cash_Interest:            {Other_Income_Type: Interest}
+#         Cash_Aid:                 {Other_Income_Type: Aid}
+#         Cash_Home_Production:     {Other_Income_Type: Home_Production}
+#         Cash_Transfer:            {Other_Income_Type: Transfer}
+#         Cash_Subsidy:             {table: subsidy}
+#         Cash_Investment_Disposal: {table: investment}
+
+#   order:
+#     - Year
+#     - ID
+#     - Member_Number
+#     - Income_Type
+#     - Income
+
+
+# Indirect_Cash_Income:
+
+#   table_list:
+#     - durable
+
+#   classifications:
+#     - {classification: Insurance_Benefits, attribute: is_benefit, dropna: true}
+
+#   filter: "Provision_Method in ['Purchase']"
+
+#   columns:
+#     Income:
+#       type: numerical
+#       expression: "Expenditure"
+
+#     Income_Type:
+#       type: categorical
+#       categories:
+#         Cash_Insurance_Benefits: null
+
+#   order:
+#     - Year
+#     - ID
+#     - Member_Number
+#     - Income_Type
+#     - Income
+
+
+# Cash_Incomes:
+#   table_list:
+#     - Direct_Cash_Incomes
+#     - Indirect_Cash_Income
+
+#   order:
+#     - Year
+#     - ID
+#     - Member_Number
+#     - Income_Type
+#     - Income
+
+
+# Incomes:
+#   table_list:
+#     - NonCash_Incomes
+#     - Cash_Incomes
+
+#   order:
+#     - Year
+#     - ID
+#     - Member_Number
+#     - Income_Type
+#     - Income
