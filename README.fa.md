@@ -41,6 +41,8 @@ pip install git+https://github.com/Iran-Open-Data/HBSIR.git
 # loads the data table containing information about food from the year 1400
 hbsir.load_table("food", 1400)
 ```
+با اجرای دستور بالا چنین جدولی باز می‌شود :
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
