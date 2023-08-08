@@ -25,7 +25,6 @@ def download(
     """
     file_name, path = _get_name_and_path(url=url, path=path)
     response = requests.get(url, timeout=1000, stream=True)
-    content_iterator = response.iter_content(chunk_size=4096)
     file_size = response.headers.get("content-length")
     if file_size is not None:
         file_size = int(file_size)
@@ -40,13 +39,7 @@ def download(
     )
     Path(path.parent).mkdir(parents=True, exist_ok=True)
     with open(path, mode="wb") as file:
-        while True:
-            try:
-                chunk = next(content_iterator)
-            except StopIteration:
-                break
-            except requests.Timeout:
-                continue
+        for chunk in response.iter_content(chunk_size=4096):
             download_bar.update(len(chunk))
             file.write(chunk)
     download_bar.close()
