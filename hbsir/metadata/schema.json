@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Budget survey table operation",
+  "description": "Specifying table operations for budget survey data",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "order": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "columns": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/$defs/column_spec",
+          "patternProperties": {
+            "^[0-9]+$": {
+              "$ref": "#/$defs/column_spec"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "column_spec": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["categorical", "numerical"]
+        }
+      },
+      "if": {
+        "properties": { "type": { "const": "categorical" } }
+      },
+      "then": {
+        "properties": { "categories": { "type": "object" } }
+      },
+      "else": {
+        "properties": { "expression": { "type": ["string", "integer"] } }
+      }
+    }
+  },
+  "required": ["default_settings"]
+}
