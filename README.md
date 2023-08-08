@@ -1,4 +1,6 @@
 # HBSIR <img src='https://github.com/Iran-Open-Data/HBSIR/assets/36173945/af8a7d40-d610-42e2-b6b4-c220f7430df4' align="right" height="139" />
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/Iran-Open-Data/HBSIR/blob/main/README.md)
+[![en](https://img.shields.io/badge/lang-fa-green.svg)](https://github.com/Iran-Open-Data/HBSIR/blob/main/README.fa.md)
 
 A package to obtain household expenditure and income survey data.
 
