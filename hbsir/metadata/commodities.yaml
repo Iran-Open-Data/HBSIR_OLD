@@ -196,8 +196,8 @@ ORIGINAL1363:
 
 
 ORIGINAL1383:
-
-  default_levels: [1, 2]
+  defaults:
+    levels: [1, 2]
 
   items: &ORIGINAL1383
 
@@ -779,7 +779,8 @@ ORIGINAL1383:
 
 
 original:
-  default_levels: [2, 3]
+  defaults:
+    levels: [2, 3]
 
   items:
     1363: *ORIGINAL1363
@@ -787,9 +788,10 @@ original:
 
 
 Food-NonFood:
-  default_levels: [1]
-  default_column_names: ["Food-NonFood"]
-  default_missing_value_replacements: {Food-NonFood: Non-Food}
+  defaults:
+    levels: [1]
+    column_names: ["Food-NonFood"]
+    missing_value_replacements: {Food-NonFood: Non-Food}
 
   items:
     1383:
@@ -806,8 +808,9 @@ Food-NonFood:
 
 
 Imputed_Rent:
-  default_levels: [1]
-  default_column_names: ["Imputed_Rent"]
+  defaults:
+    levels: [1]
+    column_names: ["Imputed_Rent"]
 
   items:
     Imputed_Rent:

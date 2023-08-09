@@ -3,15 +3,13 @@ Main file for ordinary use
 """
 
 import re
-from dataclasses import dataclass
-from typing import Iterable, Literal, get_args
+from typing import Iterable, Literal
 from types import ModuleType
 import importlib
-import itertools
 
 import pandas as pd
 
-from . import metadata_reader, utils
+from . import metadata_reader, decoder, utils
 from .data_cleaner import open_and_clean_table
 
 defaults = metadata_reader.defaults
@@ -99,7 +97,8 @@ class Applier:
         self.table = add_weights(self.table)
 
     def _add_classification(self, method_input: dict) -> None:
-        self.table = add_classification(self.table, **method_input)
+        settings = decoder.CommodityDecoderSettings(**method_input)
+        self.table = decoder.CommodityDecoder(self.table, settings).add_classification()
 
     def _add_attribute(self, method_input: dict) -> None:
         self.table = add_attribute(self.table, **method_input)
@@ -263,171 +262,6 @@ class TableLoader:
         return table_list
 
 
-@dataclass
-class ClassificationSettings:
-    levels: list[int] | tuple[int, ...] = (2, 3)
-    column_names: list[str] | tuple[str, ...] = ("classification",)
-    labels: list[str] | tuple[str, ...] = ("item_key",)
-    required_columns = ("drop",)
-    code_column_name: str = "Code"
-    year_column_name: str = "Year"
-    drop_value: bool = False
-    missing_value_replacements: dict[str, str] | None = None
-
-
-class Classification:
-    def __init__(
-        self,
-        classification_name: str = "original",
-        year: int | None = None,
-        settings: ClassificationSettings | None = None,
-        **kwargs,
-    ):
-        self.name = classification_name
-        self.year = year
-        versioned_info = metadatas.commodities[classification_name]
-        category_resolver = utils.MetadataCategoryResolver(versioned_info, year)
-        self.classification_info = category_resolver.categorize_metadata()
-        self.settings = self.create_settings(settings, **kwargs)
-
-    def create_settings(self, settings, **kwargs):
-        classification_default_settings = {
-            key.split("_", 1)[1]: value
-            for key, value in self.classification_info.items()
-            if key.split("_", 1)[0] == "default"
-        }
-        if settings is None:
-            settings = ClassificationSettings()
-        for key, value in classification_default_settings.items():
-            setattr(settings, key, value)
-
-        for key, value in kwargs.items():
-            setattr(settings, key, value)
-
-        if isinstance(settings.levels, int):
-            settings.levels = [settings.levels]
-        if isinstance(settings.column_names, str):
-            settings.column_names = [settings.column_names]
-        if isinstance(settings.labels, str):
-            settings.labels = [settings.labels]
-        return settings
-
-    @property
-    def classification_table(self) -> pd.DataFrame:
-        # pylint: disable=unsubscriptable-object
-        table = pd.DataFrame(self.classification_info["items"])
-        table["code_range"] = table["code"].apply(
-            utils.Argham,  # type: ignore
-            default_start=defaults.first_year,
-            default_end=defaults.last_year + 1,
-            keywords=["code"],
-        )
-        table = table.drop(columns=["code"])
-        for column_name in self.settings.required_columns:
-            table = self._set_column(table, column_name)
-        return table
-
-    def _set_column(self, table: pd.DataFrame, column_name: str):
-        default_value = getattr(self.settings, f"{column_name}_value")
-        if column_name not in table.columns:
-            table[column_name] = default_value
-        elif default_value is not None:
-            table[column_name] = table[column_name].fillna(default_value)
-        return table
-
-    def construct_general_mapping_table(self, table: pd.DataFrame) -> pd.DataFrame:
-        classification_codes = table["Code"].drop_duplicates()
-        tables = []
-        for _, row in self.classification_table.iterrows():
-            code_table = self._build_code_table(classification_codes, row)
-            tables.append(code_table)
-        mapping_table = pd.concat(tables, ignore_index=True)
-        # Validate
-        filt = mapping_table.duplicated(["Code", "level"], keep=False)
-        if filt.sum():
-            invalid_case_sample = (
-                mapping_table.loc[filt].sort_values(["Code", "level"]).head(10)
-            )
-            raise ValueError(f"Classification is not valid \n{invalid_case_sample}")
-        mapping_table = (
-            mapping_table.drop(columns=["code_range"])
-            .set_index(["Code", "level"])
-            .unstack()
-        )
-        assert isinstance(mapping_table, pd.DataFrame)
-        return mapping_table
-
-    @staticmethod
-    def _build_code_table(
-        classification_codes: pd.Series, row: pd.Series
-    ) -> pd.DataFrame:
-        filt = classification_codes.apply(lambda x: x in row["code_range"])
-        available_codes = classification_codes.loc[filt]
-        code_table = pd.DataFrame(
-            index=available_codes, columns=row.index
-        ).reset_index()
-        code_table[row.index] = row  # pylint: disable=unsupported-assignment-operation
-        return code_table
-
-    def construct_mapping_table(self, table: pd.DataFrame) -> pd.DataFrame:
-        mapping_table = self.construct_general_mapping_table(table)
-        mapping_table = self._apply_drop(mapping_table)
-        mapping_table = self._rename_columns(mapping_table)
-        return mapping_table
-
-    def _apply_drop(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
-        if "drop" not in mapping_table.columns:
-            return mapping_table
-        filt = mapping_table.loc[:, ("drop", slice(None))].prod(axis="columns") == 0  # type: ignore
-        mapping_table = mapping_table.loc[filt]
-        mapping_table = mapping_table.drop(columns=["drop"])
-        return mapping_table
-
-    def _rename_columns(self, mapping_table: pd.DataFrame) -> pd.DataFrame:
-        levels = self.settings.levels
-        available_levels = list(
-            mapping_table.columns.get_level_values("level").unique()
-        )
-        levels = levels if len(levels) > 0 else available_levels
-        column_names = list(itertools.product(self.settings.labels, levels))
-        for column_name in column_names:
-            if column_name not in mapping_table.columns:
-                mapping_table[column_name] = None
-        mapping_table = mapping_table.loc[:, column_names]
-        if len(column_names) == len(self.settings.column_names):
-            mapping_table.columns = self.settings.column_names
-        elif len(self.settings.labels) == len(self.settings.column_names):
-            column_names = itertools.product(self.settings.column_names, levels)
-            mapping_table.columns = [
-                f"{label}_{level}" for label, level in column_names
-            ]
-        else:
-            mapping_table.columns = [
-                f"{label}_{level}" for label, level in column_names
-            ]
-        return mapping_table
-
-    def add_classification(self, table: pd.DataFrame) -> pd.DataFrame:
-        mapping_table = self.construct_mapping_table(table)
-        old_columns = table.columns
-        table = table.merge(
-            mapping_table, left_on="Code", right_index=True, how="left", validate="m:1"
-        )
-        new_columns = [column for column in table.columns if column not in old_columns]
-        table = self._set_default_values(table, new_columns)
-        return table
-
-    def _set_default_values(self, table: pd.DataFrame, columns: list):
-        if self.settings.missing_value_replacements is None:
-            return table
-        for column_name in columns:
-            if column_name not in self.settings.missing_value_replacements:
-                continue
-            value = self.settings.missing_value_replacements[column_name]
-            table[column_name] = table[column_name].fillna(value)
-        return table
-
-
 class Attribute:
     def __init__(
         self,
@@ -550,23 +384,6 @@ class Weight:
             weights, left_on="ID", right_index=True, how="left", validate="m:1"
         )
         return table
-
-
-def add_classification(
-    table: pd.DataFrame, classification_name: str = "original", **kwargs
-):
-    if table.empty:
-        return table
-    years = table["Year"].drop_duplicates().to_list()
-    subtables = []
-    for year in years:
-        classificationer = Classification(
-            classification_name=classification_name, year=year, **kwargs
-        )
-        filt = table["Year"] == year
-        subtable = classificationer.add_classification(table.loc[filt])
-        subtables.append(subtable)
-    return pd.concat(subtables, ignore_index=True)
 
 
 def add_attribute(

@@ -29,7 +29,14 @@ from typing import Iterable, Literal
 
 import pandas as pd
 
-from . import metadata_reader, archive_handler, data_cleaner, data_engine, hbsframe
+from . import (
+    metadata_reader,
+    archive_handler,
+    data_cleaner,
+    data_engine,
+    decoder,
+    hbsframe,
+)
 from .utils import parse_years
 
 _OriginalTable = metadata_reader.OriginalTable
@@ -153,9 +160,10 @@ def add_classification(
         pd.DataFrame: Input DataFrame with added classification columns.
 
     """
-    table = data_engine.add_classification(
-        table=table, classification_name=classification_name, **kwargs
-    )
+    settings = decoder.CommodityDecoderSettings(name=classification_name, **kwargs)
+    table = decoder.CommodityDecoder(
+        table=table, settings=settings
+    ).add_classification()
     return table
 
 
