@@ -160,7 +160,9 @@ def add_classification(
         pd.DataFrame: Input DataFrame with added classification columns.
 
     """
-    settings = decoder.CommodityDecoderSettings(name=classification_name, **kwargs)
+    settings = decoder.CommodityDecoderSettings(
+        classification_name=classification_name, **kwargs
+    )
     table = decoder.CommodityDecoder(
         table=table, settings=settings
     ).add_classification()
@@ -192,9 +194,8 @@ def add_attribute(
         pd.DataFrame: Input DataFrame with added attribute columns.
 
     """
-    table = data_engine.add_attribute(
-        table=table, attribute_name=attribute_name, **kwargs
-    )
+    settings = decoder.IDDecoderSettings(attribute_name=attribute_name, **kwargs)
+    table = decoder.IDDecoder(table=table, settings=settings).add_attribute()
     return table
 
 
@@ -215,7 +216,7 @@ def add_weight(table: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: Input DataFrame with added 'Weight' column.
 
     """
-    table = data_engine.add_weights(table)
+    table = data_engine.WeightAdder(table).add_weights()
     return table
 
 
