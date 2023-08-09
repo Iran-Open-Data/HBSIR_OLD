@@ -205,7 +205,7 @@ class TableLoader:
         return table
 
     def _load_table(self, table_name: str, year: int) -> pd.DataFrame:
-        if table_name in get_args(_OriginalTable):
+        if table_name in metadata_reader.original_tables:
             table = self._load_original_table(table_name, year)
         else:
             table = self._construct_schema_based_table(table_name, year)
