@@ -150,6 +150,8 @@ class CommodityDecoder:
             raise ValueError(f"Classification is not valid \n{invalid_case_sample}")
 
     def _fill_missing_values(self):
+        if "missing_value_replacements" not in self.settings.defaults:
+            return
         for column, default in self.settings.defaults[
             "missing_value_replacements"
         ].items():
