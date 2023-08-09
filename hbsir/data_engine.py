@@ -94,14 +94,15 @@ class Applier:
         self.table["Table_Name"] = self.properties["table_name"]
 
     def _add_weights(self) -> None:
-        self.table = add_weights(self.table)
+        self.table = WeightAdder(self.table).add_weights()
 
     def _add_classification(self, method_input: dict) -> None:
         settings = decoder.CommodityDecoderSettings(**method_input)
         self.table = decoder.CommodityDecoder(self.table, settings).add_classification()
 
     def _add_attribute(self, method_input: dict) -> None:
-        self.table = add_attribute(self.table, **method_input)
+        settings = decoder.IDDecoderSettings(**method_input)
+        self.table = decoder.IDDecoder(self.table, settings).add_attribute()
 
     def _apply_order(self, method_input):
         new_columns = [
@@ -262,111 +263,44 @@ class TableLoader:
         return table_list
 
 
-class Attribute:
+class WeightAdder:
     def __init__(
         self,
-        attribute_name: _Attribute,
-        year: int,
-        translations: str | Iterable[str] = "names",
-        columns_labels: Iterable[str] | None = None,
-    ) -> None:
-        self.household_metadata = utils.MetadataVersionResolver(
-            metadatas.household, year
-        ).get_version()
-        self.attribute_name = attribute_name
-        self.translations = (
-            [translations] if isinstance(translations, str) else list(translations)
-        )
-        if columns_labels is None:
-            if len(self.translations) == 1:
-                self.columns_labels = [attribute_name]
-            else:
-                self.columns_labels = [
-                    f"{attribute_name}_{translation}"
-                    for translation in self.translations
-                ]
-
-    def construct_mapping_table(self, table: pd.DataFrame):
-        household_ids = table["ID"].drop_duplicates().copy()
-        household_ids = household_ids.set_axis(household_ids)
-        mappings = []
-        for translation in self.translations:
-            translator = self._create_code_translator(translation)
-            mappings.append(translator(household_ids))
-        mapping_table = pd.concat(mappings, axis="columns", keys=self.columns_labels)
-        return mapping_table
-
-    def _create_code_translator(self, translation):
-        assert isinstance(self.household_metadata, dict)
-        # pylint: disable=unsubscriptable-object
-        mapping = self.household_metadata[self.attribute_name][translation]
-        code_builder = self._create_code_builder()
-
-        def translator(household_id_column: pd.Series) -> pd.Series:
-            mapped = code_builder(household_id_column).map(mapping).astype("category")
-            mapped.name = translation
-            return mapped
-
-        return translator
-
-    def _create_code_builder(self):
-        assert isinstance(self.household_metadata, dict)
-        # pylint: disable=unsubscriptable-object
-        ld_len = self.household_metadata["ID_Length"]
-        attr_dict = self.household_metadata[self.attribute_name]
-        if ("position" not in attr_dict) or attr_dict["position"] is None:
-            raise ValueError("Code position is not available")
-        start, end = attr_dict["position"]["start"], attr_dict["position"]["end"]
-
-        def builder(household_id_column: pd.Series) -> pd.Series:
-            return (
-                household_id_column
-                % pow(10, (ld_len - start))
-                // pow(10, (ld_len - end))
-            )
-
-        return builder
-
-    def add_attribute(self, table: pd.DataFrame):
-        mapping_table = self.construct_mapping_table(table)
-        table = table.merge(
-            mapping_table, left_on="ID", right_index=True, how="left", validate="m:1"
-        )
-        return table
-
-
-class Weight:
-    def __init__(
-        self,
-        year: int,
+        table: pd.DataFrame,
         method: Literal["default", "external", "household_info"] = "default",
+        year_column_name: str = "Year"
     ) -> None:
-        self.year = year
-        if method == "default":
+        self.table = table
+        self.method = method
+        self.year_column_name = year_column_name
+
+    def load_weights(self, year) -> pd.Series:
+        if self.method == "default":
             if year <= 1395:
-                self.method = "external"
+                method = "external"
             else:
-                self.method = "household_info"
-        elif method in ["external", "household_info"]:
-            self.method = method
+                method = "household_info"
+        elif self.method in ["external", "household_info"]:
+            method = self.method
         else:
             raise ValueError("Method is not valid")
 
-    def load_weights(self) -> pd.Series:
-        if self.method == "external":
-            weights = self._load_from_external_data()
+        if method == "external":
+            weights = self._load_from_external_data(year)
         else:
-            weights = self._load_from_household_info()
+            weights = self._load_from_household_info(year)
         return weights
 
-    def _load_from_household_info(self) -> pd.Series:
+    @staticmethod
+    def _load_from_household_info(year) -> pd.Series:
         settings = metadata_reader.LoadTable()
-        loader = TableLoader("household_information", self.year, settings)
+        loader = TableLoader("household_information", year, settings)
         hh_info = loader.load()
         weights = hh_info.set_index("ID")["Weight"]
         return weights
 
-    def _load_from_external_data(self) -> pd.Series:
+    @staticmethod
+    def _load_from_external_data(year) -> pd.Series:
         weights_path = defaults.external_data.joinpath("weights.parquet")
         if not weights_path.exists():
             defaults.external_data.mkdir(parents=True, exist_ok=True)
@@ -374,38 +308,16 @@ class Weight:
                 f"{defaults.online_dir}/external_data/weights.parquet", weights_path
             )
         weights = pd.read_parquet(weights_path)
-        weights = weights.loc[(self.year), "Weight"]
+        weights = weights.loc[(year), "Weight"]
         assert isinstance(weights, pd.Series)
         return weights
 
-    def add_weights(self, table: pd.DataFrame) -> pd.DataFrame:
-        weights = self.load_weights()
-        table = table.merge(
-            weights, left_on="ID", right_index=True, how="left", validate="m:1"
-        )
-        return table
-
-
-def add_attribute(
-    table: pd.DataFrame, attribute_name: _Attribute, **kwargs
-) -> pd.DataFrame:
-    years = list(table["Year"].drop_duplicates())
-    subtables = []
-    for year in years:
-        attribute_reader = Attribute(year=year, attribute_name=attribute_name, **kwargs)
-        filt = table["Year"] == year
-        subtable = table.loc[filt].copy()
-        subtable = attribute_reader.add_attribute(subtable)
-        subtables.append(subtable)
-    return pd.concat(subtables, ignore_index=True)
-
-
-def add_weights(table: pd.DataFrame) -> pd.DataFrame:
-    years = table["Year"].drop_duplicates().to_list()
-    subtables = []
-    for year in years:
-        filt = table["Year"] == year
-        subtable = table.loc[filt].copy()
-        subtable = Weight(year).add_weights(subtable)
-        subtables.append(subtable)
-    return pd.concat(subtables, ignore_index=True)
+    def add_weights(self) -> pd.DataFrame:
+        years = decoder.extract_column(self.table, self.year_column_name)
+        years = years.drop_duplicates()
+        weights_list = []
+        for year in years:
+            weights_list.append(self.load_weights(year))
+        weights = pd.concat(weights_list, axis="index", keys=years, names=["Year", "ID"])
+        self.table = self.table.join(weights, on=["Year", "ID"])
+        return self.table

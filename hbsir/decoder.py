@@ -1,10 +1,11 @@
 from itertools import product
+from typing import Callable
 
 import pandas as pd
 from pydantic import BaseModel, Field
 
 from . import utils
-from .metadata_reader import metadata, defaults
+from .metadata_reader import metadata, defaults, Attribute as _Attribute
 
 
 def read_classification_info(name, year):
@@ -52,7 +53,7 @@ def extract_column(table: pd.DataFrame, column_name: str) -> pd.Series:
 
 
 class CommodityDecoderSettings(BaseModel):
-    classification_name: str = Field(default="original", alias="name")
+    name: str = Field(default="original", alias="classification_name")
     code_column_name: str = "Code"
     year_column_name: str = "Year"
     versioned_info: dict = {}
@@ -60,12 +61,12 @@ class CommodityDecoderSettings(BaseModel):
     labels: tuple[str, ...] = tuple()
     levels: tuple[int, ...] = tuple()
     drop_value: bool = False
-    column_names: tuple[str, ...] | None = None
+    output_column_names: tuple[str, ...] | None = None
     required_columns: tuple[str, ...] | None = None
     missing_value_replacements: dict[str, str] | None = None
 
     def model_post_init(self, __contex=None) -> None:
-        self.versioned_info = metadata.commodities[self.classification_name]
+        self.versioned_info = metadata.commodities[self.name]
         if "defaults" in self.versioned_info:
             self.defaults = self.versioned_info["defaults"]
         for key, value in self.defaults.items():
@@ -81,15 +82,15 @@ class CommodityDecoderSettings(BaseModel):
         super().model_post_init(None)
 
     def _resolve_column_names(self) -> None:
-        if self.column_names is None:
+        if self.output_column_names is None:
             names = [
                 f"{label}_{level}" for label, level in product(self.labels, self.levels)
             ]
-            self.column_names = tuple(names)
+            self.output_column_names = tuple(names)
 
     @property
     def rename_dict(self):
-        return dict(zip(product(self.labels, self.levels), self.column_names))  # type: ignore
+        return dict(zip(product(self.labels, self.levels), self.output_column_names))  # type: ignore
 
 
 class CommodityDecoder:
@@ -99,7 +100,7 @@ class CommodityDecoder:
         self.code_column = extract_column(table, settings.code_column_name)
         self.year_column = extract_column(table, settings.year_column_name)
         self.classification_table = create_classification_table(
-            name=self.settings.classification_name,
+            name=self.settings.name,
             years=self.year_column.drop_duplicates().to_list(),
         )
         self.year_code_pairs = self.create_year_code_pairs()
@@ -164,4 +165,101 @@ class CommodityDecoder:
         mapping = self.create_mapping_table()
         self.table = self.table.join(mapping, on=["Year", "Code"])
         self._fill_missing_values()
+        return self.table
+
+
+class IDDecoderSettings(BaseModel):
+    name: _Attribute = Field(alias="attribute_name")
+    id_column_name: str = "ID"
+    year_column_name: str = "Year"
+    labels: tuple[str, ...] = ("names",)
+    output_column_names: tuple[str] = tuple()
+
+    def model_post_init(self, __contex=None) -> None:
+
+        self._resolve_output_column_names()
+        super().model_post_init(None)
+
+    def _resolve_output_column_names(self) -> None:
+        if len(self.output_column_names) != len(self.labels):
+            if len(self.labels) == 1:
+                names = [self.name]
+            else:
+                names = [f"{self.name}_{label}" for label in self.labels]
+            self.output_column_names = tuple(names)
+
+class IDDecoder:
+    def __init__(
+        self,
+        table: pd.DataFrame,
+        settings: IDDecoderSettings,
+    ) -> None:
+        self.table = table
+        self.settings = settings
+        self.id_column = extract_column(table, settings.id_column_name)
+        self.year_column = extract_column(table, settings.year_column_name)
+
+    def construct_mapping_table(self):
+        mapped_columns = [self.year_column, self.id_column]
+        for label in self.settings.labels:
+            mapped_column = self.map_id_to_label(label)
+            mapped_columns.append(mapped_column)
+        year_and_id = [self.settings.year_column_name, self.settings.id_column_name]
+        columns = year_and_id + list(self.settings.output_column_names)
+        mapping_table = pd.concat(
+            mapped_columns, axis="columns", keys=columns
+        )
+        mapping_table = mapping_table.drop_duplicates().set_index(year_and_id)
+        return mapping_table
+
+    def _get_metadata_version(self, year) -> dict:
+        household_metadata = utils.MetadataVersionResolver(
+            metadata.household, year
+        ).get_version()
+        assert isinstance(household_metadata, dict)
+        return household_metadata
+
+    def _create_code_builder(self, household_metadata: dict) -> Callable:
+        ld_len = household_metadata["ID_Length"]
+        attr_dict = household_metadata[self.settings.name]
+        if ("position" not in attr_dict) or attr_dict["position"] is None:
+            raise ValueError("Code position is not available")
+        start, end = attr_dict["position"]["start"], attr_dict["position"]["end"]
+
+        def builder(household_id_column: pd.Series) -> pd.Series:
+            return (
+                household_id_column
+                % pow(10, (ld_len - start))
+                // pow(10, (ld_len - end))
+            )
+
+        return builder
+
+    def _create_code_mapper(self, label, year) -> Callable:
+        household_metadata = self._get_metadata_version(year)
+        # pylint: disable=unsubscriptable-object
+        mapping = household_metadata[self.settings.name][label]
+        code_builder = self._create_code_builder(household_metadata)
+
+        def mapper(household_id_column: pd.Series) -> pd.Series:
+            mapped = code_builder(household_id_column).map(mapping).astype("category")
+            mapped.name = label
+            return mapped
+
+        return mapper
+
+    def map_id_to_label(self, label):
+        years = self.year_column.drop_duplicates()
+        attribute_column = pd.Series(index=self.table.index)
+        for year in years:
+            filt = self.year_column == year
+            attribute_column.loc[filt] = self._create_code_mapper(label, year)(
+                self.id_column.loc[filt]
+            )
+        return attribute_column
+
+    def add_attribute(self):
+        mapping_table = self.construct_mapping_table()
+        year_and_id = [self.settings.year_column_name, self.settings.id_column_name]
+        self.table = self.table.join(mapping_table, year_and_id)
         return self.table

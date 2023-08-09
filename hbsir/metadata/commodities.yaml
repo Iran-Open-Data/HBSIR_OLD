@@ -790,7 +790,7 @@ original:
 Food-NonFood:
   defaults:
     levels: [1]
-    column_names: ["Food-NonFood"]
+    output_column_names: ["Food-NonFood"]
     missing_value_replacements: {Food-NonFood: Non-Food}
 
   items:
