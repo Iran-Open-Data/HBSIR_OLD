@@ -146,6 +146,8 @@ class Argham:
             if (len(self.range_set) == 1) and (self.range_set.pop() == __value):
                 return True
         if isinstance(__value, Argham):
+            if self.range_set == __value.range_set:
+                return True
             if self.get_numbers() == __value.get_numbers():
                 return True
         return False
