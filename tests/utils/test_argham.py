@@ -85,7 +85,7 @@ class TestParsing:
 
 class TestEquality:
     def test_equality_with_it_self(self):
-        argham = Argham([1, 2, 3, {"start": 10, "end": 20, "step":2}])
+        argham = Argham([1, 2, 3, {"start": 10, "end": 20, "step": 2}])
 
         assert argham == argham
 
@@ -95,8 +95,8 @@ class TestEquality:
 
         assert argham_1 == argham_2
 
-class TestAdd:
 
+class TestAdd:
     def test_integer_addition(self):
         argham_1 = Argham([1, 2, 3, 4])
         argham_2 = Argham(6)

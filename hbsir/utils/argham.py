@@ -186,7 +186,7 @@ class Argham:
             drng = self.defaults.default_range
             if (drng is not None) and ((argham < drng[0]) or (argham > drng[1])):
                 return
-            self.range_set.add(range(argham, argham+1))
+            self.range_set.add(range(argham, argham + 1))
             self._update_min(argham)
             self._update_max(argham)
         else:
