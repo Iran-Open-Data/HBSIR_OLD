@@ -15,5 +15,5 @@ temp/*
 *.pdf
 *.log
 
-*hbsir-settings.yaml
+*settings.yaml
 *tokens.toml
