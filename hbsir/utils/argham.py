@@ -1,5 +1,15 @@
 from typing import Iterable
 
+from pydantic import BaseModel
+
+
+class ArghamDefaults(BaseModel):
+    keywords: list[str] = []
+    default_start: int | None = None
+    default_end: int | None = None
+    default_step: int = 1
+    default_range: tuple[int, int] | None = None
+
 
 class Argham:
     """Flexible argument handler for numbers and ranges.
@@ -54,21 +64,9 @@ class Argham:
     [True, False, True]
     """
 
-    def __init__(
-        self,
-        argham: list | dict | int,
-        keywords: list[str] | None = None,
-        default_start: int | None = None,
-        default_end: int | None = None,
-        default_step: int = 1,
-    ):
-        self.argham = argham
-        self.range_list = []
-        self.number_list = []
-        self.keywords = [] if keywords is None else keywords
-        self.default_start = default_start
-        self.default_end = default_end
-        self.default_step = default_step
+    def __init__(self, argham: list | dict | int | None = None, **kwargs):
+        self.range_set = set()
+        self.defaults = ArghamDefaults(**kwargs)
         self.min: int | None = None
         self.max: int | None = None
         self._parse_argham(argham)
@@ -109,14 +107,25 @@ class Argham:
             result.append(value in self)
         return result
 
+    def get_numbers(self) -> set[int]:
+        numbers = set()
+        for rng in self.range_set:
+            numbers.union(set(rng))
+        return numbers
+
     def __repr__(self) -> str:
+        integers = []
+        ranges = []
+
+        for rng in self.range_set:
+            if rng.stop - rng.start == 1:
+                integers.append(rng.start)
+            else:
+                ranges.append((rng.start, rng.stop))
         representation_list = []
-        if len(self.number_list) > 0:
-            str_numbers = [str(number) for number in self.number_list]
-            representation_list.append(f"[{', '.join(str_numbers)}]")
-        if len(self.range_list) > 0:
-            for rng in self.range_list:
-                representation_list.append(f"({min(rng)} - {max(rng)})")
+        representation_list.append(f"[{', '.join(integers)}]")
+        for rng in ranges:
+            representation_list.append(f"({rng.start} - {rng.stop})")
         return ", ".join(representation_list)
 
     def __contains__(self, value: int):
@@ -124,12 +133,48 @@ class Argham:
             return False
         if (value < self.min) or (value > self.max):  # type: ignore
             return False
-        for number_range in self.range_list:
+        for number_range in self.range_set:
             if value in number_range:
                 return True
-        if value in self.number_list:
-            return True
         return False
+
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value, int):
+            if (len(self.range_set) == 1) and (__value in self.range_set.pop()):
+                return True
+        if isinstance(__value, range):
+            if (len(self.range_set) == 1) and (self.range_set.pop() == __value):
+                return True
+        if isinstance(__value, Argham):
+            if self.get_numbers() == __value.get_numbers():
+                return True
+        return False
+
+    def __add__(self, __other: "Argham") -> "Argham":
+        if self.defaults != __other.defaults:
+            print(f"Warning! different defaults! {self.defaults}, {__other.defaults}")
+        result = Argham()
+        result.defaults = self.defaults
+        result.range_set = self.range_set.union(__other.range_set)
+
+        if (self.min is None) and (__other.min is None):
+            result.min = None
+        elif self.min is None:
+            result.min = __other.min
+        elif __other.min is None:
+            result.min = self.min
+        else:
+            result.min = min(self.min, __other.min)
+
+        if (self.max is None) and (__other.max is None):
+            result.max = None
+        elif self.max is None:
+            result.max = __other.max
+        elif __other.max is None:
+            result.max = self.max
+        else:
+            result.max = max(self.max, __other.max)
+        return result
 
     def _parse_argham(self, argham) -> None:
         if isinstance(argham, list):
@@ -138,39 +183,45 @@ class Argham:
         elif isinstance(argham, dict):
             self._parse_dict(argham)
         elif isinstance(argham, int):
-            self.number_list.append(argham)
+            drng = self.defaults.default_range
+            if (drng is not None) and ((argham < drng[0]) or (argham > drng[1])):
+                return
+            self.range_set.add(range(argham, argham+1))
             self._update_min(argham)
             self._update_max(argham)
         else:
             pass
 
     def _parse_dict(self, dictionary: dict) -> None:
-        if len(self.keywords) > 0:
-            for word in self.keywords:
+        if len(self.defaults.keywords) > 0:
+            for word in self.defaults.keywords:
                 if word in dictionary:
                     self._parse_argham(dictionary[word])
                     return
         if ("start" in dictionary) or ("end" in dictionary):
             self._parse_start_end_dict(dictionary)
         else:
-            raise ValueError("Start or end must be specified")
+            for value in dictionary.values():
+                self._parse_argham(value)
 
     def _parse_start_end_dict(self, dictionary: dict) -> None:
-        start = self.default_start
-        end = self.default_end
-        step = self.default_step
+        start = self.defaults.default_start
+        end = self.defaults.default_end
+        step = self.defaults.default_step
 
         if "start" in dictionary:
             start = dictionary["start"]
         if "end" in dictionary:
             end = dictionary["end"]
+        if "step" in dictionary:
+            step = dictionary["step"]
 
         if start is None:
             raise ValueError("Start must be specified")
         if end is None:
             raise ValueError("End must be specified")
 
-        self.range_list.append(range(start, end, step))
+        self.range_set.add(range(start, end, step))
         self._update_min(start)
         self._update_max(end - 1)
 
