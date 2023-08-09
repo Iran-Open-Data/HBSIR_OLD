@@ -176,7 +176,6 @@ class IDDecoderSettings(BaseModel):
     output_column_names: tuple[str] = tuple()
 
     def model_post_init(self, __contex=None) -> None:
-
         self._resolve_output_column_names()
         super().model_post_init(None)
 
@@ -187,6 +186,7 @@ class IDDecoderSettings(BaseModel):
             else:
                 names = [f"{self.name}_{label}" for label in self.labels]
             self.output_column_names = tuple(names)
+
 
 class IDDecoder:
     def __init__(
@@ -206,9 +206,7 @@ class IDDecoder:
             mapped_columns.append(mapped_column)
         year_and_id = [self.settings.year_column_name, self.settings.id_column_name]
         columns = year_and_id + list(self.settings.output_column_names)
-        mapping_table = pd.concat(
-            mapped_columns, axis="columns", keys=columns
-        )
+        mapping_table = pd.concat(mapped_columns, axis="columns", keys=columns)
         mapping_table = mapping_table.drop_duplicates().set_index(year_and_id)
         return mapping_table
 

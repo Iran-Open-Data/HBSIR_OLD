@@ -160,7 +160,9 @@ def add_classification(
         pd.DataFrame: Input DataFrame with added classification columns.
 
     """
-    settings = decoder.CommodityDecoderSettings(classification_name=classification_name, **kwargs)
+    settings = decoder.CommodityDecoderSettings(
+        classification_name=classification_name, **kwargs
+    )
     table = decoder.CommodityDecoder(
         table=table, settings=settings
     ).add_classification()
@@ -193,9 +195,7 @@ def add_attribute(
 
     """
     settings = decoder.IDDecoderSettings(attribute_name=attribute_name, **kwargs)
-    table = decoder.IDDecoder(
-        table=table, settings=settings
-    ).add_attribute()
+    table = decoder.IDDecoder(table=table, settings=settings).add_attribute()
     return table
 
 

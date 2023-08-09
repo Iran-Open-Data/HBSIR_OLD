@@ -268,7 +268,7 @@ class WeightAdder:
         self,
         table: pd.DataFrame,
         method: Literal["default", "external", "household_info"] = "default",
-        year_column_name: str = "Year"
+        year_column_name: str = "Year",
     ) -> None:
         self.table = table
         self.method = method
@@ -318,6 +318,8 @@ class WeightAdder:
         weights_list = []
         for year in years:
             weights_list.append(self.load_weights(year))
-        weights = pd.concat(weights_list, axis="index", keys=years, names=["Year", "ID"])
+        weights = pd.concat(
+            weights_list, axis="index", keys=years, names=["Year", "ID"]
+        )
         self.table = self.table.join(weights, on=["Year", "ID"])
         return self.table
