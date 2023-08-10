@@ -142,7 +142,7 @@ class Defaults(BaseModel):
     elif settings[("in_root",)]:
         local_dir: Path = root_dir.joinpath(settings[("local_directory",)])
     else:
-        local_dir: Path = package_dir.joinpath(settings[("local_directory",)])
+        local_dir: Path = package_dir.joinpath(settings[("local_directory",)])  # type: ignore
 
     archive_files: Path = local_dir.joinpath(settings[("archive_files",)])
     unpacked_data: Path = local_dir.joinpath(settings[("unpacked_data",)])
