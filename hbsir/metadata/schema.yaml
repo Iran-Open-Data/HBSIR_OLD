@@ -1,5 +1,20 @@
 
 
+ANCHORS:
+
+  common_expenditure_order: &common_expenditure_order
+    - Year
+    - ID
+    - Code
+    - Provision_Method
+    - Price_System
+    - Amount
+    - Duration
+    - Price
+    - Expenditure
+    - Secondhand_Sale
+
+
 household_information:
 
   instructions:
@@ -16,19 +31,6 @@ house_specifications:
   instructions:
 
     - add_year
-
-
-common_expenditure_order: &common_expenditure_order
-  - Year
-  - ID
-  - Code
-  - Provision_Method
-  - Price_System
-  - Amount
-  - Duration
-  - Price
-  - Expenditure
-  - Secondhand_Sale
 
 
 food:
@@ -411,68 +413,20 @@ Expenditures:
       - Net_Expenditure
 
 
-# Original_Outlays:
-#   table_list:
-#     - food
-#     - tobacco
-#     - cloth
-#     - home
-#     - furniture
-#     - medical
-#     - transportation
-#     - communication
-#     - entertainment
-#     - education
-#     - hotel
-#     - other
-#     - durable
-#     - investment
+Original_Outlays:
+  table_list:
+    - Original_Expenditures
 
-#   columns:
-#     Gross_Expenditure:
-#       type: numerical
-#       expression: "Expenditure"
-
-#     Net_Expenditure:
-#       type: numerical
-#       expression: "Expenditure - Secondhand_Sale"
-
-#   order:
-#     - Year
-#     - ID
-#     - Code
-#     - Provision_Method
-#     - Price_System
-#     - Amount
-#     - Duration
-#     - Price
-#     - Gross_Expenditure
-#     - Net_Expenditure
+  instructions:
+    - apply_filter: "Provision_Method != 'Purchase' & Provision_Method.notnull()"
 
 
-# Outlays:
-#   table_list:
-#     - Original_Expenditures
+Outlays:
+  table_list:
+    - Expenditures
 
-#   columns:
-#     Gross_Expenditure:
-#       type: numerical
-#       expression: "Gross_Expenditure / Duration * 360"
-
-#     Net_Expenditure:
-#       type: numerical
-#       expression: "Net_Expenditure / Duration * 360"
-
-#   order:
-#     - Year
-#     - ID
-#     - Code
-#     - Provision_Method
-#     - Price_System
-#     - Amount
-#     - Price
-#     - Gross_Expenditure
-#     - Net_Expenditure
+  instructions:
+    - apply_filter: "Provision_Method != 'Purchase' & Provision_Method.notnull()"
 
 
 # employment_income:
