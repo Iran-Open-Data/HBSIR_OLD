@@ -200,15 +200,17 @@ class MetadataVersionResolver:
         else:
             latest_verion = versioned_dictionary[latest_verion_number]
 
-        if (version_type == "keyword_versioned") and isinstance(latest_verion, dict):
-            latest_verion.update(
-                {
-                    key: value
-                    for key, value in dictionaty.items()
-                    if (key != self.settings.version_keyword)
-                    and (key not in latest_verion)
-                }
-            )
+        if version_type == "keyword_versioned":
+            latest_verion = {} if latest_verion is None else latest_verion
+            if isinstance(latest_verion, dict):
+                latest_verion.update(
+                    {
+                        key: value
+                        for key, value in dictionaty.items()
+                        if (key != self.settings.version_keyword)
+                        and (key not in latest_verion)
+                    }
+                )
         latest_verion = None if latest_verion == {} else latest_verion
 
         return latest_verion
