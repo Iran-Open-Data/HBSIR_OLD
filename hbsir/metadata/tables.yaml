@@ -80,8 +80,6 @@ default_table_settings:
 ##                      - - -    General Tables   - - -                      ##
 ###############################################################################
 
-GENERAL_ITEMS:
-
 
 household_information:
 
@@ -156,6 +154,35 @@ members_properties:
         5: "Housekeeper"
         6: "Other"
 
+    members_education_level: &members_education_level
+      new_name: Education_Level
+      type: "category"
+      versions:
+        1363:
+          type: "string"
+        1393:
+          categories:
+            11: "Primary"
+            21: "Secondary"
+            31: "Tertiary"
+            41: "Pre_University"
+            51: "College"
+            52: "Bachelors"
+            53: "Masters"
+            61: "PhD"
+            71: "Unofficial"
+        1397:
+          categories:
+            1: "Primary"
+            2: "Secondary"
+            3: "Tertiary"
+            4: "Pre_University"
+            5: "College"
+            6: "Bachelors"
+            7: "Masters"
+            8: "PhD"
+            9: "Unofficial"
+
   columns:
     ADDRESS: &property_Address
       1363:
@@ -225,40 +252,11 @@ members_properties:
       1369: *property_DYCOL07_1384
 
     DYCOL08:
-      1384: &property_DYCOL08_1384
-        new_name: "Education_Level"
-      1393:
-        new_name: "Education_Level"
-        type: "category"
-        categories:
-          11: "Primary"
-          21: "Secondary"
-          31: "Tertiary"
-          41: "Pre_University"
-          51: "College"
-          52: "Bachelors"
-          53: "Masters"
-          61: "PhD"
-          71: "Unofficial"
-      1397:
-        new_name: "Education_Level"
-        type: "category"
-        categories:
-          1: "Primary"
-          2: "Secondary"
-          3: "Tertiary"
-          4: "Pre_University"
-          5: "College"
-          6: "Bachelors"
-          7: "Masters"
-          8: "PhD"
-          9: "Unofficial"
+      1384: *members_education_level
     COL08: 
       1363: *property_COL07_1364
       1364: *property_COL06_1363
-      1366: &property_COL08_1366
-        new_name: "Education_Level"
-      1369: *property_DYCOL08_1384
+      1366: *members_education_level
 
     DYCOL09: 
       1384: *members_activity_state
@@ -269,7 +267,7 @@ members_properties:
     DYCOL10: &property_DYCOL10
       1384: *members_marrital_state
     COL10:
-      1363: *property_COL08_1366
+      1363: *members_education_level
       1366: &property_COL10_1366
         new_name: "Job_Code"
       1369: *members_marrital_state
