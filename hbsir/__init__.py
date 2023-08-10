@@ -46,7 +46,7 @@ _OriginalTable = metadata_reader.OriginalTable
 # pylint: disable=unused-argument
 def load_table(
     table_name: str,
-    years: int | Iterable[int] | str | None,
+    years: int | Iterable[int] | str | None = None,
     data_type: Literal["processed", "cleaned", "original"] | None = None,
     on_missing: Literal["error", "download", "create"] | None = None,
     save_downloaded: bool | None = None,
@@ -106,6 +106,7 @@ def load_table(
 # pylint: disable=unused-argument
 def create_table_with_schema(
     schema: dict,
+    years: int | Iterable[int] | str | None = None,
     data_type: Literal["processed", "cleaned", "original"] | None = None,
     on_missing: Literal["error", "download", "create"] | None = None,
     save_downloaded: bool | None = None,
@@ -135,8 +136,9 @@ def create_table_with_schema(
     metadata_reader.metadata.reload_file("schema")
     optional_vars = {key: value for key, value in locals().items() if value is not None}
     settings = metadata_reader.LoadTable(**optional_vars)
-    if "table_list" in schema:
+    if years is None and "years" in schema:
         years = schema["years"]
+    if "table_list" in schema:
         metadata_reader.metadata.schema["_Input_Table"] = schema
     else:
         raise NameError

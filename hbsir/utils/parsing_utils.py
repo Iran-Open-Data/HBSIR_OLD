@@ -33,7 +33,7 @@ def parse_years(years: int | Iterable[int] | str | None) -> list[int]:
         [1365, 1380, 1381, 1382, 1383, 1399]
     """
     if years is None:
-        year_list = [defaults.last_year + 1]
+        year_list = [defaults.last_year]
     elif isinstance(years, int):
         year_list = [_check_year_validity(years)]
     elif isinstance(years, str):
