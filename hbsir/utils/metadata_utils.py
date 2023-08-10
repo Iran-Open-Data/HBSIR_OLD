@@ -150,20 +150,25 @@ class MetadataVersionResolver:
         ...
 
     def _retrive_version(self, element):
-        if element is None:
-            return None
-        if isinstance(element, (int, str)):
-            return element
-        if isinstance(element, list):
-            return [self._retrive_version(value) for value in element]
-        if isinstance(element, dict):
+        if (element is None) or isinstance(element, (int, str)):
+            pass
+        elif isinstance(element, list):
+            element = [self._retrive_version(value) for value in element]
+        elif isinstance(element, dict):
             element = self._retrieve_dictionaty_verion(element)
-            if isinstance(element, dict):
-                return {
+            if (
+                isinstance(element, dict)
+                and self._detect_version_type(element) == "not_versioned"
+            ):
+                element = {
                     key: self._retrive_version(value) for key, value in element.items()
                 }
-            return self._retrive_version(element)
-        raise TypeError
+            else:
+                element = self._retrive_version(element)
+        else:
+            raise TypeError
+
+        return element
 
     def _is_versioned(self, element):
         if isinstance(element, (int, str)):

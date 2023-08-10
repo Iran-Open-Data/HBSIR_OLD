@@ -171,3 +171,30 @@ class TestInstruction:
                 MetadataVersionResolver(inst["sample_2"], year).get_version()
                 == inst["sample_2_1380"]
             )
+
+    def test_sample_3(self):
+        for year in range(1350, 1360):
+            assert (
+                MetadataVersionResolver(inst["sample_3"], year).get_version()
+                == inst["sample_3_0"]
+            )
+        for year in range(1360, 1370):
+            assert (
+                MetadataVersionResolver(inst["sample_3"], year).get_version()
+                == inst["sample_3_1360"]
+            )
+        for year in range(1370, 1375):
+            assert (
+                MetadataVersionResolver(inst["sample_3"], year).get_version()
+                == inst["sample_3_1370"]
+            )
+        for year in range(1375, 1380):
+            assert (
+                MetadataVersionResolver(inst["sample_3"], year).get_version()
+                == inst["sample_3_1375"]
+            )
+        for year in range(1380, 1400):
+            assert (
+                MetadataVersionResolver(inst["sample_3"], year).get_version()
+                == inst["sample_3_1380"]
+            )
