@@ -167,6 +167,11 @@ class Applier:
             raise KeyError
         return filt
 
+    def _apply_filter(self, conditions: str | list[str]):
+        conditions = [conditions] if isinstance(conditions, str) else conditions
+        for condition in conditions:
+            self.table = self.table.query(condition)
+
     def _apply_external_function(self, method_input: str) -> None:
         module_name, func_name = method_input.rsplit(".", 1)
         self.__load_module(module_name)
