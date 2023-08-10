@@ -218,6 +218,9 @@ class TableLoader:
         table_name: str | None = None,
         year: int | None = None,
     ):
+        if "instructions" not in self.schema[table_name]:
+            return table
+
         if (table_name is None) and ("table_name" in table.attrs):
             table_name = table.attrs["table_name"]
 
