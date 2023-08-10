@@ -15,7 +15,7 @@ def food_1400():
 @pytest.fixture(scope="session")
 def expenditures_1400():
     """Loads 1400 Expenditures Table"""
-    hbsir.setup(1400, replace=True)
+    hbsir.setup(1400)
     return hbsir.load_table("Expenditures", 1400, on_missing="error")
 
 
