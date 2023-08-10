@@ -45,35 +45,35 @@
 
 # The range of years during which the table is available
 yearly_table_availability:
-	household_information:      {start: 1388}
-	members_properties:         {start: 1363}
-	house_specifications:       {start: 1363}
+  household_information:      {start: 1388}
+  members_properties:         {start: 1363}
+  house_specifications:       {start: 1363}
 
-	food:                       {start: 1363}
-	tobacco:                    {start: 1383}
-	cloth:                      {start: 1363}
-	home:                       {start: 1363}
-	furniture:                  {start: 1363}
-	medical:                    {start: 1363}
-	transportation:             {start: 1363}
-	communication:              {start: 1383}
-	entertainment:              {start: 1363}
-	education:                  {start: 1383}
-	hotel:                      {start: 1383}
-	other:                      {start: 1363}
-	durable:                    {start: 1363}
-	investment:                 [{start: 1366, end: 1375}, {start: 1378}]
+  food:                       {start: 1363}
+  tobacco:                    {start: 1383}
+  cloth:                      {start: 1363}
+  home:                       {start: 1363}
+  furniture:                  {start: 1363}
+  medical:                    {start: 1363}
+  transportation:             {start: 1363}
+  communication:              {start: 1383}
+  entertainment:              {start: 1363}
+  education:                  {start: 1383}
+  hotel:                      {start: 1383}
+  other:                      {start: 1363}
+  durable:                    {start: 1363}
+  investment:                 [{start: 1366, end: 1375}, {start: 1378}]
 
-	employment_income:          {start: 1369}
-	self_employed_income:       {start: 1369}
-	other_income:               {start: 1369}
-	subsidy:                    {start: 1390}
-	public_employment_income:   {start: 1363, end: 1369}
-	private_employment_income:  {start: 1363, end: 1369}
+  employment_income:          {start: 1369}
+  self_employed_income:       {start: 1369}
+  other_income:               {start: 1369}
+  subsidy:                    {start: 1390}
+  public_employment_income:   {start: 1363, end: 1369}
+  private_employment_income:  {start: 1363, end: 1369}
 
 
 default_table_settings:
-	missings: error             # error, drop, keep
+  missings: error             # error, drop, keep
 
 
 ###############################################################################
@@ -85,223 +85,223 @@ GENERAL_ITEMS:
 
 household_information:
 
-	settings:
-		missings: drop
+  settings:
+    missings: drop
 
 
-	file_code:
-		1363: null
-		1388: "Data"
+  file_code:
+    1363: null
+    1388: "Data"
 
 
-	columns:
-		ADDRESS:
-			new_name: "ID"
-			type: "unsigned"
+  columns:
+    ADDRESS:
+      new_name: "ID"
+      type: "unsigned"
 
-		FASL:
-			new_name: "Season"
-			type: "category"
-			categories: 
-				1: "Spring"
-				2: "Summer"
-				3: "Autumn"
-				4: "Winter"
+    FASL:
+      new_name: "Season"
+      type: "category"
+      categories: 
+        1: "Spring"
+        2: "Summer"
+        3: "Autumn"
+        4: "Winter"
 
-		WEIGHT:
-			new_name: "Weight"
-			type: "unsigned"
+    WEIGHT:
+      new_name: "Weight"
+      type: "unsigned"
 
 
 members_properties:
-	file_code:
-		1363: "P1"
+  file_code:
+    1363: "P1"
 
-	items:
-		member_number: &member_number
-			new_name: "ID"
-			type: "unsigned"
+  items:
+    member_number: &member_number
+      new_name: "ID"
+      type: "unsigned"
 
-		member_relationship: &member_relationship
-			new_name: "Relationship"
-			type: "category"
-			categories:
-				1: "Head"
-				2: "Spouse"
-				3: "Child"
-				4: "Child-in-Law"
-				5: "Grand-Child"
-				6: "Parent"
-				7: "Sister/Brother"
-				8: "Other_Family"
-				9: "Non-Family"
+    member_relationship: &member_relationship
+      new_name: "Relationship"
+      type: "category"
+      categories:
+        1: "Head"
+        2: "Spouse"
+        3: "Child"
+        4: "Child-in-Law"
+        5: "Grand-Child"
+        6: "Parent"
+        7: "Sister/Brother"
+        8: "Other_Family"
+        9: "Non-Family"
 
-		marrital_state: &members_marrital_state
-			new_name: "Marrital_State"
-			type: "category"
-			categories: 
-				1: "Married"
-				2: "Widowed"
-				3: "Divorced"
-				4: "Bachelor"
+    marrital_state: &members_marrital_state
+      new_name: "Marrital_State"
+      type: "category"
+      categories: 
+        1: "Married"
+        2: "Widowed"
+        3: "Divorced"
+        4: "Bachelor"
 
-		members_activity_state: &members_activity_state
-			new_name: "Activity_State"
-			type: "category"
-			categories: 
-				1: "Employed"
-				2: "Unemployed"
-				3: "Income_without_Work"
-				4: "Student"
-				5: "Housekeeper"
-				6: "Other"
+    members_activity_state: &members_activity_state
+      new_name: "Activity_State"
+      type: "category"
+      categories: 
+        1: "Employed"
+        2: "Unemployed"
+        3: "Income_without_Work"
+        4: "Student"
+        5: "Housekeeper"
+        6: "Other"
 
-	columns:
-		ADDRESS: &property_Address
-			1363:
-					new_name: "ID"
-					type: "unsigned"
+  columns:
+    ADDRESS: &property_Address
+      1363:
+          new_name: "ID"
+          type: "unsigned"
 
-		COL01: *member_number
-		DYCOL01: *member_number
+    COL01: *member_number
+    DYCOL01: *member_number
 
-		DYCOL03: &property_DYCOL03
-			1363:
-				new_name: "Relationship"
-				type: "category"
-				categories:
-					1: "Head"
-					2: "Spouse"
-					3: "Child"
-					4: "Child-in-Law"
-					5: "Grand-Child"
-					6: "Parent"
-					7: "Sister/Brother"
-					8: "Other_Family"
-					9: "Non-Family"
-		COL03: *property_DYCOL03
+    DYCOL03: &property_DYCOL03
+      1363:
+        new_name: "Relationship"
+        type: "category"
+        categories:
+          1: "Head"
+          2: "Spouse"
+          3: "Child"
+          4: "Child-in-Law"
+          5: "Grand-Child"
+          6: "Parent"
+          7: "Sister/Brother"
+          8: "Other_Family"
+          9: "Non-Family"
+    COL03: *property_DYCOL03
 
-		DYCOL04: &property_DYCOL04
-			1363:
-				new_name: "Sex"
-				type: "category"
-				categories:
-					1: "Male"
-					2: "Female"
-		COL04: *property_DYCOL04
+    DYCOL04: &property_DYCOL04
+      1363:
+        new_name: "Sex"
+        type: "category"
+        categories:
+          1: "Male"
+          2: "Female"
+    COL04: *property_DYCOL04
 
-		DYCOL05: &property_DYCOL05
-			1363:
-				new_name: "Age"
-				type: "unsigned"
-		COL05: *property_DYCOL05
+    DYCOL05: &property_DYCOL05
+      1363:
+        new_name: "Age"
+        type: "unsigned"
+    COL05: *property_DYCOL05
 
-		DYCOL06:
-			1384: &property_DYCOL06_1384
-				new_name: "Literate"
-				type: "boolean"
-				true_condition: 1
-		COL06:
-			1363: &property_COL06_1363
-				new_name: "Member_Weeks"
-				type: "unsigned"
-			1364: *members_marrital_state
-			1366: *property_COL06_1363
-			1369: *property_DYCOL06_1384
+    DYCOL06:
+      1384: &property_DYCOL06_1384
+        new_name: "Literate"
+        type: "boolean"
+        true_condition: 1
+    COL06:
+      1363: &property_COL06_1363
+        new_name: "Member_Weeks"
+        type: "unsigned"
+      1364: *members_marrital_state
+      1366: *property_COL06_1363
+      1369: *property_DYCOL06_1384
 
-		DYCOL07: 
-			1384: &property_DYCOL07_1384
-				new_name: "Student"
-				type: "boolean"
-				true_condition: 1
-		COL07:
-			1363: *members_marrital_state
-			1364: &property_COL07_1364
-				new_name: "Nationality"
-				type: "unsigned"
-			1366: &property_COL07_1366
-				new_name: "Literacy_Status"
-				type: "unsigned"
-			1369: *property_DYCOL07_1384
+    DYCOL07: 
+      1384: &property_DYCOL07_1384
+        new_name: "Student"
+        type: "boolean"
+        true_condition: 1
+    COL07:
+      1363: *members_marrital_state
+      1364: &property_COL07_1364
+        new_name: "Nationality"
+        type: "unsigned"
+      1366: &property_COL07_1366
+        new_name: "Literacy_Status"
+        type: "unsigned"
+      1369: *property_DYCOL07_1384
 
-		DYCOL08:
-			1384: &property_DYCOL08_1384
-				new_name: "Education_Level"
-			1393:
-				new_name: "Education_Level"
-				type: "category"
-				categories:
-					11: "Primary"
-					21: "Secondary"
-					31: "Tertiary"
-					41: "Pre_University"
-					51: "College"
-					52: "Bachelors"
-					53: "Masters"
-					61: "PhD"
-					71: "Unofficial"
-			1397:
-				new_name: "Education_Level"
-				type: "category"
-				categories:
-					1: "Primary"
-					2: "Secondary"
-					3: "Tertiary"
-					4: "Pre_University"
-					5: "College"
-					6: "Bachelors"
-					7: "Masters"
-					8: "PhD"
-					9: "Unofficial"
-		COL08: 
-			1363: *property_COL07_1364
-			1364: *property_COL06_1363
-			1366: &property_COL08_1366
-				new_name: "Education_Level"
-			1369: *property_DYCOL08_1384
+    DYCOL08:
+      1384: &property_DYCOL08_1384
+        new_name: "Education_Level"
+      1393:
+        new_name: "Education_Level"
+        type: "category"
+        categories:
+          11: "Primary"
+          21: "Secondary"
+          31: "Tertiary"
+          41: "Pre_University"
+          51: "College"
+          52: "Bachelors"
+          53: "Masters"
+          61: "PhD"
+          71: "Unofficial"
+      1397:
+        new_name: "Education_Level"
+        type: "category"
+        categories:
+          1: "Primary"
+          2: "Secondary"
+          3: "Tertiary"
+          4: "Pre_University"
+          5: "College"
+          6: "Bachelors"
+          7: "Masters"
+          8: "PhD"
+          9: "Unofficial"
+    COL08: 
+      1363: *property_COL07_1364
+      1364: *property_COL06_1363
+      1366: &property_COL08_1366
+        new_name: "Education_Level"
+      1369: *property_DYCOL08_1384
 
-		DYCOL09: 
-			1384: *members_activity_state
-		COL09:
-			1363: *property_COL07_1366
-			1366: *members_activity_state
+    DYCOL09: 
+      1384: *members_activity_state
+    COL09:
+      1363: *property_COL07_1366
+      1366: *members_activity_state
 
-		DYCOL10: &property_DYCOL10
-			1384: *members_marrital_state
-		COL10:
-			1363: *property_COL08_1366
-			1366: &property_COL10_1366
-				new_name: "Job_Code"
-			1369: *members_marrital_state
+    DYCOL10: &property_DYCOL10
+      1384: *members_marrital_state
+    COL10:
+      1363: *property_COL08_1366
+      1366: &property_COL10_1366
+        new_name: "Job_Code"
+      1369: *members_marrital_state
 
-		COL11:
-			1363: *members_activity_state
-			1366: &property_COL11_1366
-				new_name: "Work_Place"
-				type: "unsigned"
-			1369: null
+    COL11:
+      1363: *members_activity_state
+      1366: &property_COL11_1366
+        new_name: "Work_Place"
+        type: "unsigned"
+      1369: null
 
-		COL12:
-			1363: *property_COL10_1366
-			1366: &property_COL12_1366
-				new_name: "Work_Type"
-				type: "unsigned"
-			1369: null
+    COL12:
+      1363: *property_COL10_1366
+      1366: &property_COL12_1366
+        new_name: "Work_Type"
+        type: "unsigned"
+      1369: null
 
-		COL13:
-			1363: *property_COL11_1366
-			1366: &property_COL13_1366
-				new_name: "Employed_Weeks"
-				type: "unsigned"
-			1369: null
+    COL13:
+      1363: *property_COL11_1366
+      1366: &property_COL13_1366
+        new_name: "Employed_Weeks"
+        type: "unsigned"
+      1369: null
 
-		COL14:
-			1363: *property_COL12_1366
-			1366: null
+    COL14:
+      1363: *property_COL12_1366
+      1366: null
 
-		COL15:
-			1363: *property_COL13_1366
-			1366: null
+    COL15:
+      1363: *property_COL13_1366
+      1366: null
 
 
 house_specifications:
