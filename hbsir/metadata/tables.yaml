@@ -107,8 +107,13 @@ household_information:
         4: "Winter"
 
     WEIGHT:
-      new_name: "Weight"
-      type: "unsigned"
+      new_name: Weight
+      type: unsigned
+
+    NOEKHN:
+      new_name: Household_Type
+      type: unsigned
+
 
 
 members_properties:
@@ -116,11 +121,15 @@ members_properties:
     1363: "P1"
 
   items:
-    member_number: &member_number
+    members_address: &members_address
       new_name: "ID"
       type: "unsigned"
 
-    member_relationship: &member_relationship
+    members_member_number: &members_member_number
+      new_name: "Member_ID"
+      type: "unsigned"
+
+    members_member_relationship: &members_member_relationship
       new_name: "Relationship"
       type: "category"
       categories:
@@ -134,7 +143,28 @@ members_properties:
         8: "Other_Family"
         9: "Non-Family"
 
-    marrital_state: &members_marrital_state
+    members_sex: &members_sex
+      new_name: "Sex"
+      type: "category"
+      categories:
+        1: "Male"
+        2: "Female"
+
+    members_age: &members_age
+      new_name: "Age"
+      type: "unsigned"
+
+    members_is_literate: &members_is_literate
+      new_name: "Is_Literate"
+      type: "boolean"
+      true_condition: 1
+
+    members_is_student: &members_is_student
+      new_name: "Is_Student"
+      type: "boolean"
+      true_condition: 1
+
+    members_marrital_state: &members_marrital_state
       new_name: "Marrital_State"
       type: "category"
       categories: 
@@ -171,6 +201,12 @@ members_properties:
             53: "Masters"
             61: "PhD"
             71: "Unofficial"
+
+          versions:
+            1394:
+              replace: {"1": null}
+            1395: null
+
         1397:
           categories:
             1: "Primary"
@@ -183,123 +219,94 @@ members_properties:
             8: "PhD"
             9: "Unofficial"
 
+    memders_member_weeks: &memders_member_weeks
+      new_name: "Member_Weeks"
+      type: "unsigned"
+
+    members_nationality: &members_nationality
+      new_name: "Nationality"
+      type: "unsigned"
+
+    members_literacy_status: &members_literacy_status
+      new_name: "Literacy_Status"
+      type: "unsigned"
+
+    members_job_code: &members_job_code
+      new_name: "Job_Code"
+      type: "string"
+
+    members_work_place: &members_work_place
+      new_name: "Work_Place"
+      type: "unsigned"
+
+    members_work_type: &members_work_type
+      new_name: "Work_Type"
+      type: "unsigned"
+
+    members_employed_weeks: &members_employed_weeks
+      new_name: "Employed_Weeks"
+      type: "unsigned"
+
+
   columns:
-    ADDRESS: &property_Address
-      1363:
-          new_name: "ID"
-          type: "unsigned"
+    1363:
+      ADDRESS: *members_address
 
-    COL01: *member_number
-    DYCOL01: *member_number
+      COL01: *members_member_number
+      COL03: *members_member_relationship
+      COL04: *members_sex
+      COL05: *members_age
+      COL06:
+        1363: *memders_member_weeks
+        1364: *members_marrital_state
+        1366: *memders_member_weeks
+        1369: *members_is_literate
+      COL07:
+        1363: *members_marrital_state
+        1364: *members_nationality
+        1366: *members_literacy_status
+        1369: *members_is_student
+      COL08: 
+        1363: *members_nationality
+        1364: *memders_member_weeks
+        1366: *members_education_level
+      COL09:
+        1363: *members_literacy_status
+        1366: *members_activity_state
+      COL10:
+        1363: *members_education_level
+        1366: *members_job_code
+        1369: *members_marrital_state
+      COL11:
+        1363: *members_activity_state
+        1366: *members_work_place
+        1369: null
+      COL12:
+        1363: *members_job_code
+        1366: *members_work_type
+        1369: null
+      COL13:
+        1363: *members_work_place
+        1366: *members_employed_weeks
+        1369: null
+      COL14:
+        1363: *members_work_type
+        1366: null
+      COL15:
+        1363: *members_employed_weeks
+        1366: null
 
-    DYCOL03: &property_DYCOL03
-      1363:
-        new_name: "Relationship"
-        type: "category"
-        categories:
-          1: "Head"
-          2: "Spouse"
-          3: "Child"
-          4: "Child-in-Law"
-          5: "Grand-Child"
-          6: "Parent"
-          7: "Sister/Brother"
-          8: "Other_Family"
-          9: "Non-Family"
-    COL03: *property_DYCOL03
-
-    DYCOL04: &property_DYCOL04
-      1363:
-        new_name: "Sex"
-        type: "category"
-        categories:
-          1: "Male"
-          2: "Female"
-    COL04: *property_DYCOL04
-
-    DYCOL05: &property_DYCOL05
-      1363:
-        new_name: "Age"
-        type: "unsigned"
-    COL05: *property_DYCOL05
-
-    DYCOL06:
-      1384: &property_DYCOL06_1384
-        new_name: "Literate"
-        type: "boolean"
-        true_condition: 1
-    COL06:
-      1363: &property_COL06_1363
-        new_name: "Member_Weeks"
-        type: "unsigned"
-      1364: *members_marrital_state
-      1366: *property_COL06_1363
-      1369: *property_DYCOL06_1384
-
-    DYCOL07: 
-      1384: &property_DYCOL07_1384
-        new_name: "Student"
-        type: "boolean"
-        true_condition: 1
-    COL07:
-      1363: *members_marrital_state
-      1364: &property_COL07_1364
-        new_name: "Nationality"
-        type: "unsigned"
-      1366: &property_COL07_1366
-        new_name: "Literacy_Status"
-        type: "unsigned"
-      1369: *property_DYCOL07_1384
-
-    DYCOL08:
-      1384: *members_education_level
-    COL08: 
-      1363: *property_COL07_1364
-      1364: *property_COL06_1363
-      1366: *members_education_level
-
-    DYCOL09: 
-      1384: *members_activity_state
-    COL09:
-      1363: *property_COL07_1366
-      1366: *members_activity_state
-
-    DYCOL10: &property_DYCOL10
-      1384: *members_marrital_state
-    COL10:
-      1363: *members_education_level
-      1366: &property_COL10_1366
-        new_name: "Job_Code"
-      1369: *members_marrital_state
-
-    COL11:
-      1363: *members_activity_state
-      1366: &property_COL11_1366
-        new_name: "Work_Place"
-        type: "unsigned"
-      1369: null
-
-    COL12:
-      1363: *property_COL10_1366
-      1366: &property_COL12_1366
-        new_name: "Work_Type"
-        type: "unsigned"
-      1369: null
-
-    COL13:
-      1363: *property_COL11_1366
-      1366: &property_COL13_1366
-        new_name: "Employed_Weeks"
-        type: "unsigned"
-      1369: null
-
-    COL14:
-      1363: *property_COL12_1366
-      1366: null
-
-    COL15:
-      1363: *property_COL13_1366
-      1366: null
+    1384:
+      ADDRESS: *members_address
+      DYCOL01: *members_member_number
+      DYCOL03: *members_member_relationship
+      DYCOL04: *members_sex
+      DYCOL05: *members_age
+      DYCOL06: *members_is_literate
+      DYCOL07: *members_is_student
+      DYCOL08: *members_education_level
+      DYCOL09:  *members_activity_state
+      DYCOL10: *members_marrital_state
 
 
 house_specifications:
