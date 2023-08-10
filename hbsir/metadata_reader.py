@@ -206,7 +206,9 @@ class LoadTable(BaseModel):
     save_downloaded: bool = settings[
         ("functions_defaults", "load_table", "save_downloaded")
     ]
+    redownload: bool = settings[("functions_defaults", "load_table", "recreate")]
     save_created: bool = settings[("functions_defaults", "load_table", "save_created")]
+    recreate: bool = settings[("functions_defaults", "load_table", "recreate")]
 
 
 metadata = Metadata()

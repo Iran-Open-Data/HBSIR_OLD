@@ -50,7 +50,9 @@ def load_table(
     data_type: Literal["processed", "cleaned", "original"] | None = None,
     on_missing: Literal["error", "download", "create"] | None = None,
     save_downloaded: bool | None = None,
+    redownload: bool | None = None,
     save_created: bool | None = None,
+    recreate: bool | None = None,
 ) -> pd.DataFrame:
     """Load DataFrame for given table name and year range.
 

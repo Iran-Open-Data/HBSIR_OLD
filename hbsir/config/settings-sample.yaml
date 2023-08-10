@@ -53,4 +53,6 @@ functions_defaults:
     data_type: processed
     on_missing: download
     save_downloaded: true
+    redownload: false
     save_created: true
+    recreate: true
