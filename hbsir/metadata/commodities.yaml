@@ -810,7 +810,7 @@ Food-NonFood:
 Imputed_Rent:
   defaults:
     levels: [1]
-    column_names: ["Imputed_Rent"]
+    output_column_names: ["Imputed_Rent"]
 
   items:
     Imputed_Rent:
@@ -822,8 +822,9 @@ Imputed_Rent:
 
 
 Insurance_Benefits:
-  default_levels: [1]
-  default_column_names: ["Insurance_Benefits"]
+  defaults:
+    levels: [1]
+    output_column_names: ["Insurance_Benefits"]
 
   items:
     Insurance_Benefits:
