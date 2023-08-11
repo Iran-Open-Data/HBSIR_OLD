@@ -126,7 +126,7 @@ members_properties:
       type: "unsigned"
 
     members_member_number: &members_member_number
-      new_name: "Member_ID"
+      new_name: "Member_Number"
       type: "unsigned"
 
     members_member_relationship: &members_member_relationship
