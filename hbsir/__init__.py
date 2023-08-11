@@ -141,10 +141,14 @@ def create_table_with_schema(
     if years is None and "years" in schema:
         years = schema["years"]
     if "table_list" in schema:
-        metadata_reader.metadata.schema["_Input_Table"] = schema
+        table_name = "_Input_Table"
+        metadata_reader.metadata.schema[table_name] = schema
+    elif all("table_list" in table_schema for table_schema in schema.values()):
+        table_name = list(schema.keys())[-1]
+        metadata_reader.metadata.schema.update(schema)
     else:
         raise NameError
-    return data_engine.TableLoader("_Input_Table", years, settings).load()
+    return data_engine.TableLoader(table_name, years, settings).load()
 
 
 def add_classification(
