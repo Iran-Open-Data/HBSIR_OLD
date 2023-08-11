@@ -174,6 +174,12 @@ class Applier:
         for condition in conditions:
             self.table = self.table.query(condition)
 
+    def _apply_pandas_function(self, method_input: str) -> None:
+        method_input = "self.table" + method_input
+        table = pd.eval(method_input, target=self.table)
+        assert isinstance(table, pd.DataFrame)
+        self.table = table
+
     def _apply_external_function(self, method_input: str) -> None:
         module_name, func_name = method_input.rsplit(".", 1)
         self.__load_module(module_name)
