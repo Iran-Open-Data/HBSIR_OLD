@@ -209,7 +209,7 @@ class TableLoader:
         for year in self.years:
             table = self._load_table(self.table_name, year)
             table_list.append(table)
-        table = pd.concat(table_list, ignore_index=True)
+        table = pd.concat(table_list)
         if "views" in self.table_schema:
             table.view.views = self.table_schema["views"]
         return table
@@ -259,7 +259,7 @@ class TableLoader:
 
         table_list = self._collect_schema_tables(table_names, year)
 
-        table = pd.concat(table_list, ignore_index=True)
+        table = pd.concat(table_list)
         table = self._apply_schema(table, table_name, year)
         return table
 
