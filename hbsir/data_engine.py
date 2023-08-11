@@ -117,11 +117,12 @@ class Applier:
         if method_input is None:
             return
         column_name = method_input["name"]
-        expression = method_input["expression"]
         if method_input["type"] == "numerical":
+            expression = method_input["expression"]
             self.__apply_numerical_instruction(column_name, expression)
         elif method_input["type"] == "categorical":
-            self.__apply_categorical_instruction(column_name, expression)
+            categories = method_input["categories"]
+            self.__apply_categorical_instruction(column_name, categories)
 
     def __apply_numerical_instruction(self, column_name, expression: int | str) -> None:
         if isinstance(expression, int):
@@ -132,10 +133,8 @@ class Applier:
         self.table[column_name] = self.table[columns_names].fillna(0).eval(expression)
 
     def __apply_categorical_instruction(
-        self, column_name: str, instruction: dict
+        self, column_name: str, categories: dict
     ) -> None:
-        categories: dict = instruction["categories"]
-
         if column_name in self.table.columns:
             categorical_column = self.table[column_name].copy()
         else:
