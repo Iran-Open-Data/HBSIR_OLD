@@ -59,9 +59,9 @@ class CommodityDecoderSettings(BaseModel):
     versioned_info: dict = {}
     defaults: dict = {}
     labels: tuple[str, ...] = tuple()
-    levels: tuple[int, ...] = tuple()
+    levels: tuple[int, ...] = (1,)
     drop_value: bool = False
-    output_column_names: tuple[str, ...] | None = None
+    output_column_names: tuple[str, ...] = ()
     required_columns: tuple[str, ...] | None = None
     missing_value_replacements: dict[str, str] | None = None
 
@@ -82,7 +82,7 @@ class CommodityDecoderSettings(BaseModel):
         super().model_post_init(None)
 
     def _resolve_column_names(self) -> None:
-        if self.output_column_names is None:
+        if len(self.output_column_names) == 0:
             names = [
                 f"{label}_{level}" for label, level in product(self.labels, self.levels)
             ]
