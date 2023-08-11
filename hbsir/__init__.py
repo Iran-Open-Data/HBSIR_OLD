@@ -258,4 +258,4 @@ def setup(
     data_cleaner.save_cleaned_tables_as_parquet(table_names, years)
 
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
