@@ -217,10 +217,13 @@ class Metadata:
             if len(parts) == 1:
                 placeholders_mapping[placeholder] = yaml_body[parts[0]]
             elif len(parts) == 2:
-                placeholders_mapping[placeholder] = yaml_body[parts[0]]["items"][parts[1]]
+                placeholders_mapping[placeholder] = yaml_body[parts[0]]["items"][
+                    parts[1]
+                ]
         for placeholder, value in placeholders_mapping.items():
             yaml_text = yaml_text.replace("{{" + placeholder + "}}", str(value))
         return yaml_text
+
 
 class LoadTable(BaseModel):
     data_type: Literal["processed", "cleaned", "original"] = settings[
