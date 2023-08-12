@@ -622,7 +622,7 @@ house_specifications:
           7: "Other"
       DYCOL02: 
         1383: *rooms
-        1387: null
+        1387: drop
       DYCOL03: 
         1383: *space
         1387: *rooms
@@ -885,8 +885,7 @@ house_specifications:
         1391: *other_month
       DYCOL59:
         1391: *other_year
-      DYCOL60:
-        1391: *other_year
+      DYCOL60: drop
       DYCOL61:
         1391: *noceremony
 
