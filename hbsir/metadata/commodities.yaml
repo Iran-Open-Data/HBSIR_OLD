@@ -72,9 +72,8 @@ tables:
 ################### - Original Classification Before 1383 - ###################
 
 
-ORIGINAL1363:
-  items: &ORIGINAL1363
-
+original_1363:
+  items:
 
     #                        ######## LEVEL 1 ########                        #
     food_beverages_and_tobacco:
@@ -195,16 +194,15 @@ ORIGINAL1363:
 ################### - Original Classification After 1383 - ####################
 
 
-ORIGINAL1383:
+original_1383:
   defaults:
     levels: [1, 2]
 
-  items: &ORIGINAL1383
+  items:
 
 
     #                ################ LEVEL 0 ################                #
     food_and_non_alcoholic_beverages:
-      &original_1383_0_food_and_non_alcoholic_beverages
       level: 0
       farsi_name: "مواد خوراکی و نوشیدنی‌های غیر الکلی"
       code: {start: 10_000, end: 20_000}
@@ -456,7 +454,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     alcoholic_beverages_tobacco_and_norcotics:
-      &original_1383_0_alcoholic_beverages_tobacco_and_norcotics
       level: 0
       farsi_name: "نوشیدنی‌های الکلی، تنباکو و مواد مخدر"
       code: {start: 20_000, end: 30_000}
@@ -524,7 +521,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     clothing_and_footwear:
-      &original_1383_0_clothing_and_footwear
       level: 0
       farsi_name: "پوشاک و کفش"
       code: {start: 30_000, end: 33_000}
@@ -597,7 +593,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     housing_water_electricity_gas_and_other_fuels:
-      &original_1383_0_housing_water_electricity_gas_and_other_fuels
       level: 0
       farsi_name: ""
       code: {start: 40_000, end: 50_000}
@@ -605,7 +600,6 @@ ORIGINAL1383:
 
     #                        ######## LEVEL 1 ########                        #
     actual_rentals_for_housing:
-      &original_1383_0_actual_rentals_for_housing
       level: 1
       farsi_name: ""
       code: {start: 41_000, end: 42_000}
@@ -613,7 +607,6 @@ ORIGINAL1383:
 
     #                        ######## LEVEL 1 ########                        #
     imputed_rentals_for_housing:
-      &original_1383_0_imputed_rentals_for_housing
       level: 1
       farsi_name: ""
       code: {start: 42_000, end: 43_000}
@@ -621,7 +614,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     furnishings_household_equipment_and_routine_household_maintenance:
-      &original_1383_0_furnishings_household_equipment_and_routine_household_maintenance
       level: 0
       farsi_name: ""
       code: {start: 50_000, end: 60_000}
@@ -629,7 +621,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     health:
-      &original_1383_0_health
       level: 0
       farsi_name: ""
       code: {start: 60_000, end: 70_000}
@@ -637,7 +628,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     transport:
-      &original_1383_0_transport
       level: 0
       farsi_name: ""
       code: {start: 70_000, end: 80_000}
@@ -645,7 +635,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     information_and_communication:
-      &original_1383_0_information_and_communication
       level: 0
       farsi_name: ""
       code: {start: 80_000, end: 90_000}
@@ -653,7 +642,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     recreation_sport_and_culture:
-      &original_1383_0_recreation_sport_and_culture
       level: 0
       farsi_name: ""
       code: {start: 90_000, end: 100_000}
@@ -661,7 +649,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     education_services:
-      &original_1383_0_education_services
       level: 0
       farsi_name: ""
       code: {start: 100_000, end: 110_000}
@@ -669,7 +656,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     restaurants_and_accommodation_services:
-      &original_1383_0_restaurants_and_accommodation_services
       level: 0
       farsi_name: ""
       code: {start: 110_000, end: 120_000}
@@ -677,7 +663,6 @@ ORIGINAL1383:
 
     #                        ######## LEVEL 1 ########                        #
     food_and_beverage_serving_services:
-      &original_1383_1_food_and_beverage_serving_services
       level: 1
       farsi_name: ""
       code: {start: 111_000, end: 112_000}
@@ -713,7 +698,6 @@ ORIGINAL1383:
 
     #                        ######## LEVEL 1 ########                        #
     accommodation_services:
-      &original_1383_1_accommodation_services
       level: 1
       farsi_name: ""
       code: {start: 112_000, end: 113_000}
@@ -735,7 +719,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     other_commodities:
-      &original_1383_0_other_commodities
       level: 0
       farsi_name: ""
       code: {start: 120_000, end: 130_000}
@@ -743,7 +726,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     transfer_payments:
-      &original_1383_0_transfer_payments
       level: 0
       farsi_name: ""
       code: {start: 130_000, end: 140_000}
