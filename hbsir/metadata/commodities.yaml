@@ -783,8 +783,8 @@ original:
     levels: [2, 3]
 
   items:
-    1363: *ORIGINAL1363
-    1383: *ORIGINAL1383
+    1363: {{original_1363}}
+    1383: {{original_1383}}
 
 
 Food-NonFood:
@@ -799,9 +799,9 @@ Food-NonFood:
         level: 1
         farsi_name: "مخارج خوراکی"
         code:
-          - *original_1383_0_food_and_non_alcoholic_beverages
-          - *original_1383_0_alcoholic_beverages_tobacco_and_norcotics
-          - *original_1383_1_food_and_beverage_serving_services
+          - {{original_1383.food_and_non_alcoholic_beverages}}
+          - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
+          - {{original_1383.food_and_beverage_serving_services}}
       Non-Food:
         level: 1
         farsi_name: "مخارج غیر خوراکی"

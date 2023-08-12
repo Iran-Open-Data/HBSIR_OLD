@@ -1,9 +1,10 @@
 """
 Metadata module
 """
+import re
 
 from pathlib import Path
-from typing import Any, Literal, get_args
+from typing import Any, Literal, Callable, get_args
 
 from pydantic import BaseModel
 import yaml
@@ -65,7 +66,11 @@ original_tables: tuple[OriginalTable] = get_args(OriginalTable)
 standard_tables: tuple[StandardTable] = get_args(StandardTable)
 
 
-def open_yaml(path: Path | str, location: Literal["package", "root"] = "package"):
+def open_yaml(
+    path: Path | str,
+    location: Literal["package", "root"] = "package",
+    interpreter: Callable[[str], str] | None = None,
+):
     """
     Read the contents of a YAML file relative to the root directory and return it as a dictionary.
 
@@ -87,7 +92,10 @@ def open_yaml(path: Path | str, location: Literal["package", "root"] = "package"
         path = PACKAGE_DIRECTORY.joinpath(path)
 
     with open(path, mode="r", encoding="utf8") as yaml_file:
-        yaml_content = yaml.load(yaml_file, Loader=yaml.CLoader)
+        yaml_text = yaml_file.read()
+    if interpreter is not None:
+        yaml_text = interpreter(yaml_text)
+    yaml_content = yaml.safe_load(yaml_text)
     return yaml_content
 
 
@@ -189,12 +197,30 @@ class Metadata:
         local_metadata_path = ROOT_DIRECTORT.joinpath(
             settings[("local_metadata", file_name)]
         )
-        _metadata = open_yaml(package_metadata_path)
+        if f"{file_name}_interpreter" in dir(self):
+            interpreter = getattr(self, f"{file_name}_interpreter")
+        else:
+            interpreter = None
+        _metadata = open_yaml(package_metadata_path, interpreter=interpreter)
         if local_metadata_path.exists():
             local_metadata = open_yaml(local_metadata_path)
             _metadata.update(local_metadata)
         setattr(self, file_name, _metadata)
 
+    @staticmethod
+    def commodities_interpreter(yaml_text: str):
+        yaml_body = yaml.safe_load(re.sub("{{.*}}", "", yaml_text))
+        placeholders_list: list[str] = re.findall(r"{{\s*(.*)\s*}}", yaml_text)
+        placeholders_mapping = {}
+        for placeholder in placeholders_list:
+            parts = placeholder.split(".")
+            if len(parts) == 1:
+                placeholders_mapping[placeholder] = yaml_body[parts[0]]
+            elif len(parts) == 2:
+                placeholders_mapping[placeholder] = yaml_body[parts[0]]["items"][parts[1]]
+        for placeholder, value in placeholders_mapping.items():
+            yaml_text = yaml_text.replace("{{" + placeholder + "}}", str(value))
+        return yaml_text
 
 class LoadTable(BaseModel):
     data_type: Literal["processed", "cleaned", "original"] = settings[
