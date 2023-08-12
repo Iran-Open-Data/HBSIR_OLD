@@ -310,8 +310,6 @@ members_properties:
 
 
 house_specifications:
-  settings:
-    missings: drop
 
   file_code:
     1363: "P2"
@@ -889,6 +887,8 @@ house_specifications:
         1391: *other_year
       DYCOL60:
         1391: *other_year
+      DYCOL61:
+        1391: *noceremony
 
 
 
