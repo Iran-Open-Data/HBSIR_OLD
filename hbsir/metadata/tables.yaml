@@ -315,6 +315,9 @@ house_specifications:
     1363: "P2"
 
   items:
+    other_tenure: &other_tenure
+        new_name: "Other_tenure"
+        type: "string"
     rooms: &rooms
         new_name: "Number_of_Rooms"
         type: "unsigned"
@@ -617,7 +620,7 @@ house_specifications:
           7: "Other"
       DYCOL02: 
         1383: *rooms
-        1387: drop
+        1387: *other_tenure
       DYCOL03: 
         1383: *space
         1387: *rooms
