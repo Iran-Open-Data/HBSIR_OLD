@@ -110,7 +110,7 @@ class Argham:
     def get_numbers(self) -> set[int]:
         numbers = set()
         for rng in self.range_set:
-            numbers.union(set(rng))
+            numbers = numbers.union(set(rng))
         return numbers
 
     def __repr__(self) -> str:
@@ -123,9 +123,10 @@ class Argham:
             else:
                 ranges.append((rng.start, rng.stop))
         representation_list = []
-        representation_list.append(f"[{', '.join(integers)}]")
+        if len(integers) > 0:
+            representation_list.append(f"[{', '.join(integers)}]")
         for rng in ranges:
-            representation_list.append(f"({rng.start} - {rng.stop})")
+            representation_list.append(f"({rng[0]} - {rng[1]})")
         return ", ".join(representation_list)
 
     def __contains__(self, value: int):
