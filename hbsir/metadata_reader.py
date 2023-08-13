@@ -1,6 +1,7 @@
 """
 Metadata module
 """
+import functools
 import re
 
 from pathlib import Path
@@ -197,30 +198,39 @@ class Metadata:
         local_metadata_path = ROOT_DIRECTORT.joinpath(
             settings[("local_metadata", file_name)]
         )
-        if f"{file_name}_interpreter" in dir(self):
-            interpreter = getattr(self, f"{file_name}_interpreter")
-        else:
-            interpreter = None
+        interpreter = self.get_interpreter(file_name)
         _metadata = open_yaml(package_metadata_path, interpreter=interpreter)
+        interpreter = self.get_interpreter(file_name, _metadata)
         if local_metadata_path.exists():
-            local_metadata = open_yaml(local_metadata_path)
+            local_metadata = open_yaml(local_metadata_path, interpreter=interpreter)
             _metadata.update(local_metadata)
         setattr(self, file_name, _metadata)
 
+    def get_interpreter(
+        self, file_name: str, context: dict | None = None
+    ) -> Callable[[str], str]:
+        context = context or {}
+        if f"{file_name}_interpreter" in dir(self):
+            interpreter = getattr(self, f"{file_name}_interpreter")
+            interpreter = functools.partial(interpreter, context=context)
+        else:
+            interpreter = None
+        return interpreter  # type: ignore
+
     @staticmethod
-    def commodities_interpreter(yaml_text: str):
-        yaml_body = yaml.safe_load(re.sub("{{.*}}", "", yaml_text))
+    def commodities_interpreter(yaml_text: str, context: dict) -> str:
+        context.update(yaml.safe_load(re.sub("{{.*}}", "", yaml_text)))
         placeholders_list: list[str] = re.findall(r"{{\s*(.*)\s*}}", yaml_text)
-        placeholders_mapping = {}
+        mapping = {}
         for placeholder in placeholders_list:
             parts = placeholder.split(".")
             if len(parts) == 1:
-                placeholders_mapping[placeholder] = yaml_body[parts[0]]
+                mapping[placeholder] = context[parts[0]]
             elif len(parts) == 2:
-                placeholders_mapping[placeholder] = yaml_body[parts[0]]["items"][
-                    parts[1]
-                ]
-        for placeholder, value in placeholders_mapping.items():
+                mapping[placeholder] = context[parts[0]]["items"][parts[1]]
+            else:
+                raise ValueError
+        for placeholder, value in mapping.items():
             yaml_text = yaml_text.replace("{{" + placeholder + "}}", str(value))
         return yaml_text
 
