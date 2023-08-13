@@ -310,56 +310,584 @@ members_properties:
 
 
 house_specifications:
-  settings:
-    missings: drop
 
   file_code:
     1363: "P2"
 
-  columns:
+  items:
+    other_tenure: &other_tenure
+        new_name: "Other_tenure"
+        type: "string"
+    rooms: &rooms
+        new_name: "Number_of_Rooms"
+        type: "unsigned"
+    space: &space
+        new_name: "Space"
+        type: "unsigned"
 
-    ADDRESS:
-      new_name: "ID"
-      type: "unsigned"
-
-    DYCOL01:
-      new_name: "Tenure"
+    skeleton: &skeleton
+      new_name: "Construction_Skeleton"
       type: "category"
       categories:
-        1: "Owned_Estate_Land"
-        2: "Owned_Estate"
-        3: "Rent"
-        4: "Mortgage"
-        5: "Service"
-        6: "Free"
-        7: "Other"
-    DYCOL03:
-      new_name: "Number_of_Rooms"
-      type: "unsigned"
+        1: "Metal"
+        2: "Concrete"
+        3: "Other"
 
-    DYCOL04:
-      new_name: "Space"
-      type: "unsigned"
+    construction_material: &construction_material
+      new_name: "Construction_Material"
+      type: "category"
+      categories:
+        1: "BrickSteel_StoneSteel"
+        2: "Brickwood_Stonewood"
+        3: "Cement_Blocks"
+        4: "AllBrick_Stone"
+        5: "AllWood"
+        6: "Sundried_Brickwood"
+        7: "Sundried_Brickmud"
+        8: "Other"
 
-    DYCOL07:
-      new_name: "Car"
+    cookfuel: &cookfuel
+      new_name: "Cooking_Fuel"
+      type: "category"
+      categories:
+        1: "Karosine"
+        2: "Gasoline"
+        3: "Gas"
+        4: "Piped_Gas"
+        5: "Electricity"
+        6: "Wood_and_Charcoal"
+        7: "Animal_Fuel"
+        8: "Charcoal"
+        9: "Other_Fuel"
+        10: "None"
+
+    heatfuel: &heatfuel
+      new_name: "Heating_Fuel"
+      type: "category"
+      categories:
+        11: "Karosine"
+        12: "Gasoline"
+        13: "Gas"
+        14: "Piped_Gas"
+        15: "Electricity"
+        16: "Wood_and_Charcoal"
+        17: "Animal_Fuel"
+        18: "Charcoal"
+        19: "Other_Fuel"
+        20: "None"
+
+    hotwaterfuel: &hotwaterfuel
+      new_name: "Hotwater_Fuel"
+      type: "category"
+      categories:
+        21: "Karosine"
+        22: "Gasoline"
+        23: "Gas"
+        24: "Piped_Gas"
+        25: "Electricity"
+        26: "Wood_and_Charcoal"
+        27: "Animal_Fuel"
+        28: "Charcoal"
+        29: "Other_Fuel"
+        30: "None"
+
+    car: &car
+        new_name: "Car"
+        type: "boolean"
+        true_condition: 1
+    motorcycle: &motorcycle
+        new_name: "Motorcycle"
+        type: "boolean"
+        true_condition: 1
+    bicycle: &bicycle
+        new_name: "Bicycle"
+        type: "boolean"
+        true_condition: 1
+    radio: &radio
+        new_name: "Radio"
+        type: "boolean"
+        true_condition: 1
+    cassette: &cassette
+        new_name: "Cassette"
+        type: "boolean"
+        true_condition: 1
+    tvbw: &tvbw
+        new_name: "TV_BW"
+        type: "boolean"
+        true_condition: 1
+    tvcr: &tvcr
+        new_name: "TV_CR"
+        type: "boolean"
+        true_condition: 1
+    vcr: &vcr
+        new_name: "VCR"
+        type: "boolean"
+        true_condition: 1
+    computer: &computer
+        new_name: "Computer"
+        type: "boolean"
+        true_condition: 1
+    cellphone: &cellphone
+        new_name: "Cellphone"
+        type: "boolean"
+        true_condition: 1
+    freezer: &freezer
+        new_name: "Freezer"
+        type: "boolean"
+        true_condition: 1
+    refrigerator: &refrigerator
+        new_name: "Refrigerator"
+        type: "boolean"
+        true_condition: 1
+    frizer_refrigrator: &frizer_refrigrator
+        new_name: "Frizer_Refrigrator"
+        type: "boolean"
+        true_condition: 1
+    oven: &oven
+        new_name: "Oven"
+        type: "boolean"
+        true_condition: 1
+    vaccum: &vaccum
+        new_name: "Vaccum"
+        type: "boolean"
+        true_condition: 1
+    washer: &washer
+        new_name: "Washer"
+        type: "boolean"
+        true_condition: 1
+    sewing: &sewing
+        new_name: "Sewing"
+        type: "boolean"
+        true_condition: 1
+    fan: &fan
+        new_name: "Fan"
+        type: "boolean"
+        true_condition: 1
+    cooler_water_movable: &cooler_water_movable
+        new_name: "Cooler_Water_Movable"
+        type: "boolean"
+        true_condition: 1
+    cooler_gas_movable: &cooler_gas_movable
+        new_name: "Cooler_Gas_Movable"
+        type: "boolean"
+        true_condition: 1
+    dishwasher: &dishwasher
+        new_name: "Dishwasher"
+        type: "boolean"
+        true_condition: 1
+    microwave: &microwave
+        new_name: "Microwave"
+        type: "boolean"
+        true_condition: 1
+    # TODO what is this?
+    none: &none
+        new_name: "None"
+        type: "boolean"
+        true_condition: 1
+    pipewater: &pipewater
+      new_name: "Pipewater"
+      type: "boolean"
+      true_condition: 1
+    electricity: &electricity
+      new_name: "Electricity"
+      type: "boolean"
+      true_condition: 1
+    pipegas: &pipegas
+      new_name: "Pipegas"
+      type: "boolean"
+      true_condition: 1
+    phone: &phone
+      new_name: "Phone"
+      type: "boolean"
+      true_condition: 1
+    internet: &internet
+      new_name: "Internet"
+      type: "boolean"
+      true_condition: 1
+    bathroom: &bathroom
+      new_name: "Bathroom"
+      type: "boolean"
+      true_condition: 1
+    kitchen: &kitchen
+      new_name: "Kitchen"
+      type: "boolean"
+      true_condition: 1
+    cooler: &cooler
+      new_name: "Cooler"
+      type: "boolean"
+      true_condition: 1
+    centralcooler: &centralcooler
+      new_name: "Centralcooler"
+      type: "boolean"
+      true_condition: 1
+    centralheater: &centralheater
+      new_name: "Centralheat"
+      type: "boolean"
+      true_condition: 1
+    package: &package
+      new_name: "Package"
+      type: "boolean"
+      true_condition: 1
+    cooler_gas: &cooler_gas
+      new_name: "Cooler_gas"
+      type: "boolean"
+      true_condition: 1
+    seweragenetwork: &seweragenetwork
+      new_name: "Seweragenetwork"
+      type: "boolean"
+      true_condition: 1
+    party_month: &party_month
+      new_name: "Party_month"
+      type: "boolean"
+      true_condition: 1
+    party_year: &party_year
+      new_name: "Party_year"
+      type: "boolean"
+      true_condition: 1
+    ceremony_month: &ceremony_month
+      new_name: "Ceremony_month"
+      type: "boolean"
+      true_condition: 1
+    ceremony_year: &ceremony_year
+      new_name: "Ceremony_year"
+      type: "boolean"
+      true_condition: 1
+    homerepair_month: &homerepair_month
+      new_name: "Homerepair_month"
+      type: "boolean"
+      true_condition: 1
+    homerepair_year: &homerepair_year
+      new_name: "Homerepair_year"
+      type: "boolean"
+      true_condition: 1
+    ziarati_trip_month: &ziarati_trip_month
+      new_name: "Ziarati_trip_month"
+      type: "boolean"
+      true_condition: 1
+    ziarati_trip_year: &ziarati_trip_year
+      new_name: "Ziarati_trip_year"
+      type: "boolean"
+      true_condition: 1
+    foreign_trip_month: &foreign_trip_month
+      new_name: "Foreign_trip_month"
+      type: "boolean"
+      true_condition: 1
+    foreign_trip_year: &foreign_trip_year
+      new_name: "Foreign_trip_year"
+      type: "boolean"
+      true_condition: 1
+    surgery_month: &surgery_month
+      new_name: "Surgery_month"
+      type: "boolean"
+      true_condition: 1
+    surgery_year: &surgery_year
+      new_name: "Surgery_year"
+      type: "boolean"
+      true_condition: 1
+    other_event_month: &other_event_month
+      new_name: "Other_event_month"
+      type: "boolean"
+      true_condition: 1
+    other_event_year: &other_event_year
+      new_name: "Other_event_year"
+      type: "boolean"
+      true_condition: 1
+    other_event_name: &other_event_name
+      new_name: "Other_event_name"
+      type: "string"
+    no_event: &no_event
+      new_name: "No_event"
       type: "boolean"
       true_condition: 1
 
-    DYCOL08:
-      new_name: "Motorcycle"
-      type: "boolean"
-      true_condition: 1
+  columns:
 
-    DYCOL09:
-      new_name: "Bicycle"
-      type: "boolean"
-      true_condition: 1
+    1383:
+      ADDRESS:
+        new_name: "ID"
+        type: "unsigned"
 
-    DYCOL10:
-      new_name: "Radio"
-      type: "boolean"
-      true_condition: 1
+      DYCOL01:
+        new_name: "Tenure"
+        type: "category"
+        categories:
+          1: "Owned_Estate_Land"
+          2: "Owned_Estate"
+          3: "Rent"
+          4: "Mortgage"
+          5: "Service"
+          6: "Free"
+          7: "Other"
+      DYCOL02: 
+        1383: *rooms
+        1387: *other_tenure
+      DYCOL03: 
+        1383: *space
+        1387: *rooms
+      DYCOL04:
+        1383: *skeleton
+        1387: *space
+      DYCOL05: 
+        1383: *construction_material
+        1387: *skeleton
+      DYCOL06: 
+        1383: *car
+        1387: *construction_material
+      DYCOL07: 
+        1383: *motorcycle
+        1387: *car
+      DYCOL08: 
+        1383: *bicycle
+        1387: *motorcycle
+      DYCOL09: 
+        1383: *radio
+        1387: *bicycle
+      DYCOL10: 
+        1383: *cassette
+        1387: *radio
+      DYCOL11:
+        1383: *tvbw
+        1387: *cassette
+      DYCOL12:
+        1383: *tvcr
+        1387: *tvbw
+      DYCOL13:
+        1383: *vcr
+        1387: *tvcr
+      DYCOL14:
+        1383: *computer
+        1387: *vcr
+      DYCOL15:
+        1383: *cellphone
+        1387: *computer
+      DYCOL16:
+        1383: *freezer
+        1387: *cellphone
+      DYCOL17:
+        1383: *refrigerator
+        1387: *freezer
+      DYCOL18:
+        1383: *oven
+        1384: *frizer_refrigrator
+        1387: *refrigerator
+      DYCOL19:
+        1383: *vaccum
+        1384: *oven
+        1387: *frizer_refrigrator
+      DYCOL20:
+        1383: *washer
+        1384: *vaccum
+        1387: *oven
+      DYCOL21:
+        1383: *sewing
+        1384: *washer
+        1387: *vaccum
+      DYCOL22:
+        1383: *fan
+        1384: *sewing
+        1387: *washer
+      DYCOL23:
+        1383: *cooler_water_movable
+        1384: *fan
+        1387: *sewing
+      DYCOL24:
+        1383: *none
+        1384: *cooler_water_movable
+        1387: *fan
+      DYCOL25:
+        1383: *pipewater
+        1384: *none
+        1385: *cooler_gas_movable
+        1387: *cooler_water_movable
+      DYCOL26:
+        1383: *electricity
+        1384: *pipewater
+        1385: *dishwasher
+        1387: *cooler_gas_movable
+      DYCOL27:
+        1383: *pipegas
+        1384: *electricity
+        1385: *none
+        1387: *dishwasher
+      DYCOL28:
+        1383: *phone
+        1384: *pipegas
+        1385: *pipewater
+        1387: *none
+        1391: *microwave
+      DYCOL29:
+        1383: *internet
+        1384: *phone
+        1385: *electricity
+        1387: *pipewater
+        1391: *none
+      DYCOL30:
+        1383: *bathroom
+        1384: *internet
+        1385: *pipegas
+        1387: *electricity
+        1391: *pipewater
+      DYCOL31:
+        1383: *kitchen
+        1384: *bathroom
+        1385: *phone
+        1387: *pipegas
+        1391: *electricity
+      DYCOL32:
+        1383: *cooler
+        1384: *kitchen
+        1385: *internet
+        1387: *phone
+        1391: *pipegas
+      DYCOL33:
+        1383: *centralcooler
+        1384: *cooler
+        1385: *bathroom
+        1387: *internet
+        1391: *phone
+      DYCOL34:
+        1383: *centralheater
+        1384: *centralcooler
+        1385: *kitchen
+        1387: *bathroom
+        1391: *internet
+      DYCOL35:
+        1383: *cookfuel
+        1384: *centralheater
+        1385: *cooler
+        1387: *kitchen
+        1391: *bathroom
+      DYCOL36:
+        1383: *heatfuel
+        1384: *cookfuel
+        1385: *centralcooler
+        1387: *cooler
+        1391: *kitchen
+      DYCOL37:
+        1384: *heatfuel
+        1385: *centralheater
+        1387: *centralcooler
+        1391: *cooler
+      DYCOL38:
+        1384: *party_month
+        1385: *package
+        1387: *centralheater
+        1391: *centralcooler
+      DYCOL39:
+        1384: *party_year
+        1385: *cooler_gas
+        1387: *package
+        1391: *centralheater
+      DYCOL40:
+        1384: *ceremony_month
+        1385: *cookfuel
+        1386: *seweragenetwork
+        1387: *cooler_gas
+        1391: *package
+      DYCOL41:
+        1384: *ceremony_year
+        1385: *heatfuel
+        1386: *cookfuel
+        1387: *seweragenetwork
+        1391: *cooler_gas
+      DYCOL42:
+        1384: *homerepair_month
+        1385: *party_month
+        1386: *heatfuel
+        1387: *cookfuel
+        1391: *seweragenetwork
+      DYCOL43:
+        1384: *homerepair_year
+        1385: *party_year
+        1386: *hotwaterfuel
+        1387: *heatfuel
+        1391: *cookfuel
+      DYCOL44:
+        1384: *ziarati_trip_month
+        1385: *ceremony_month
+        1386: *party_month
+        1387: *hotwaterfuel
+        1391: *heatfuel
+      DYCOL45:
+        1384: *ziarati_trip_year
+        1385: *ceremony_year
+        1386: *party_year
+        1387: *party_month
+        1391: *hotwaterfuel
+      DYCOL46:
+        1384: *foreign_trip_month
+        1385: *homerepair_month
+        1386: *ceremony_month
+        1387: *party_year
+        1391: *party_month
+      DYCOL47:
+        1384: *foreign_trip_year
+        1385: *homerepair_year
+        1386: *ceremony_year
+        1387: *ceremony_month
+        1391: *party_year
+      DYCOL48:
+        1384: *surgery_month
+        1385: *ziarati_trip_month
+        1386: *homerepair_month
+        1387: *ceremony_year
+        1391: *ceremony_month
+      DYCOL49:
+        1384: *other_event_month
+        1385: *ziarati_trip_month
+        1386: *homerepair_year
+        1387: *homerepair_month
+        1391: *ceremony_year
+      DYCOL50:
+        1384: *other_event_year
+        1385: *foreign_trip_month
+        1386: *ziarati_trip_month
+        1387: *homerepair_year
+        1391: *homerepair_month
+      DYCOL51:
+        1384: *no_event
+        1385: *foreign_trip_year
+        1386: *ziarati_trip_year
+        1387: *ziarati_trip_month
+        1391: *homerepair_year
+      DYCOL52:
+        1385: *surgery_month
+        1386: *foreign_trip_month
+        1387: *ziarati_trip_year
+        1391: *ziarati_trip_month
+      DYCOL53:
+        1385: *other_event_month
+        1386: *foreign_trip_year
+        1387: *foreign_trip_month
+        1391: *ziarati_trip_year
+      DYCOL54:
+        1385: *other_event_year
+        1386: *surgery_month
+        1387: *foreign_trip_year
+        1391: *foreign_trip_month
+      DYCOL55:
+        1385: *no_event
+        1386: *other_event_month
+        1387: *surgery_month
+        1391: *foreign_trip_year
+      DYCOL56:
+        1386: *other_event_year
+        1387: *other_event_month
+        1391: *surgery_month
+      DYCOL57:
+        1386: *no_event
+        1387: *other_event_year
+        1391: *surgery_year
+      DYCOL58:
+        1387: *no_event
+        1391: *other_event_month
+      DYCOL59:
+        1389: *other_event_name
+        1391: *other_event_year
+      DYCOL60: 
+        1391: *other_event_name
+      DYCOL61:
+        1391: *no_event
 
 
 
