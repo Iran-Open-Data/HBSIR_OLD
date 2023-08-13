@@ -38,5 +38,7 @@ jobs:
     - name: Install pytest
       run: poetry add pytest
 
-    - name: Test with pytest
+    - name: Test package with pytest
       run: poetry run pytest tests/test_package/
+    - name: Test package metadata with pytest
+      run: poetry run pytest tests/test_metadata/
