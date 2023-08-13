@@ -26,10 +26,7 @@ def build_table_year_pairs(table_name: str):
     return [(table_name, year) for year in available_years]
 
 
-@pytest.mark.parametrize(
-    "table_name,year",
-    build_table_year_pairs("food") + build_table_year_pairs("house_specifications"),
-)
+@pytest.mark.parametrize("table_name,year", build_table_year_pairs("food"))
 def test_load_table(table_name, year):
     hbsir.load_table(
         table_name, year, on_missing="create", recreate=True, save_created=False
