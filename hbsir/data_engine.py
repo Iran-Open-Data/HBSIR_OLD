@@ -36,15 +36,15 @@ class TableHandler:
     def read(self) -> pd.DataFrame:
         """Read the parquet file"""
         self.local_path.parent.mkdir(exist_ok=True, parents=True)
-        if self.settings.on_missing == "create":
-            if not self.local_path.exists() or self.settings.recreate:
+        if (self.settings.on_missing == "create") or self.settings.recreate:
+            if (not self.local_path.exists()) or self.settings.recreate:
                 table = open_and_clean_table(self.table_name, self.year)
                 if self.settings.save_created:
                     table.to_parquet(self.local_path)
             else:
                 table = self.read_local_file()
-        elif self.settings.on_missing == "download":
-            if not self.local_path.exists() or self.settings.recreate:
+        elif self.settings.on_missing == "download" or self.settings.redownload:
+            if (not self.local_path.exists()) or self.settings.redownload:
                 table = self.download()
                 if self.settings.save_downloaded:
                     table.to_parquet(self.local_path)
