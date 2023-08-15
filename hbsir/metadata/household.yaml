@@ -38,35 +38,35 @@ Province:
   names:
     0:  "Markazi"                           # مرکزی
     1:  "Gilan"                             # گیلان
-    2:  "Mazandaran"	                      # مازندران
-    3:  "East_Azerbaijan"	                  # آذربایجان شرقی
-    4:  "West_Azerbaijan"	                  # آذربایجان غربی
-    5:  "Kermanshah"	                      # کرمانشاه
-    6:  "Khuzestan"	                        # خوزستان
-    7:  "Fars"	                            # فارس
-    8:  "Kerman"	                          # کرمان
-    9:  "Razavi_Khorasan"	                  # خراسان رضوی
-    10: "Isfahan"	                          # اصفهان
-    11: "Sistan_and_Baluchestan"	          # سیستان و بلوچستان
-    12: "Kurdistan"	                        # کردستان
-    13: "Hamadan"	                          # همدان
+    2:  "Mazandaran"                       # مازندران
+    3:  "East_Azerbaijan"                   # آذربایجان شرقی
+    4:  "West_Azerbaijan"                   # آذربایجان غربی
+    5:  "Kermanshah"                       # کرمانشاه
+    6:  "Khuzestan"                         # خوزستان
+    7:  "Fars"                             # فارس
+    8:  "Kerman"                           # کرمان
+    9:  "Razavi_Khorasan"                   # خراسان رضوی
+    10: "Isfahan"                           # اصفهان
+    11: "Sistan_and_Baluchestan"           # سیستان و بلوچستان
+    12: "Kurdistan"                         # کردستان
+    13: "Hamadan"                           # همدان
     14: "Chaharmahal_and_Bakhtiari"         # چهارمحال و بختیاری
-    15: "Lorestan"	                        # لرستان
-    16: "Ilam"	                            # ایلام
+    15: "Lorestan"                         # لرستان
+    16: "Ilam"                             # ایلام
     17: "Kohgiluyeh_and_Boyer-Ahmad"        # کهکیلویه و بویر احمد
-    18: "Bushehr"	                          # بوشهر
-    19: "Zanjan"	                          # زنجان
-    20: "Semnan"	                          # سمنان
-    21: "Yazd"	                            # یزد
-    22: "Hormozgan"	                        # هرمزگان
-    23: "Tehran"	                          # تهران
-    24: "Ardabil"	                          # اردبیل
-    25: "Qom"	                              # قم
-    26: "Qazvin"	                          # قزوین
-    27: "Golestan"	                        # گلستان
-    28: "North_Khorasan"	                  # خراسان شمالی
-    29: "South_Khorasan"	                  # خراسان جنوبی
-    30: "Alborz"	                          # البرز
+    18: "Bushehr"                           # بوشهر
+    19: "Zanjan"                           # زنجان
+    20: "Semnan"                           # سمنان
+    21: "Yazd"                             # یزد
+    22: "Hormozgan"                         # هرمزگان
+    23: "Tehran"                           # تهران
+    24: "Ardabil"                           # اردبیل
+    25: "Qom"                               # قم
+    26: "Qazvin"                           # قزوین
+    27: "Golestan"                         # گلستان
+    28: "North_Khorasan"                   # خراسان شمالی
+    29: "South_Khorasan"                   # خراسان جنوبی
+    30: "Alborz"                           # البرز
 
   farsi_names:
     0:  "مرکزی"
@@ -116,523 +116,523 @@ Region:
   names:
     # 0 0 X X
     #   + Markazi                           + مرکزی
-    1:	 "Arak"      	                      # اراک
-    2:	 "Ashtian"     	                    # آشتیان
-    3:	 "Tafresh"     	                    # تفرش
-    4:	 "Khomein"     	                    # خمین
-    5:	 "Delijan"     	                    # دلیجان
-    6:	 "Saveh"     	                      # ساوه
-    7:	 "Shazand"     	                    # شازند
-    9:	 "Mahallat"                    	    # محلات
-    10:	 "Zarandieh"                  	    # زرندیه
-    11:	 "Komeijan"                   	    # کمیجان
-    12:	 "Khondab"     	                    # خنداب
-    13:	 "Farahan"                   	      # فراهان
+    1:  "Arak"                             # اراک
+    2:  "Ashtian"                          # آشتیان
+    3:  "Tafresh"                          # تفرش
+    4:  "Khomein"                          # خمین
+    5:  "Delijan"                          # دلیجان
+    6:  "Saveh"                            # ساوه
+    7:  "Shazand"                          # شازند
+    9:  "Mahallat"                         # محلات
+    10:  "Zarandieh"                       # زرندیه
+    11:  "Komeijan"                        # کمیجان
+    12:  "Khondab"                          # خنداب
+    13:  "Farahan"                          # فراهان
 
     # 0 1 X X
     #    + Gilan                            + گیلان
-    101:	"Astara"	                        # آستارا
-    102:	"Astane-ye-Ashrafiyeh"	          # آستانه اشرفیه
-    103:	"Bandar-e-Anzali"	                # بندرانزلی
-    104:	"Talesh"	                        # طوالش
-    105:	"Rasht"	                          # رشت
-    106:	"Rudbar"	                        # رودبار
-    107:	"Rudsar"	                        # رودسر
-    108:	"Some'e-Sara"                     # صومعه سرا
-    109:	"Fuman"	                          # فومن
-    110:	"Langrud"	                        # لنگرود
-    111:	"Lahijan"	                        # لاهیجان
-    112:	"Shaft"	                          # شفت
-    113:	"Amlash"	                        # املش
-    114:	"Rezvanshahr"	                    # رضوانشهر
-    115:	"Siahkal"	                        # سیاهکل
-    116:	"Masal"	                          # ماسال
+    101: "Astara"                         # آستارا
+    102: "Astane-ye-Ashrafiyeh"           # آستانه اشرفیه
+    103: "Bandar-e-Anzali"                 # بندرانزلی
+    104: "Talesh"                         # طوالش
+    105: "Rasht"                           # رشت
+    106: "Rudbar"                         # رودبار
+    107: "Rudsar"                         # رودسر
+    108: "Some'e-Sara"                     # صومعه سرا
+    109: "Fuman"                           # فومن
+    110: "Langrud"                         # لنگرود
+    111: "Lahijan"                         # لاهیجان
+    112: "Shaft"                           # شفت
+    113: "Amlash"                         # املش
+    114: "Rezvanshahr"                     # رضوانشهر
+    115: "Siahkal"                         # سیاهکل
+    116: "Masal"                           # ماسال
 
     # 0 2 X X
     #    + Mazandaran                       + مازندران
-    201:	"Amol"                        	  # آمل
-    202:	"Babol"         	                # بابل
-    204:	"Behshahr"          	            # بهشهر
-    205:	"Tonekabon"         	            # تنکابن
-    206:	"Ramsar"          	              # رامسر
-    207:	"Sari"          	                # ساری
-    208:	"Savadkuh"          	            # سوادکوه
-    210:	"Qaemshahr"         	            # قائم شهر
-    214:	"Nur"         	                  # نور
-    215:	"Noshahr"         	              # نوشهر
-    216:	"Babolsar"          	            # بابلسر
-    218:	"Mahmudabad"          	          # محمودآباد
-    219:	"Neka"          	                # نکا
-    220:	"Chalus"          	              # چالوس
-    221:	"Juybar"          	              # جویبار
-    222:	"Galugah"         	              # گلوگاه
-    223:	"Feredunkenar"          	        # فریدونکنار
-    224:	"Abbasabad"         	            # عباس آباد
-    225:	"Miandorud"         	            # میاندورود
-    226:	"Simorgh"         	              # سیمرغ
-    227:	"Northern_Savadkooh"              # سوادکوه شمالی
-    228:	"Kelardasht"          	          # کلاردشت
+    201: "Amol"                           # آمل
+    202: "Babol"                          # بابل
+    204: "Behshahr"                       # بهشهر
+    205: "Tonekabon"                      # تنکابن
+    206: "Ramsar"                         # رامسر
+    207: "Sari"                           # ساری
+    208: "Savadkuh"                       # سوادکوه
+    210: "Qaemshahr"                      # قائم شهر
+    214: "Nur"                            # نور
+    215: "Noshahr"                        # نوشهر
+    216: "Babolsar"                       # بابلسر
+    218: "Mahmudabad"                     # محمودآباد
+    219: "Neka"                           # نکا
+    220: "Chalus"                         # چالوس
+    221: "Juybar"                         # جویبار
+    222: "Galugah"                        # گلوگاه
+    223: "Feredunkenar"                   # فریدونکنار
+    224: "Abbasabad"                      # عباس آباد
+    225: "Miandorud"                      # میاندورود
+    226: "Simorgh"                        # سیمرغ
+    227: "Northern_Savadkooh"              # سوادکوه شمالی
+    228: "Kelardasht"                     # کلاردشت
 
     # 0 3 X X
     #    + East_Azerbaijan                  + آذربایجان شرقی
-    302:	"Ahar"	                          # اهر
-    303:	"Tabriz"	                        # تبریز
-    305:	"Sarab"	                          # سراب
-    306:	"Maragheh"	                      # مراغه
-    307:	"Marand"	                        # مرند
-    310:	"Mianeh"	                        # میانه
-    311:	"Hashtrud"	                      # هشترود
-    312:	"Bonab"	                          # بناب
-    313:	"Bostanabad"	                    # بستان آباد
-    314:	"Shabestar"	                      # شبستر
-    315:	"Kalibar"	                        # کلیبر
-    316:	"Heris"	                          # هریس
-    319:	"Jolfa"	                          # جلفا
-    320:	"Malekan"	                        # ملکان
-    321:	"Azarshahr"	                      # آذرشهر
-    322:	"Osku"	                          # اسکو
-    323:	"Charuymaq"	                      # چاراویماق
-    324:	"Varzaqan"	                      # ورزقان
-    325:	"Ajabshir"	                      # عجب شیر
-    326:	"Khodaafarin"	                    # خداآفرین
+    302: "Ahar"                           # اهر
+    303: "Tabriz"                         # تبریز
+    305: "Sarab"                           # سراب
+    306: "Maragheh"                       # مراغه
+    307: "Marand"                         # مرند
+    310: "Mianeh"                         # میانه
+    311: "Hashtrud"                       # هشترود
+    312: "Bonab"                           # بناب
+    313: "Bostanabad"                     # بستان آباد
+    314: "Shabestar"                       # شبستر
+    315: "Kalibar"                         # کلیبر
+    316: "Heris"                           # هریس
+    319: "Jolfa"                           # جلفا
+    320: "Malekan"                         # ملکان
+    321: "Azarshahr"                       # آذرشهر
+    322: "Osku"                           # اسکو
+    323: "Charuymaq"                       # چاراویماق
+    324: "Varzaqan"                       # ورزقان
+    325: "Ajabshir"                       # عجب شیر
+    326: "Khodaafarin"                     # خداآفرین
 
     # 0 4 X X
     #    + West_Azerbaijan                  + آذربایجان غربی
-    401:	"Urumia"	                        # ارومیه
-    402:	"Piranshahr"	                    # پیرانشهر
-    403:	"Khoy"	                          # خوی
-    404:	"Sardasht"	                      # سردشت
-    405:	"Salmas"	                        # سلماس
-    406:	"Maku"	                          # ماکو
-    407:	"Mahabad"	                        # مهاباد
-    408:	"Miandoab"	                      # میاندوآب
-    409:	"Naqadeh"	                        # نقده
-    410:	"Bukan"	                          # بوکان
-    411:	"Shahindej"	                      # شاهین دژ
-    412:	"Takab"	                          # تکاب
-    413:	"Oshnaviyeh"	                    # اشنویه
-    414:	"Chaldoran"	                      # چالدران
-    415:	"Poldasht"	                      # پلدشت
-    416:	"Chaypareh"	                      # چایپاره
-    417:	"Showt"	                          # شوط
+    401: "Urumia"                         # ارومیه
+    402: "Piranshahr"                     # پیرانشهر
+    403: "Khoy"                           # خوی
+    404: "Sardasht"                       # سردشت
+    405: "Salmas"                         # سلماس
+    406: "Maku"                           # ماکو
+    407: "Mahabad"                         # مهاباد
+    408: "Miandoab"                       # میاندوآب
+    409: "Naqadeh"                         # نقده
+    410: "Bukan"                           # بوکان
+    411: "Shahindej"                       # شاهین دژ
+    412: "Takab"                           # تکاب
+    413: "Oshnaviyeh"                     # اشنویه
+    414: "Chaldoran"                       # چالدران
+    415: "Poldasht"                       # پلدشت
+    416: "Chaypareh"                       # چایپاره
+    417: "Showt"                           # شوط
 
     # 0 5 X X
     #    + Kermanshah                       + کرمانشاه
-    501:	"Islamabad-e-Gharb"               # اسلام آبادغرب
-    502:	"Kermanshah"                      # کرمانشاه
-    503:	"Paveh"                           # پاوه
-    504:	"Sarpol-e-Zahab"                  # سرپل ذهاب
-    505:	"Sonqor"                          # سنقر
-    506:	"Qasr-e-Shirin"                   # قصرشیرین
-    507:	"Kangavar"                        # کنگاور
-    508:	"Gilan-e-Gharb"                   # گیلانغرب
-    509:	"Javanrud"                        # جوانرود
-    510:	"Sahneh"                          # صحنه
-    511:	"Harsin"                          # هرسین
-    512:	"Solas-e-Babajani"                # ثلاث باباجانی
-    513:	"Dalaho"                          # دالاهو
-    514:	"Ravansar"                        # روانسر
+    501: "Islamabad-e-Gharb"               # اسلام آبادغرب
+    502: "Kermanshah"                      # کرمانشاه
+    503: "Paveh"                           # پاوه
+    504: "Sarpol-e-Zahab"                  # سرپل ذهاب
+    505: "Sonqor"                          # سنقر
+    506: "Qasr-e-Shirin"                   # قصرشیرین
+    507: "Kangavar"                        # کنگاور
+    508: "Gilan-e-Gharb"                   # گیلانغرب
+    509: "Javanrud"                        # جوانرود
+    510: "Sahneh"                          # صحنه
+    511: "Harsin"                          # هرسین
+    512: "Solas-e-Babajani"                # ثلاث باباجانی
+    513: "Dalaho"                          # دالاهو
+    514: "Ravansar"                        # روانسر
 
     # 0 6 X X
     #    + Khuzestan                        + خوزستان
-    601:	"Abadan"	                        # آبادان
-    602:	"Andimeshk"	                      # اندیمشک
-    603:	"Ahvaz"	                          # اهواز
-    604:	"Izeh"	                          # ایذه
-    605:	"Mahshahr"	                      # بندرماهشهر
-    606:	"Behbahan"	                      # بهبهان
-    607:	"Khorramshahr"	                  # خرمشهر
-    608:	"Dezful"	                        # دزفول
-    609:	"Dasht-e-Azadegan"	              # دشت آزادگان
-    610:	"Ramhormoz"	                      # رامهرمز
-    611:	"Shadegan"	                      # شادگان
-    612:	"Shushtar"	                      # شوشتر
-    613:	"Masjed-Soleyman"	                # مسجدسلیمان
-    614:	"Shush"	                          # شوش
-    615:	"Baghmalek"	                      # باغ ملک
-    616:	"Omidiyeh"	                      # امیدیه
-    617:	"Lali"	                          # لالی
-    618:	"Hendijan"	                      # هندیجان
-    619:	"Ramshir"	                        # رامشیر
-    620:	"Guotvand"	                      # گتوند
-    621:	"Andika"	                        # اندیکا
-    622:	"Haftgol"	                        # هفتگل
-    623:	"Hoveizeh"	                      # هویزه
-    624:	"Bavi"	                          # باوی
-    625:	"Hamidieh"	                      # حمیدیه
-    626:	"Aghajari"	                      # آغاجاری
-    627:	"Karoun"	                        # کارون
+    601: "Abadan"                         # آبادان
+    602: "Andimeshk"                       # اندیمشک
+    603: "Ahvaz"                           # اهواز
+    604: "Izeh"                           # ایذه
+    605: "Mahshahr"                       # بندرماهشهر
+    606: "Behbahan"                       # بهبهان
+    607: "Khorramshahr"                   # خرمشهر
+    608: "Dezful"                         # دزفول
+    609: "Dasht-e-Azadegan"               # دشت آزادگان
+    610: "Ramhormoz"                       # رامهرمز
+    611: "Shadegan"                       # شادگان
+    612: "Shushtar"                       # شوشتر
+    613: "Masjed-Soleyman"                 # مسجدسلیمان
+    614: "Shush"                           # شوش
+    615: "Baghmalek"                       # باغ ملک
+    616: "Omidiyeh"                       # امیدیه
+    617: "Lali"                           # لالی
+    618: "Hendijan"                       # هندیجان
+    619: "Ramshir"                         # رامشیر
+    620: "Guotvand"                       # گتوند
+    621: "Andika"                         # اندیکا
+    622: "Haftgol"                         # هفتگل
+    623: "Hoveizeh"                       # هویزه
+    624: "Bavi"                           # باوی
+    625: "Hamidieh"                       # حمیدیه
+    626: "Aghajari"                       # آغاجاری
+    627: "Karoun"                         # کارون
 
     # 0 7 X X
     #    + Fars                             + فارس
-    701:	"Abadeh"	                        # آباده
-    702:	"Estahban"	                      # استهبان
-    703:	"Eqlid"	                          # اقلید
-    704:	"Jahrom"	                        # جهرم
-    705:	"Darab"	                          # داراب
-    706:	"Sepidan"	                        # سپیدان
-    707:	"Shiraz"	                        # شیراز
-    708:	"Fasa"	                          # فسا
-    709:	"Firuzabad"	                      # فیروزآباد
-    710:	"Kazerun"	                        # کازرون
-    711:	"Larestan"	                      # لارستان
-    712:	"Marvdasht"	                      # مرودشت
-    713:	"Mamasani"	                      # ممسنی
-    714:	"Neyriz"	                        # نی ریز
-    715:	"Lamerd"	                        # لامرد
-    716:	"Bavanat"	                        # بوانات
-    717:	"Arsanjan"	                      # ارسنجان
-    718:	"Khorrambid"	                    # خرم بید
-    719:	"Zarrindasht"	                    # زرین دشت
-    720:	"Qir-o-Karzin"	                  # قیروکارزین
-    721:	"Mehr"	                          # مهر
-    722:	"Farashband"	                    # فراشبند
-    723:	"Pasargad"	                      # پاسارگاد
-    724:	"Khonj"	                          # خنج
-    725:	"Sarvestan"	                      # سروستان
-    726:	"Rostam"	                        # رستم
-    727:	"Gerash"	                        # گراش
-    728:	"Kavar"	                          # کوار
-    729:	"Kherameh"	                      # خرامه
+    701: "Abadeh"                         # آباده
+    702: "Estahban"                       # استهبان
+    703: "Eqlid"                           # اقلید
+    704: "Jahrom"                         # جهرم
+    705: "Darab"                           # داراب
+    706: "Sepidan"                         # سپیدان
+    707: "Shiraz"                         # شیراز
+    708: "Fasa"                           # فسا
+    709: "Firuzabad"                       # فیروزآباد
+    710: "Kazerun"                         # کازرون
+    711: "Larestan"                       # لارستان
+    712: "Marvdasht"                       # مرودشت
+    713: "Mamasani"                       # ممسنی
+    714: "Neyriz"                         # نی ریز
+    715: "Lamerd"                         # لامرد
+    716: "Bavanat"                         # بوانات
+    717: "Arsanjan"                       # ارسنجان
+    718: "Khorrambid"                     # خرم بید
+    719: "Zarrindasht"                     # زرین دشت
+    720: "Qir-o-Karzin"                   # قیروکارزین
+    721: "Mehr"                           # مهر
+    722: "Farashband"                     # فراشبند
+    723: "Pasargad"                       # پاسارگاد
+    724: "Khonj"                           # خنج
+    725: "Sarvestan"                       # سروستان
+    726: "Rostam"                         # رستم
+    727: "Gerash"                         # گراش
+    728: "Kavar"                           # کوار
+    729: "Kherameh"                       # خرامه
 
     # 0 8 X X
     #    + Kerman                           + کرمان
-    801:	"Baft"	                          # بافت
-    802:	"Bam"	                            # بم
-    803:	"Jiroft"	                        # جیرفت
-    804:	"Rafsanjan"	                      # رفسنجان
-    805:	"Zarand"	                        # زرند
-    806:	"Sirjan"	                        # سیرجان
-    807:	"Shahr-e-Babak"	                  # شهربابک
-    808:	"Kerman"	                        # کرمان
-    809:	"Kahnuj"	                        # کهنوج
-    810:	"Bardsir"	                        # بردسیر
-    811:	"Ravar"	                          # راور
-    812:	"Anbarabad"	                      # عنبرآباد
-    813:	"Manujan"	                        # منوجان
-    814:	"Kuhbonan"	                      # کوهبنان
-    815:	"Roudbar-e-Jonub"	                # رودبارجنوب
-    816:	"Ghaleye-Ganj"	                  # قلعه گنج
-    817:	"Rigan"	                          # ریگان
-    818:	"Rabar"	                          # رابر
-    819:	"Fahraj"	                        # فهرج
-    820:	"Anar"	                          # انار
-    821:	"Normashir"	                      # نرماشیر
-    822:	"Faryab"	                        # فاریاب
-    823:	"Arzuiyeh"	                      # ارزوئیه
+    801: "Baft"                           # بافت
+    802: "Bam"                             # بم
+    803: "Jiroft"                         # جیرفت
+    804: "Rafsanjan"                       # رفسنجان
+    805: "Zarand"                         # زرند
+    806: "Sirjan"                         # سیرجان
+    807: "Shahr-e-Babak"                   # شهربابک
+    808: "Kerman"                         # کرمان
+    809: "Kahnuj"                         # کهنوج
+    810: "Bardsir"                         # بردسیر
+    811: "Ravar"                           # راور
+    812: "Anbarabad"                       # عنبرآباد
+    813: "Manujan"                         # منوجان
+    814: "Kuhbonan"                       # کوهبنان
+    815: "Roudbar-e-Jonub"                 # رودبارجنوب
+    816: "Ghaleye-Ganj"                   # قلعه گنج
+    817: "Rigan"                           # ریگان
+    818: "Rabar"                           # رابر
+    819: "Fahraj"                         # فهرج
+    820: "Anar"                           # انار
+    821: "Normashir"                       # نرماشیر
+    822: "Faryab"                         # فاریاب
+    823: "Arzuiyeh"                       # ارزوئیه
 
     # 0 9 X X
     #    + Razavi_Khorasan                  + خراسان رضوی
-    904:	"Taybad"	                        # تایباد
-    905:	"Torbat-e-Heydarieh"	            # تربت حیدریه
-    906:	"Torbat-e-Jam"	                  # تربت جام
-    907:	"Dargaz"	                        # درگز
-    908:	"Sabzevar"	                      # سبزوار
-    913:	"Quchan"	                        # قوچان
-    914:	"Kashmar"	                        # کاشمر
-    915:	"Gonabad"	                        # گناباد
-    916:	"Mashhad"	                        # مشهد
-    917:	"Nishapur"	                      # نیشابور
-    918:	"Chenaran"	                      # چناران
-    919:	"Khaf"	                          # خواف
-    920:	"Sarakhs"	                        # سرخس
-    922:	"Fariman"	                        # فریمان
-    923:	"Bardaskan"	                      # بردسکن
-    927:	"Rashtkhar"	                      # رشتخوار
-    928:	"Kalat"	                          # کلات
-    929:	"Khalilabad"	                    # خلیل آباد
-    930:	"Mahvelat"	                      # مه ولات
-    931:	"Bajestan"	                      # بجستان
-    932:	"Torghabe-o-Shandiz"	            # بینالود
-    933:	"Firuzeh"	                        # فیروزه
-    934:	"Joghatai"	                      # جغتای
-    935:	"Zave"	                          # زاوه
-    936:	"Jowayin"	                        # جوین
-    937:	"Bakharz"	                        # باخرز
-    938:	"Khoshab"	                        # خوشاب
-    939:	"Davarzan"	                      # داورزن
+    904: "Taybad"                         # تایباد
+    905: "Torbat-e-Heydarieh"             # تربت حیدریه
+    906: "Torbat-e-Jam"                   # تربت جام
+    907: "Dargaz"                         # درگز
+    908: "Sabzevar"                       # سبزوار
+    913: "Quchan"                         # قوچان
+    914: "Kashmar"                         # کاشمر
+    915: "Gonabad"                         # گناباد
+    916: "Mashhad"                         # مشهد
+    917: "Nishapur"                       # نیشابور
+    918: "Chenaran"                       # چناران
+    919: "Khaf"                           # خواف
+    920: "Sarakhs"                         # سرخس
+    922: "Fariman"                         # فریمان
+    923: "Bardaskan"                       # بردسکن
+    927: "Rashtkhar"                       # رشتخوار
+    928: "Kalat"                           # کلات
+    929: "Khalilabad"                     # خلیل آباد
+    930: "Mahvelat"                       # مه ولات
+    931: "Bajestan"                       # بجستان
+    932: "Torghabe-o-Shandiz"             # بینالود
+    933: "Firuzeh"                         # فیروزه
+    934: "Joghatai"                       # جغتای
+    935: "Zave"                           # زاوه
+    936: "Jowayin"                         # جوین
+    937: "Bakharz"                         # باخرز
+    938: "Khoshab"                         # خوشاب
+    939: "Davarzan"                       # داورزن
 
     # 1 0 X X
     #    + Isfahan                          + اصفهان
-    1001:	"Ardestan"                        # اردستان
-    1002:	"Isfahan"                         # اصفهان
-    1003:	"Khomeinishahr"                   # خمینی شهر
-    1004:	"Khansar"                         # خوانسار
-    1005:	"Semirom"                         # سمیرم
-    1006:	"Faridan"                         # فریدن
-    1007:	"Fereydunshahr"                   # فریدونشهر
-    1008:	"Falavarjan"                      # فلاورجان
-    1009:	"Shahreza"                        # شهرضا
-    1010:	"Kashan"                          # کاشان
-    1011:	"Golpayegan"                      # گلپایگان
-    1012:	"Lenjan"                          # لنجان
-    1013:	"Nain"                            # نایین
-    1014:	"Najafabad"                       # نجف آباد
-    1015:	"Natanz"                          # نطنز
-    1016:	"Shahinshahro Meymeh"             # شاهین شهرومیمه
-    1017:	"Mobarakeh"                       # مبارکه
-    1018:	"Aran-o-Bidgol"                   # آران وبیدگل
-    1019:	"Tiran-o-Korun"                   # تیران وکرون
-    1020:	"Chadegan"                        # چادگان
-    1021:	"Dehaghan"                        # دهاقان
-    1022:	"Borkhar"                         # برخوار
-    1023:	"Khorobiyabanak"                  # خور و بیابانک
-    1024:	"Booeino_Miyandasht"              # بو یین و میاندشت
+    1001: "Ardestan"                        # اردستان
+    1002: "Isfahan"                         # اصفهان
+    1003: "Khomeinishahr"                   # خمینی شهر
+    1004: "Khansar"                         # خوانسار
+    1005: "Semirom"                         # سمیرم
+    1006: "Faridan"                         # فریدن
+    1007: "Fereydunshahr"                   # فریدونشهر
+    1008: "Falavarjan"                      # فلاورجان
+    1009: "Shahreza"                        # شهرضا
+    1010: "Kashan"                          # کاشان
+    1011: "Golpayegan"                      # گلپایگان
+    1012: "Lenjan"                          # لنجان
+    1013: "Nain"                            # نایین
+    1014: "Najafabad"                       # نجف آباد
+    1015: "Natanz"                          # نطنز
+    1016: "Shahinshahro Meymeh"             # شاهین شهرومیمه
+    1017: "Mobarakeh"                       # مبارکه
+    1018: "Aran-o-Bidgol"                   # آران وبیدگل
+    1019: "Tiran-o-Korun"                   # تیران وکرون
+    1020: "Chadegan"                        # چادگان
+    1021: "Dehaghan"                        # دهاقان
+    1022: "Borkhar"                         # برخوار
+    1023: "Khorobiyabanak"                  # خور و بیابانک
+    1024: "Booeino_Miyandasht"              # بو یین و میاندشت
 
     # 1 1 X X
     #    + Sistan_and_Baluchestan            + سیتان و بلوچستان
-    1101:	"Iranshahr"	                      # ایرانشهر
-    1102:	"Chabahar"	                      # چابهار
-    1103:	"Khash"	                          # خاش
-    1104:	"Zabol"	                          # زابل
-    1105:	"Zahedan"	                        # زاهدان
-    1106:	"Saravan"                     	  # سراوان
-    1107:	"Nikshahr"	                      # نیک شهر
-    1108:	"Sarbaz"	                        # سرباز
-    1109:	"Konarak"                     	  # کنارک
-    1110:	"Zehak"	                          # زهک
-    1111:	"Hirmand"	                        # هیرمند
-    1112:	"Dalgan"	                        # دلگان
-    1113:	"Mehrestan"	                      # مهرستان
-    1114:	"Sibo_Soran"                      # سیب و سوران
-    1115:	"Nimrouz"	                        # نیمروز
-    1116:	"Hamoun"	                        # هامون
-    1117:	"Mirjaveh"	                      # میرجاوه
-    1118:	"Ghasre_Ghand"	                  # قصرقند
-    1119:	"Fanouj"	                        # فنوج
+    1101: "Iranshahr"                       # ایرانشهر
+    1102: "Chabahar"                       # چابهار
+    1103: "Khash"                           # خاش
+    1104: "Zabol"                           # زابل
+    1105: "Zahedan"                         # زاهدان
+    1106: "Saravan"                        # سراوان
+    1107: "Nikshahr"                       # نیک شهر
+    1108: "Sarbaz"                         # سرباز
+    1109: "Konarak"                        # کنارک
+    1110: "Zehak"                           # زهک
+    1111: "Hirmand"                         # هیرمند
+    1112: "Dalgan"                         # دلگان
+    1113: "Mehrestan"                       # مهرستان
+    1114: "Sibo_Soran"                      # سیب و سوران
+    1115: "Nimrouz"                         # نیمروز
+    1116: "Hamoun"                         # هامون
+    1117: "Mirjaveh"                       # میرجاوه
+    1118: "Ghasre_Ghand"                   # قصرقند
+    1119: "Fanouj"                         # فنوج
 
     # 1 2 X X
     #    + Kurdistan                        + کردستان
-    1201:	"Baneh"	                          # بانه
-    1202:	"Bijar"	                          # بیجار
-    1203:	"Saqqez"	                        # سقز
-    1204:	"Sannandaj"	                      # سنندج
-    1205:	"Qorveh"	                        # قروه
-    1206:	"Marivan"	                        # مریوان
-    1207:	"Divandarreh"	                    # دیواندره
-    1208:	"Kamyaran"	                      # کامیاران
-    1209:	"Sarvabad"	                      # سروآباد
-    1210:	"Dehgolan"	                      # دهگلان
+    1201: "Baneh"                           # بانه
+    1202: "Bijar"                           # بیجار
+    1203: "Saqqez"                         # سقز
+    1204: "Sannandaj"                       # سنندج
+    1205: "Qorveh"                         # قروه
+    1206: "Marivan"                         # مریوان
+    1207: "Divandarreh"                     # دیواندره
+    1208: "Kamyaran"                       # کامیاران
+    1209: "Sarvabad"                       # سروآباد
+    1210: "Dehgolan"                       # دهگلان
     
     # 1 3 X X
     #    + Hamadan                          # همدان
-    1301:	"Tuyserkan"	                      # تویسرکان
-    1302:	"Malayer"	                        # ملایر
-    1303:	"Nahavand"	                      # نهاوند
-    1304:	"Hamadan"	                        # همدان
-    1305:	"Kabudarahang"	                  # کبودرآهنگ
-    1306:	"Asadabad"	                      # اسدآباد
-    1307:	"Bahar"	                          # بهار
-    1308:	"Razan"	                          # رزن
-    1309:	"Famenin"	                        # فامنین
+    1301: "Tuyserkan"                       # تویسرکان
+    1302: "Malayer"                         # ملایر
+    1303: "Nahavand"                       # نهاوند
+    1304: "Hamadan"                         # همدان
+    1305: "Kabudarahang"                   # کبودرآهنگ
+    1306: "Asadabad"                       # اسدآباد
+    1307: "Bahar"                           # بهار
+    1308: "Razan"                           # رزن
+    1309: "Famenin"                         # فامنین
     
     # 1 4 X X
     #    + Chaharmahal_and_Bakhtiari        # چهارمحال و بختیاری
-    1401:	"Borujen"	                        # بروجن
-    1402:	"Shahrekord"	                    # شهرکرد
-    1403:	"Farsan"	                        # فارسان
-    1404:	"Lordegan"	                      # لردگان
-    1405:	"Ardal"	                          # اردل
-    1406:	"Kuhrang"	                        # کوهرنگ
-    1407:	"Kiaar"	                          # کیار
-    1408:	"Saman"	                          # سامان
-    1409:	"Ben"	                            # بن
+    1401: "Borujen"                         # بروجن
+    1402: "Shahrekord"                     # شهرکرد
+    1403: "Farsan"                         # فارسان
+    1404: "Lordegan"                       # لردگان
+    1405: "Ardal"                           # اردل
+    1406: "Kuhrang"                         # کوهرنگ
+    1407: "Kiaar"                           # کیار
+    1408: "Saman"                           # سامان
+    1409: "Ben"                             # بن
 
     # 1 5 X X
     #    + Lorestan                         + لرستان
-    1501:	"Aligudarz"	                      # الیگودرز
-    1502:	"Borujerd"	                      # بروجرد
-    1503:	"Khorramabad"	                    # خرم آباد
-    1504:	"Delfan"	                        # دلفان
-    1505:	"Dorud"	                          # دورود
-    1506:	"Kuhdasht"	                      # کوهدشت
-    1507:	"Azna"	                          # ازنا
-    1508:	"Poldokhtar"	                    # پلدختر
-    1509:	"Selseleh"	                      # سلسله
-    1510:	"Doureh"	                        # دوره
-    1511:	"Romeshkan"	                      # رومشکان
+    1501: "Aligudarz"                       # الیگودرز
+    1502: "Borujerd"                       # بروجرد
+    1503: "Khorramabad"                     # خرم آباد
+    1504: "Delfan"                         # دلفان
+    1505: "Dorud"                           # دورود
+    1506: "Kuhdasht"                       # کوهدشت
+    1507: "Azna"                           # ازنا
+    1508: "Poldokhtar"                     # پلدختر
+    1509: "Selseleh"                       # سلسله
+    1510: "Doureh"                         # دوره
+    1511: "Romeshkan"                       # رومشکان
 
     # 1 6 X X
     #    + Ilam                             + ایلام
-    1601:	"Ilam"	                          # ایلام
-    1602:	"Darreh Shahr"	                  # دره شهر
-    1603:	"Dehloran"	                      # دهلران
-    1604:	"Shirvan-o-Chardavol"	            # چرداول
-    1605:	"Mehran"	                        # مهران
-    1606:	"Abdanan"	                        # آبدانان
-    1607:	"Eyvan"	                          # ایوان
-    1608:	"Malekshahi"	                    # ملکشاهی
-    1609:	"Sirvan"	                        # سیروان
-    1610:	"Badre"	                          # بدره
+    1601: "Ilam"                           # ایلام
+    1602: "Darreh Shahr"                   # دره شهر
+    1603: "Dehloran"                       # دهلران
+    1604: "Shirvan-o-Chardavol"             # چرداول
+    1605: "Mehran"                         # مهران
+    1606: "Abdanan"                         # آبدانان
+    1607: "Eyvan"                           # ایوان
+    1608: "Malekshahi"                     # ملکشاهی
+    1609: "Sirvan"                         # سیروان
+    1610: "Badre"                           # بدره
 
     # 1 7 X X
     #    + Kohgiluyeh_and_Boyer-Ahmad       + کهگیلویه و بویر احمد
-    1701:	"Boyer-Ahmad"                     # بویر احمد
-    1702:	"Kohgeluyeh"	                    # کهگیلویه
-    1703:	"Gachsaran"	                      # گچساران
-    1704:	"Dena"	                          # دنا
-    1705:	"Bahmai"	                        # بهمئی
-    1706:	"Charam"	                        # چرام
-    1707:	"Basht"	                          # باشت
-    1708:	"Landeh"	                        # لنده
+    1701: "Boyer-Ahmad"                     # بویر احمد
+    1702: "Kohgeluyeh"                     # کهگیلویه
+    1703: "Gachsaran"                       # گچساران
+    1704: "Dena"                           # دنا
+    1705: "Bahmai"                         # بهمئی
+    1706: "Charam"                         # چرام
+    1707: "Basht"                           # باشت
+    1708: "Landeh"                         # لنده
 
     # 1 8 X X
     #    + Bushehr                          + بوشهر
-    1801:	"Bushehr"	                        # بوشهر
-    1802:	"Tangestan"	                      # تنگستان
-    1803:	"Dashtestan"	                    # دشتستان
-    1804:	"Dashti"	                        # دشتی
-    1805:	"Dayyer"	                        # دیر
-    1806:	"Kangan"	                        # کنگان
-    1807:	"Ganaveh"	                        # گناوه
-    1808:	"Deylam"	                        # دیلم
-    1809:	"Jam"	                            # جم
-    1810:	"Asaluyeh"	                      # عسلویه
+    1801: "Bushehr"                         # بوشهر
+    1802: "Tangestan"                       # تنگستان
+    1803: "Dashtestan"                     # دشتستان
+    1804: "Dashti"                         # دشتی
+    1805: "Dayyer"                         # دیر
+    1806: "Kangan"                         # کنگان
+    1807: "Ganaveh"                         # گناوه
+    1808: "Deylam"                         # دیلم
+    1809: "Jam"                             # جم
+    1810: "Asaluyeh"                       # عسلویه
 
     # 1 9 X X
     #    + Zanjan                           + زنجان
-    1901:	"Abhar"	                          # ابهر
-    1903:	"Khodabandeh"	                    # خدابنده
-    1904:	"Zanjan"	                        # زنجان
-    1906:	"Eejrud"	                        # ایجرود
-    1907:	"Khorramdarreh"	                  # خرمدره
-    1908:	"Tarom"	                          # طارم
-    1909:	"Mahneshan"	                      # ماهنشان
-    1910:	"Soltanieh"	                      # سلطانیه
+    1901: "Abhar"                           # ابهر
+    1903: "Khodabandeh"                     # خدابنده
+    1904: "Zanjan"                         # زنجان
+    1906: "Eejrud"                         # ایجرود
+    1907: "Khorramdarreh"                   # خرمدره
+    1908: "Tarom"                           # طارم
+    1909: "Mahneshan"                       # ماهنشان
+    1910: "Soltanieh"                       # سلطانیه
 
     # 2 0 X X
     #    + Semnan                           + سمنان
-    2001:	"Damghan"	                        # دامغان
-    2002:	"Semnan"	                        # سمنان
-    2003:	"Shahrud"	                        # شاهرود
-    2004:	"Garmsar"	                        # گرمسار
-    2005:	"Mehdishahr"	                    # مهدی شهر
-    2006:	"Aradan"	                        # آرادان
-    2007:	"Meyami"	                        # میامی
-    2008:	"Sorkheh"	                        # سرخه
+    2001: "Damghan"                         # دامغان
+    2002: "Semnan"                         # سمنان
+    2003: "Shahrud"                         # شاهرود
+    2004: "Garmsar"                         # گرمسار
+    2005: "Mehdishahr"                     # مهدی شهر
+    2006: "Aradan"                         # آرادان
+    2007: "Meyami"                         # میامی
+    2008: "Sorkheh"                         # سرخه
 
     # 2 1 X X
     #    + Yazd                             # یزد
-    2101:	"Ardekan"	                        # اردکان
-    2102:	"Bafq"	                          # بافق
-    2103:	"Taft"	                          # تفت
-    2104:	"Mehriz"	                        # مهریز
-    2105:	"Yazd"	                          # یزد
-    2106:	"Meybod"	                        # میبد
-    2107:	"Abarkuh"	                        # ابرکوه
-    2108:	"Ashkezar"	                      # اشکذر
-    2109:	"Khatam"	                        # خاتم
-    2111:	"Bahabad"	                        # بهاباد
+    2101: "Ardekan"                         # اردکان
+    2102: "Bafq"                           # بافق
+    2103: "Taft"                           # تفت
+    2104: "Mehriz"                         # مهریز
+    2105: "Yazd"                           # یزد
+    2106: "Meybod"                         # میبد
+    2107: "Abarkuh"                         # ابرکوه
+    2108: "Ashkezar"                       # اشکذر
+    2109: "Khatam"                         # خاتم
+    2111: "Bahabad"                         # بهاباد
 
     # 2 2 X X
     #    + Hormozgan                        # هرمزگان
-    2201:	"Abumusa"	                        # ابوموسی
-    2202:	"Bandar-Lengeh"	                  # بندرعباس
-    2203:	"Bandar-Abbas"	                  # بندرلنگه
-    2204:	"Qeshm"	                          # قشم
-    2205:	"Minab"	                          # میناب
-    2206:	"Jask"	                          # جاسک
-    2207:	"Rudan"	                          # رودان
-    2208:	"Hajiabad"	                      # حاجی اباد
-    2209:	"Bastak"	                        # بستک
-    2210:	"Khamir"	                        # خمیر
-    2211:	"Parsian"	                        # پارسیان
-    2212:	"Sirik"	                          # سیریک
-    2213:	"Bashagard"	                      # بشاگرد
+    2201: "Abumusa"                         # ابوموسی
+    2202: "Bandar-Lengeh"                   # بندرعباس
+    2203: "Bandar-Abbas"                   # بندرلنگه
+    2204: "Qeshm"                           # قشم
+    2205: "Minab"                           # میناب
+    2206: "Jask"                           # جاسک
+    2207: "Rudan"                           # رودان
+    2208: "Hajiabad"                       # حاجی اباد
+    2209: "Bastak"                         # بستک
+    2210: "Khamir"                         # خمیر
+    2211: "Parsian"                         # پارسیان
+    2212: "Sirik"                           # سیریک
+    2213: "Bashagard"                       # بشاگرد
 
     # 2 3 X X
     #    + Tehran                           # تهران
-    2301:	"Tehran"	                        # تهران
-    2302:	"Damavand"	                      # دماوند
-    2303:	"Rey"	                            # ری
-    2304:	"Shemiranat"	                    # شمیرانات
-    2306:	"Varamin"	                        # ورامین
-    2309:	"Shahriar"	                      # شهریار
-    2310:	"Islamshahr"	                    # اسلام شهر
-    2312:	"Robat-Karim"	                    # رباط کریم
-    2313:	"Pakdasht"	                      # پاکدشت
-    2314:	"Firuzkuh"	                      # فیروزکوه
-    2316:	"Shahr-e_Qods"	                  # قدس
-    2317:	"Malard"	                        # ملارد
-    2318:	"Pishva"	                        # پیشوا
-    2319:	"Baharestan"	                    # بهارستان
-    2320:	"Pardis"	                        # پردیس
-    2321:	"Qarchak"	                        # قرچک
+    2301: "Tehran"                         # تهران
+    2302: "Damavand"                       # دماوند
+    2303: "Rey"                             # ری
+    2304: "Shemiranat"                     # شمیرانات
+    2306: "Varamin"                         # ورامین
+    2309: "Shahriar"                       # شهریار
+    2310: "Islamshahr"                     # اسلام شهر
+    2312: "Robat-Karim"                     # رباط کریم
+    2313: "Pakdasht"                       # پاکدشت
+    2314: "Firuzkuh"                       # فیروزکوه
+    2316: "Shahr-e_Qods"                   # قدس
+    2317: "Malard"                         # ملارد
+    2318: "Pishva"                         # پیشوا
+    2319: "Baharestan"                     # بهارستان
+    2320: "Pardis"                         # پردیس
+    2321: "Qarchak"                         # قرچک
 
     # 2 4 X X
     #    + Ardabil                          + اردبیل
-    2401:	"Ardabil"	                        # اردبیل
-    2402:	"Bilasavar"	                      # بیله سوار
-    2403:	"Khalkhal"	                      # خلخال
-    2404:	"Meshginshahr"	                  # مشگین شهر
-    2405:	"Germi"	                          # گرمی
-    2406:	"Parsabad"	                      # پارس آباد
-    2407:	"Kowsar"	                        # کوثر
-    2408:	"Namin"	                          # نمین
-    2409:	"Nir"	                            # نیر
-    2410:	"Sareyn"	                        # سرعین
+    2401: "Ardabil"                         # اردبیل
+    2402: "Bilasavar"                       # بیله سوار
+    2403: "Khalkhal"                       # خلخال
+    2404: "Meshginshahr"                   # مشگین شهر
+    2405: "Germi"                           # گرمی
+    2406: "Parsabad"                       # پارس آباد
+    2407: "Kowsar"                         # کوثر
+    2408: "Namin"                           # نمین
+    2409: "Nir"                             # نیر
+    2410: "Sareyn"                         # سرعین
 
 
     # 2 5 X X
     #    + Qom                              + قم
-    2501:	"Qom"	                            # قم
+    2501: "Qom"                             # قم
 
     # 2 6 X X
     #    + Qazvin                           + قزوین
-    2601:	"Buin-Zahra"	                    # بوئین زهرا
-    2602:	"Takestan"	                      # تاکستان
-    2603:	"Qazvin"	                        # قزوین
-    2604:	"Abyek"	                          # آبیک
-    2605:	"Alborz"	                        # البرز
-    2606:	"Avaj"	                          # آوج
+    2601: "Buin-Zahra"                     # بوئین زهرا
+    2602: "Takestan"                       # تاکستان
+    2603: "Qazvin"                         # قزوین
+    2604: "Abyek"                           # آبیک
+    2605: "Alborz"                         # البرز
+    2606: "Avaj"                           # آوج
 
     # 2 7 X X
     #    + Golestan                         # گلستان
-    2701:	"Bandar-e-Gaz"	                  # بندرگز
-    2702:	"Bandar-e-Torkaman"	              # ترکمن
-    2703:	"Aliabad"	                        # علی آباد
-    2704:	"Kordkuy"	                        # کردکوی
-    2705:	"Gorgan"	                        # گرگان
-    2706:	"Gonbad-e-Kavus"	                # گنبدکاووس
-    2707:	"Minudasht"	                      # مینودشت
-    2708:	"Aqqala"	                        # آق قلا
-    2709:	"Kolaleh"	                        # کلاله
-    2710:	"Azadshahr"	                      # آزادشهر
-    2711:	"Ramian"	                        # رامیان
-    2712:	"Maravehtapeh"	                  # مراوه تپه
-    2713:	"Gomishan"	                      # گمیشان
-    2714:	"Galikash"	                      # گالیکش
+    2701: "Bandar-e-Gaz"                   # بندرگز
+    2702: "Bandar-e-Torkaman"               # ترکمن
+    2703: "Aliabad"                         # علی آباد
+    2704: "Kordkuy"                         # کردکوی
+    2705: "Gorgan"                         # گرگان
+    2706: "Gonbad-e-Kavus"                 # گنبدکاووس
+    2707: "Minudasht"                       # مینودشت
+    2708: "Aqqala"                         # آق قلا
+    2709: "Kolaleh"                         # کلاله
+    2710: "Azadshahr"                       # آزادشهر
+    2711: "Ramian"                         # رامیان
+    2712: "Maravehtapeh"                   # مراوه تپه
+    2713: "Gomishan"                       # گمیشان
+    2714: "Galikash"                       # گالیکش
 
     # 2 8 X X
     #    + North_Khorasan                   + خراسان شمالی
-    2801:	"Esfarayen"	                      # اسفراین
-    2802:	"Bojnurd"	                        # بجنورد
-    2803:	"Jajrom"	                        # جاجرم
-    2804:	"Shirvan"	                        # شیروان
-    2805:	"Faroj"	                          # فاروج
-    2806:	"Maneh-o-Samalqan"	              # مانه وسملقان
-    2807:	"Germeh"	                        # گرمه
-    2808:	"Razo_Jalgelan"	                  # راز و جرگلان
+    2801: "Esfarayen"                       # اسفراین
+    2802: "Bojnurd"                         # بجنورد
+    2803: "Jajrom"                         # جاجرم
+    2804: "Shirvan"                         # شیروان
+    2805: "Faroj"                           # فاروج
+    2806: "Maneh-o-Samalqan"               # مانه وسملقان
+    2807: "Germeh"                         # گرمه
+    2808: "Razo_Jalgelan"                   # راز و جرگلان
 
     # 2 9 X X
     #    + South_Khorasan                   + خراسان جنوبی
-    2901:	"Birjand"	                        # بیرجند
-    2902:	"Darmian"	                        # درمیان
-    2903:	"Sarbisheh"	                      # سربیشه
-    2904:	"Qaen"	                          # قائنات
-    2905:	"Nehbandan"	                      # نهبندان
-    2906:	"Sarayan"	                        # سرایان
-    2907:	"Ferdows"	                        # فردوس
-    2908:	"Boshruyeh"	                      # بشرویه
-    2909:	"Zirkouh"	                        # زیرکوه
-    2910:	"Khusf"	                          # خوسف
-    2911:	"Tabas"	                          # طبس
+    2901: "Birjand"                         # بیرجند
+    2902: "Darmian"                         # درمیان
+    2903: "Sarbisheh"                       # سربیشه
+    2904: "Qaen"                           # قائنات
+    2905: "Nehbandan"                       # نهبندان
+    2906: "Sarayan"                         # سرایان
+    2907: "Ferdows"                         # فردوس
+    2908: "Boshruyeh"                       # بشرویه
+    2909: "Zirkouh"                         # زیرکوه
+    2910: "Khusf"                           # خوسف
+    2911: "Tabas"                           # طبس
 
     # 3 0 X X
     #    + Alborz                           + البرز
-    3001:	"Karaj"	                          # کرج
-    3002:	"Savojbolagh"	                    # ساوجبلاغ
-    3003:	"Nazarabad"	                      # نظرآباد
-    3004:	"Taleghan"	                      # طالقان
-    3005:	"Eshtehard"	                      # اشتهارد
-    3006:	"Fardis"	                        # فردیس
+    3001: "Karaj"                           # کرج
+    3002: "Savojbolagh"                     # ساوجبلاغ
+    3003: "Nazarabad"                       # نظرآباد
+    3004: "Taleghan"                       # طالقان
+    3005: "Eshtehard"                       # اشتهارد
+    3006: "Fardis"                         # فردیس

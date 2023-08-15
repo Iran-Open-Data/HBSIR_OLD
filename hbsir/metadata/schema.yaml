@@ -24,7 +24,7 @@ household_information:
       - Year
       - ID
       - Season
-      - Weight	
+      - Weight
 
 
 house_specifications:

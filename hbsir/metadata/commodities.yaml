@@ -72,9 +72,8 @@ tables:
 ################### - Original Classification Before 1383 - ###################
 
 
-ORIGINAL1363:
-  items: &ORIGINAL1363
-
+original_1363:
+  items:
 
     #                        ######## LEVEL 1 ########                        #
     food_beverages_and_tobacco:
@@ -195,16 +194,15 @@ ORIGINAL1363:
 ################### - Original Classification After 1383 - ####################
 
 
-ORIGINAL1383:
+original_1383:
   defaults:
     levels: [1, 2]
 
-  items: &ORIGINAL1383
+  items:
 
 
     #                ################ LEVEL 0 ################                #
     food_and_non_alcoholic_beverages:
-      &original_1383_0_food_and_non_alcoholic_beverages
       level: 0
       farsi_name: "مواد خوراکی و نوشیدنی‌های غیر الکلی"
       code: {start: 10_000, end: 20_000}
@@ -456,7 +454,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     alcoholic_beverages_tobacco_and_norcotics:
-      &original_1383_0_alcoholic_beverages_tobacco_and_norcotics
       level: 0
       farsi_name: "نوشیدنی‌های الکلی، تنباکو و مواد مخدر"
       code: {start: 20_000, end: 30_000}
@@ -524,7 +521,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     clothing_and_footwear:
-      &original_1383_0_clothing_and_footwear
       level: 0
       farsi_name: "پوشاک و کفش"
       code: {start: 30_000, end: 33_000}
@@ -597,7 +593,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     housing_water_electricity_gas_and_other_fuels:
-      &original_1383_0_housing_water_electricity_gas_and_other_fuels
       level: 0
       farsi_name: ""
       code: {start: 40_000, end: 50_000}
@@ -605,7 +600,6 @@ ORIGINAL1383:
 
     #                        ######## LEVEL 1 ########                        #
     actual_rentals_for_housing:
-      &original_1383_0_actual_rentals_for_housing
       level: 1
       farsi_name: ""
       code: {start: 41_000, end: 42_000}
@@ -613,7 +607,6 @@ ORIGINAL1383:
 
     #                        ######## LEVEL 1 ########                        #
     imputed_rentals_for_housing:
-      &original_1383_0_imputed_rentals_for_housing
       level: 1
       farsi_name: ""
       code: {start: 42_000, end: 43_000}
@@ -621,7 +614,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     furnishings_household_equipment_and_routine_household_maintenance:
-      &original_1383_0_furnishings_household_equipment_and_routine_household_maintenance
       level: 0
       farsi_name: ""
       code: {start: 50_000, end: 60_000}
@@ -629,7 +621,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     health:
-      &original_1383_0_health
       level: 0
       farsi_name: ""
       code: {start: 60_000, end: 70_000}
@@ -637,7 +628,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     transport:
-      &original_1383_0_transport
       level: 0
       farsi_name: ""
       code: {start: 70_000, end: 80_000}
@@ -645,7 +635,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     information_and_communication:
-      &original_1383_0_information_and_communication
       level: 0
       farsi_name: ""
       code: {start: 80_000, end: 90_000}
@@ -653,7 +642,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     recreation_sport_and_culture:
-      &original_1383_0_recreation_sport_and_culture
       level: 0
       farsi_name: ""
       code: {start: 90_000, end: 100_000}
@@ -661,7 +649,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     education_services:
-      &original_1383_0_education_services
       level: 0
       farsi_name: ""
       code: {start: 100_000, end: 110_000}
@@ -669,7 +656,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     restaurants_and_accommodation_services:
-      &original_1383_0_restaurants_and_accommodation_services
       level: 0
       farsi_name: ""
       code: {start: 110_000, end: 120_000}
@@ -677,7 +663,6 @@ ORIGINAL1383:
 
     #                        ######## LEVEL 1 ########                        #
     food_and_beverage_serving_services:
-      &original_1383_1_food_and_beverage_serving_services
       level: 1
       farsi_name: ""
       code: {start: 111_000, end: 112_000}
@@ -713,7 +698,6 @@ ORIGINAL1383:
 
     #                        ######## LEVEL 1 ########                        #
     accommodation_services:
-      &original_1383_1_accommodation_services
       level: 1
       farsi_name: ""
       code: {start: 112_000, end: 113_000}
@@ -735,7 +719,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     other_commodities:
-      &original_1383_0_other_commodities
       level: 0
       farsi_name: ""
       code: {start: 120_000, end: 130_000}
@@ -743,7 +726,6 @@ ORIGINAL1383:
 
     #                ################ LEVEL 0 ################                #
     transfer_payments:
-      &original_1383_0_transfer_payments
       level: 0
       farsi_name: ""
       code: {start: 130_000, end: 140_000}
@@ -783,8 +765,8 @@ original:
     levels: [2, 3]
 
   items:
-    1363: *ORIGINAL1363
-    1383: *ORIGINAL1383
+    1363: {{original_1363}}
+    1383: {{original_1383}}
 
 
 Food-NonFood:
@@ -799,9 +781,9 @@ Food-NonFood:
         level: 1
         farsi_name: "مخارج خوراکی"
         code:
-          - *original_1383_0_food_and_non_alcoholic_beverages
-          - *original_1383_0_alcoholic_beverages_tobacco_and_norcotics
-          - *original_1383_1_food_and_beverage_serving_services
+          - {{original_1383.food_and_non_alcoholic_beverages}}
+          - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
+          - {{original_1383.food_and_beverage_serving_services}}
       Non-Food:
         level: 1
         farsi_name: "مخارج غیر خوراکی"
@@ -854,10 +836,432 @@ Insurance_Benefits:
 ###############################################################################
 
 coicop:
-  '01':
-    level: 0
-    description: "Food and Non-Alcoholic Beverages "
-    code_history:
-      1384:
-        code: [10000, 19999]
 
+  items:
+    '01':
+      level: 0
+      description: "Food and non-alcoholic beverages"
+      code:
+        1383: {{original_1383.food_and_non_alcoholic_beverages}}
+
+    '01.1':
+      level: 1
+      description: "Food"
+      code:
+        1383: {{original_1383.food}}
+
+    '01.1.1':
+      level: 2
+      description: "Cereals and cereal products (ND)"
+      code:
+
+    '01.1.1.1':
+      level: 3
+      description: "Cereals (ND)"
+      code:
+
+    '01.1.1.2':
+      level: 3
+      description: "Flour of cereals (ND)"
+      code:
+
+    '01.1.1.3':
+      level: 3
+      description: "Bread and bakery products (ND)"
+      code:
+
+    '01.1.1.4':
+      level: 3
+      description: "Breakfast cereals (ND)"
+      code:
+
+    '01.1.1.5':
+      level: 3
+      description: "Macaroni, noodles, couscous and similar pasta products (ND)"
+      code:
+
+    '01.1.1.9':
+      level: 3
+      description: "Other cereal and grain mill products (ND)"
+      code:
+      
+    '01.2':
+      level: 1
+      description: "Non-alcoholic beverages"
+      code:
+        1383: {{original_1383.non_alcoholic_beverages}}
+
+    '01.3':
+      level: 1
+      description: "Services for processing primary goods for food and non-alcoholic beverages"
+      code:
+
+    '02':
+      level: 0
+      description: "Alcoholic beverages, tobacco and narcotics"
+      code:
+
+    '02.1':
+      level: 1
+      description: "Alcoholic beverages"
+      code:
+
+    '02.2':
+      level: 1
+      description: "Alcohol production services"
+      code:
+
+    '02.3':
+      level: 1
+      description: "Tobacco"
+      code:
+
+    '02.4':
+      level: 1
+      description: "Narcotics"
+      code:
+
+    '03':
+      level: 0
+      description: "Clothing and footwear"
+      code:
+
+    '03.1':
+      level: 1
+      description: "Clothing"
+      code:
+
+    '03.2':
+      level: 1
+      description: "Footwear"
+      code:
+
+    '04':
+      level: 0
+      description: "Housing, water, electricity, gas and other fuels"
+      code:
+
+    '04.1':
+      level: 1
+      description: "Actual rentals for housing"
+      code:
+
+    '04.2':
+      level: 1
+      description: "Imputed rentals for housing"
+      code:
+
+    '04.3':
+      level: 1
+      description: "Maintenance, repair and security of the dwelling"
+      code:
+
+    '04.4':
+      level: 1
+      description: "Water supply and miscellaneous services relating to the dwelling"
+      code:
+
+    '04.5':
+      level: 1
+      description: "Electricity, gas and other fuels"
+      code:
+
+    '05':
+      level: 0
+      description: "Furnishings, household equipment and routine household maintenance"
+      code:
+
+    '05.1':
+      level: 1
+      description: "Furniture, furnishings, and loose carpets"
+      code:
+
+    '05.2':
+      level: 1
+      description: "Household textiles"
+      code:
+
+    '05.3':
+      level: 1
+      description: "Household appliances"
+      code:
+
+    '05.4':
+      level: 1
+      description: "Glassware, tableware and household utensils"
+      code:
+
+    '05.5':
+      level: 1
+      description: "Tools and equipment for house and garden"
+      code:
+
+    '05.6':
+      level: 1
+      description: "Goods and services for routine household maintenance"
+      code:
+
+    '06':
+      level: 0
+      description: "Health"
+      code:
+
+    '06.1':
+      level: 1
+      description: "Medicines and health products"
+      code:
+
+    '06.2':
+      level: 1
+      description: "Outpatient care services"
+      code:
+
+    '06.3':
+      level: 1
+      description: "Inpatient care services"
+      code:
+
+    '06.4':
+      level: 1
+      description: "Other health services"
+      code:
+
+    '07':
+      level: 0
+      description: "Transport"
+      code:
+
+    '07.1':
+      level: 1
+      description: "Purchase of vehicles"
+      code:
+
+    '07.2':
+      level: 1
+      description: "Operation of personal transport equipment"
+      code:
+
+    '07.3':
+      level: 1
+      description: "Passenger transport services"
+      code:
+
+    '07.4':
+      level: 1
+      description: "Transport services of goods"
+      code:
+
+    '08':
+      level: 0
+      description: "Information and communication"
+      code:
+
+    '08.1':
+      level: 1
+      description: "Information and communication equipment"
+      code:
+
+    '08.2':
+      level: 1
+      description: "Software excluding games"
+      code:
+
+    '08.3':
+      level: 1
+      description: "Information and communication services"
+      code:
+
+    '09':
+      level: 0
+      description: "Recreation, sport and culture"
+      code:
+
+    '09.1':
+      level: 1
+      description: "Recreational durables"
+      code:
+
+    '09.2':
+      level: 1
+      description: "Other recreational goods"
+      code:
+
+    '09.3':
+      level: 1
+      description: "Garden products and pets"
+      code:
+
+    '09.4':
+      level: 1
+      description: "Recreational services"
+      code:
+
+    '09.5':
+      level: 1
+      description: "Cultural goods"
+      code:
+
+    '09.6':
+      level: 1
+      description: "Cultural services"
+      code:
+
+    '09.7':
+      level: 1
+      description: "Newspapers, books and stationery"
+      code:
+
+    '09.8':
+      level: 1
+      description: "Package holidays "
+      code:
+
+    '10':
+      level: 0
+      description: "Education services"
+      code:
+
+    '10.1':
+      level: 1
+      description: "Early childhood and primary education"
+      code:
+
+    '10.2':
+      level: 1
+      description: "Secondary education"
+      code:
+
+    '10.3':
+      level: 1
+      description: "Post-secondary non-tertiary education"
+      code:
+
+    '10.4':
+      level: 1
+      description: "Tertiary education"
+      code:
+
+    '10.5':
+      level: 1
+      description: "Education not defined by level"
+      code:
+
+    '11':
+      level: 0
+      description: "Restaurants and accommodation services"
+      code:
+
+    '11.1':
+      level: 1
+      description: "Food and beverage serving services"
+      code:
+
+    '11.2':
+      level: 1
+      description: "Accommodation services"
+      code:
+
+    '12':
+      level: 0
+      description: "Insurance and financial services"
+      code:
+
+    '12.1':
+      level: 1
+      description: "Insurance"
+      code:
+
+    '12.2':
+      level: 1
+      description: "Financial services"
+      code:
+
+    '13':
+      level: 0
+      description: "Personal care, social protection and miscellaneous goods and services"
+      code:
+
+    '13.1':
+      level: 1
+      description: "Personal care"
+      code:
+
+    '13.2':
+      level: 1
+      description: "Other personal effects"
+      code:
+
+    '13.3':
+      level: 1
+      description: "Social protection"
+      code:
+
+    '13.9':
+      level: 1
+      description: "Other services"
+      code:
+
+    '14':
+      level: 0
+      description: "Individual consumption expenditure of non-profit institutions serving households (NPISHS)"
+      code:
+
+    '14.1':
+      level: 1
+      description: "Housing"
+      code:
+
+    '14.2':
+      level: 1
+      description: "Health"
+      code:
+
+    '14.3':
+      level: 1
+      description: "Recreation and culture"
+      code:
+
+    '14.4':
+      level: 1
+      description: "Education"
+      code:
+
+    '14.5':
+      level: 1
+      description: "Social protection"
+      code:
+
+    '14.6':
+      level: 1
+      description: "Other services"
+      code:
+
+    '15':
+      level: 0
+      description: "Individual consumption expenditure of general government"
+      code:
+
+    '15.1':
+      level: 1
+      description: "Housing"
+      code:
+
+    '15.2':
+      level: 1
+      description: "Health"
+      code:
+
+    '15.3':
+      level: 1
+      description: "Recreation and culture"
+      code:
+
+    '15.4':
+      level: 1
+      description: "Education"
+      code:
+
+    '15.5':
+      level: 1
+      description: "Social protection"
+      code:
