@@ -225,7 +225,7 @@ class Metadata:
         for placeholder in placeholders_list:
             parts = placeholder.split(".")
             if len(parts) == 1:
-                mapping[placeholder] = context[parts[0]]
+                mapping[placeholder] = context[parts[0]]["items"]
             elif len(parts) == 2:
                 mapping[placeholder] = context[parts[0]]["items"][parts[1]]
             else:
