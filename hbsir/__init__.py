@@ -207,7 +207,7 @@ def add_attribute(
     return table
 
 
-def add_weight(table: pd.DataFrame) -> pd.DataFrame:
+def add_weight(table: pd.DataFrame, how="left") -> pd.DataFrame:
     """Add sampling weights to DataFrame based on household ID and year.
 
     Takes a DataFrame containing 'ID' and 'Year' columns, joins the
@@ -224,7 +224,7 @@ def add_weight(table: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: Input DataFrame with added 'Weight' column.
 
     """
-    table = data_engine.WeightAdder(table).add_weights()
+    table = data_engine.WeightAdder(table).add_weights(how=how)
     return table
 
 

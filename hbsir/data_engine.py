@@ -328,7 +328,7 @@ class WeightAdder:
         assert isinstance(weights, pd.Series)
         return weights
 
-    def add_weights(self) -> pd.DataFrame:
+    def add_weights(self, **kwargs) -> pd.DataFrame:
         years = decoder.extract_column(self.table, self.year_column_name)
         years = years.drop_duplicates()
         weights_list = []
@@ -337,5 +337,5 @@ class WeightAdder:
         weights = pd.concat(
             weights_list, axis="index", keys=years, names=["Year", "ID"]
         )
-        self.table = self.table.join(weights, on=["Year", "ID"])
+        self.table = self.table.join(weights, on=["Year", "ID"], **kwargs)
         return self.table
