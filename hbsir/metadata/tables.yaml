@@ -1353,7 +1353,10 @@ INCOME_ITEMS:
 
   income_job_code: &income_job_code
     new_name: "Job_Code"
-    type: "string"
+    type: "unsigned"
+    replace:
+      1390: {"x0000": null, "x000": null}
+      1397: null
   
   income_activity_status: &income_activity_status
     new_name: "Activity_Status"
@@ -1361,16 +1364,21 @@ INCOME_ITEMS:
 
   income_workplace_activity: &income_workplace_activity
     new_name: "Workplace_Activity"
-    type: "string"
+    type: "unsigned"
+    replace:
+      1390: {"x0000": null, "x000": null}
+      1397: null
 
   income_sector_base: &income_sector_base
     new_name: "Sector"
     type: "category"
+
   income_sector_1: &income_sector_1
     <<: *income_sector_base
     categories:
       1: "Public"
       2: "Private"
+
   income_sector_2: &income_sector_2
     <<: *income_sector_base
     categories:
@@ -1426,6 +1434,11 @@ INCOME_ITEMS:
   income_work_type: &income_work_type_base
     new_name: "Work_Type"
     type: "category"
+
+    replace:
+      1396: null
+      1397: {1: null}
+      1398: null
 
   income_work_type_1: &income_work_type_1
     <<: *income_work_type_base
