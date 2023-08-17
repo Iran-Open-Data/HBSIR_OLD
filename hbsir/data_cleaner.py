@@ -176,8 +176,11 @@ def _general_cleaning(column: pd.Series):
     if pd.api.types.is_numeric_dtype(column):
         return column
     chars_to_remove = r"\n\r\,\@\-\+\*\[\]"
-    column = column.str.replace(f"[{chars_to_remove}]+", "", regex=True)
-    column = column.replace(r"\A\s*\Z", np.nan, regex=True)
+    try:
+        column = column.str.replace(f"[{chars_to_remove}]+", "", regex=True)
+        column = column.replace(r"\A[\s\.]*\Z", np.nan, regex=True)
+    except AttributeError:
+        pass
     return column
 
 
