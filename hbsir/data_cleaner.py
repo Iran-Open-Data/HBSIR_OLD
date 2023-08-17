@@ -151,7 +151,7 @@ def _get_table_settings(table_metadata: dict) -> dict:
 
 
 def _apply_metadata_to_column(column: pd.Series, column_metadata: dict) -> pd.Series:
-    if "replace" in column_metadata:
+    if ("replace" in column_metadata) and (column_metadata["replace"] is not None):
         column = column.replace(column_metadata["replace"])
     column = _apply_type_to_column(column, column_metadata)
     return column
