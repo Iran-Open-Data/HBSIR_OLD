@@ -55,10 +55,11 @@ def _get_file_size_online_directory(file_name):
 
 
 def publish_data(
-    table_name: _OriginalTable | list[_OriginalTable] | None = None,
+    table_name: _OriginalTable | Iterable[_OriginalTable] | None = None,
     years: int | Iterable[int] | str | None = None,
 ) -> None:
-    table_year = utils.create_table_year_product(table_name, years)
+    assert isinstance(table_name, str)
+    table_year = utils.construct_table_year_pairs(table_name, years)
     pbar = tqdm(total=len(table_year), desc="Preparing ...", unit="Table")
     for _table_name, year in table_year:
         pbar.update()
@@ -82,8 +83,8 @@ def _upload_file_to_online_directory(file_path, file_name):
 
 
 def _get_bucket(bucket_name="sdac"):
-    with open("tokens.toml", "rb") as f:
-        token = tomllib.load(f)["arvan"]
+    with open("tokens.toml", "rb") as file:
+        token = tomllib.load(file)["arvan"]
     s3_resource = boto3.resource(
         "s3",
         endpoint_url="https://s3.ir-tbz-sh1.arvanstorage.ir",

@@ -25,6 +25,9 @@ fastparquet = ">=2023"
 pydantic = ">=2.1"
 pyarrow = ">=11"
 
+[tool.poetry.group.maintain.dependencies]
+boto3 = ">=1.28.28"
+
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.2"
 
