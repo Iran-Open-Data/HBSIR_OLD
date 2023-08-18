@@ -677,21 +677,20 @@ NonCash_Incomes:
       - Income
 
 
-Direct_Cash_Incomes:
+Cash_Incomes:
 
   table_list:
     - employment_income
     - self_employed_income
     - _long_other_income
     - subsidy
-    - investment
 
   instructions:
 
     - create_column:
         name: Income
         type: numerical
-        expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy + Secondhand_Sale"
+        expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy"
 
     - create_column:
         name: Income_Type
@@ -709,7 +708,6 @@ Direct_Cash_Incomes:
           Cash_Home_Production:     {Other_Income_Type: Home_Production}
           Cash_Transfer:            {Other_Income_Type: Transfer}
           Cash_Subsidy:             {Table_Name: subsidy}
-          Cash_Investment_Disposal: {Table_Name: investment}
 
     - apply_order:
       - Year
@@ -718,44 +716,15 @@ Direct_Cash_Incomes:
       - Income
 
 
-Indirect_Cash_Income:
-
+Income_Breakdown:
   table_list:
-    - durable
+    - NonCash_Incomes
+    - Cash_Incomes
 
   instructions:
 
-    - add_classification:
-        classification_name: Insurance_Benefits
-        labels: [is_benefit]
-
-    - apply_filter: "Provision_Method == 'Purchase'"
-    - apply_filter: "Insurance_Benefits.notnull()"
-
-    - create_column:
-        name: Income
-        type: numerical
-        expression: Expenditure
-
-    - create_column:
-        name: Income_Type
-        type: categorical
-        categories:
-          Cash_Insurance_Benefits: null
-
-    - apply_order:
-      - Year
-      - ID
-      - Income_Type
-      - Income
-
-
-Cash_Incomes:
-  table_list:
-    - Direct_Cash_Incomes
-    - Indirect_Cash_Income
-
-  instructions:
+    - apply_pandas_function: >
+        .groupby(["Year", "ID", "Income_Type"], as_index=False).sum()
 
     - apply_order:
       - Year
@@ -767,14 +736,15 @@ Cash_Incomes:
 
 Total_Income:
   table_list:
-    - NonCash_Incomes
-    - Cash_Incomes
+    - Income_Breakdown
 
   instructions:
+
+    - apply_pandas_function: >
+        .groupby(["Year", "ID"], as_index=False).sum(numeric_only=True)
 
     - apply_order:
       - Year
       - ID
       - Member_Number
-      - Income_Type
       - Income
