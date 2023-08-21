@@ -183,6 +183,9 @@ members_properties:
         4: "Student"
         5: "Housekeeper"
         6: "Other"
+      replace:
+        1370: {7: null}
+        1371: null
 
     members_education_level: &members_education_level
       new_name: Education_Level
@@ -315,15 +318,32 @@ house_specifications:
     1363: "P2"
 
   items:
+
+    house_address: &house_address
+      new_name: "ID"
+      type: "unsigned"
+
+    house_tenure: &house_tenure
+      new_name: "Tenure"
+      type: "category"
+      categories:
+        1: "Owned_Estate_Land"
+        2: "Owned_Estate"
+        3: "Rent"
+        4: "Mortgage"
+        5: "Service"
+        6: "Free"
+        7: "Other"
+
     other_tenure: &other_tenure
-        new_name: "Other_tenure"
-        type: "string"
+      new_name: "Other_tenure"
+      type: "string"
     rooms: &rooms
-        new_name: "Number_of_Rooms"
-        type: "unsigned"
+      new_name: "Number_of_Rooms"
+      type: "unsigned"
     space: &space
-        new_name: "Space"
-        type: "unsigned"
+      new_name: "Space"
+      type: "unsigned"
 
     skeleton: &skeleton
       new_name: "Construction_Skeleton"
@@ -332,6 +352,14 @@ house_specifications:
         1: "Metal"
         2: "Concrete"
         3: "Other"
+
+    construction_material_1: &construction_material_1
+      new_name: "Construction_Material_1"
+      type: "unsigned"
+
+    construction_material_2: &construction_material_2
+      new_name: "Construction_Material_2"
+      type: "unsigned"
 
     construction_material: &construction_material
       new_name: "Construction_Material"
@@ -345,51 +373,98 @@ house_specifications:
         6: "Sundried_Brickwood"
         7: "Sundried_Brickmud"
         8: "Other"
+      replace:
+        1383: {'00': null, '11': null, '31': null, '61': null}
+        1384: {'11': null}
+        1385: null
+        1386: {'00': null}
+        1389: null
 
     cookfuel: &cookfuel
       new_name: "Cooking_Fuel"
       type: "category"
       categories:
-        1: "Karosine"
-        2: "Gasoline"
-        3: "Gas"
-        4: "Piped_Gas"
-        5: "Electricity"
-        6: "Wood_and_Charcoal"
-        7: "Animal_Fuel"
-        8: "Charcoal"
-        9: "Other_Fuel"
-        10: "None"
+        1369:
+          1: "Karosine"
+          2: "Gasoline"
+          3: "Gas"
+          4: "Electricity"
+          5: "Wood_and_Charcoal"
+          6: "Animal_Fuel"
+          7: "Other_Fuel"
+        1385:
+          1: "Karosine"
+          2: "Gasoline"
+          3: "Gas"
+          4: "Electricity"
+          5: "Wood_and_Charcoal"
+          6: "Animal_Fuel"
+          7: "Charcoal"
+          8: "Other_Fuel"
+        1386:
+          1: "Karosine"
+          2: "Gasoline"
+          3: "Liquid_Gas"
+          4: "Piped_Gas"
+          5: "Electricity"
+          6: "Wood_and_Charcoal"
+          7: "Animal_Fuel"
+          8: "Coal"
+          9: "Other_Fuel"
+          10: "None"
+      replace:
+        1383: {30: null}
 
     heatfuel: &heatfuel
       new_name: "Heating_Fuel"
       type: "category"
       categories:
-        11: "Karosine"
-        12: "Gasoline"
-        13: "Gas"
-        14: "Piped_Gas"
-        15: "Electricity"
-        16: "Wood_and_Charcoal"
-        17: "Animal_Fuel"
-        18: "Charcoal"
-        19: "Other_Fuel"
-        20: "None"
+        1369:
+            8: "Karosine"
+            9: "Gasoline"
+            10: "Gas"
+            11: "Electricity"
+            12: "Wood_and_Charcoal"
+            13: "Animal_Fuel"
+            14: "Other_Fuel"
+        1385:
+            9: "Karosine"
+            10: "Gasoline"
+            11: "Gas"
+            12: "Electricity"
+            13: "Wood_and_Charcoal"
+            14: "Animal_Fuel"
+            15: "Charcoal"
+            16: "Other_Fuel"
+        1386:
+            11: "Karosine"
+            12: "Gasoline"
+            13: "Liquid_Gas"
+            14: "Piped_Gas"
+            15: "Electricity"
+            16: "Wood_and_Charcoal"
+            17: "Animal_Fuel"
+            18: "Coal"
+            19: "Other_Fuel"
+            20: "None"
+      replace:
+        1383: {1: null, 2: null, 83: null, 88: null}
 
     hotwaterfuel: &hotwaterfuel
       new_name: "Hotwater_Fuel"
       type: "category"
       categories:
-        21: "Karosine"
-        22: "Gasoline"
-        23: "Gas"
-        24: "Piped_Gas"
-        25: "Electricity"
-        26: "Wood_and_Charcoal"
-        27: "Animal_Fuel"
-        28: "Charcoal"
-        29: "Other_Fuel"
-        30: "None"
+        1368:
+          21: "Karosine"
+          22: "Gasoline"
+          23: "Liquid_Gas"
+          24: "Piped_Gas"
+          25: "Electricity"
+          26: "Wood_and_Charcoal"
+          27: "Animal_Fuel"
+          28: "Coal"
+          29: "Other_Fuel"
+          30: "None"
 
     car: &car
         new_name: "Car"
@@ -451,8 +526,8 @@ house_specifications:
         new_name: "Vaccum"
         type: "boolean"
         true_condition: 1
-    washer: &washer
-        new_name: "Washer"
+    washing_machine: &washing_machine
+        new_name: "Washing Machine"
         type: "boolean"
         true_condition: 1
     sewing: &sewing
@@ -600,24 +675,103 @@ house_specifications:
       type: "boolean"
       true_condition: 1
 
+    cooperative_members: &cooperative_members
+      new_name: "Cooperative_Members"
+      type: "unsigned"
+    consumption_cooperatives: &consumption_cooperatives
+      new_name: "Consumption_Cooperative"
+      type: "unsigned"
+    house_cooperatives: &house_cooperatives
+      new_name: "House_Cooperative"
+      type: "unsigned"
+    other_cooperatives: &other_cooperatives
+      new_name: "Other_Cooperative"
+      type: "unsigned"
+
   columns:
 
-    1383:
-      ADDRESS:
-        new_name: "ID"
-        type: "unsigned"
+    1363:
+      ADDRESS: *house_address
+      Q1: *house_tenure
+      Q2: *rooms
+      Q3: *space
+      Q4A: *construction_material_1
+      Q4: {1377: *skeleton}
+      Q4B: *construction_material_2
+      Q4_1: {1377: *construction_material}
+      Q5_01: *car
+      Q5_02: *motorcycle
+      Q5_03: *bicycle
+      Q5_04: *sewing
+      Q5_05: *radio
+      Q5_06: *cassette
+      Q5_07: *tvbw
+      Q5_08: *tvcr
+      Q5_09: *freezer
+      Q5_10: *refrigerator
+      Q5_11: *oven
+      Q5_12: *vaccum
+      Q5_13: *washing_machine
+      Q5_14: *vcr
+      Q5_15: {1377: *computer}
+      Q5_16: {1378: *cellphone}
+      Q6_1: *pipewater
+      Q6_2: *electricity
+      Q6_3: *pipegas
+      Q6_4: *bathroom
+      Q6_5: *cooler
+      Q6_6: *phone
+      Q6_7: *centralheater
+      Q6_8: *kitchen
+      Q6_9: {1377: *cellphone, 1378: null}
+      Q7A: *cookfuel
+      Q7B: *heatfuel
+      Q8_1: {1378: *cooperative_members}
+      Q8_2_1: {1378: *consumption_cooperatives}
+      Q8_2_2: {1378: *house_cooperatives}
+      Q8_2_3: {1378: *other_cooperatives}
 
-      DYCOL01:
-        new_name: "Tenure"
-        type: "category"
-        categories:
-          1: "Owned_Estate_Land"
-          2: "Owned_Estate"
-          3: "Rent"
-          4: "Mortgage"
-          5: "Service"
-          6: "Free"
-          7: "Other"
+    1381:
+      ADDRESS: *house_address
+      Q1: *house_tenure
+      Q2: *rooms
+      Q3: *space
+      Q4: *skeleton
+      Q4_1: *construction_material
+      Q5_01: *car
+      Q5_02: *motorcycle
+      Q5_03: *bicycle
+      Q5_04: *sewing
+      Q5_05: *radio
+      Q5_06: *cassette
+      Q5_07: *tvbw
+      Q5_08: *tvcr
+      Q5_09: *freezer
+      Q5_10: *refrigerator
+      Q5_11: *oven
+      Q5_12: *vaccum
+      Q5_13: *washing_machine
+      Q5_14: *vcr
+      Q5_15: *computer
+      Q5_16: *cellphone
+      Q5_17: *fan
+      Q5_18: *cooler_water_movable
+      Q6_01: *pipewater
+      Q6_02: *electricity
+      Q6_03: *pipegas
+      Q6_04: *bathroom
+      Q6_05: *cooler
+      Q6_06: *phone
+      Q6_07: *centralheater
+      Q6_08: *kitchen
+      Q6_09: *centralcooler
+      Q6_10: *internet
+      Q7A: *cookfuel
+      Q7B: *heatfuel
+
+    1383:
+      ADDRESS: *house_address
+      DYCOL01: *house_tenure
       DYCOL02: 
         1383: *rooms
         1387: *other_tenure
@@ -675,17 +829,17 @@ house_specifications:
         1384: *oven
         1387: *frizer_refrigrator
       DYCOL20:
-        1383: *washer
+        1383: *washing_machine
         1384: *vaccum
         1387: *oven
       DYCOL21:
         1383: *sewing
-        1384: *washer
+        1384: *washing_machine
         1387: *vaccum
       DYCOL22:
         1383: *fan
         1384: *sewing
-        1387: *washer
+        1387: *washing_machine
       DYCOL23:
         1383: *cooler_water_movable
         1384: *fan
@@ -845,12 +999,13 @@ house_specifications:
         1387: *homerepair_year
         1391: *homerepair_month
       DYCOL51:
-        1384: *no_event
+        1384: drop
         1385: *foreign_trip_year
         1386: *ziarati_trip_year
         1387: *ziarati_trip_month
         1391: *homerepair_year
       DYCOL52:
+        1384: *no_event
         1385: *surgery_month
         1386: *foreign_trip_month
         1387: *ziarati_trip_year
@@ -1355,7 +1510,7 @@ INCOME_ITEMS:
     new_name: "Job_Code"
     type: "unsigned"
     replace:
-      1390: {"x0000": null, "x000": null}
+      1387: {"x0000": null, "x000": null}
       1397: null
   
   income_activity_status: &income_activity_status
@@ -1366,7 +1521,7 @@ INCOME_ITEMS:
     new_name: "Workplace_Activity"
     type: "unsigned"
     replace:
-      1390: {"x0000": null, "x000": null}
+      1387: {"x0000": null, "x000": null}
       1397: null
 
   income_sector_base: &income_sector_base
@@ -1495,14 +1650,12 @@ INCOME_ITEMS:
   # # # Base Items
 
   income_base_columns: &income_base_columns
-    Address: &employment_income_Address
+    ADDRESS:
       new_name: "ID"
       type: "unsigned"
-    ADDRESS: *employment_income_Address
 
     COL01: *income_member_number
     DYCOL01: *income_member_number
-    Dycol01: *income_member_number
 
 
 employment_income:
@@ -1572,16 +1725,26 @@ employment_income:
 
 
 self_employed_income:
-  file_code:
-    1363: null
-    1369: "P4S2"
-    1384: "P4S02"
-
-  property:
-    missings: pass
-
-  columns:
-    1384:
+  1363: null
+  1369:
+    file_code: "P4S2"
+    columns:
+      <<: *income_base_columns
+      COL02: *income_activity_status
+      COL03: *income_job_code
+      COL04: *income_workplace_activity
+      COL05: *income_work_type
+      COL06: *income_is_agricultural
+      COL07: *income_wages
+      COL08: *income_cost_of_sales
+      COL09: *income_other_operating_costs
+      COL10: *income_other_costs
+      COL11: *income_besiness_tax
+      COL12: *income_sales
+      COL13: *income_profit
+  1384:
+    file_code: "P4S02"
+    columns:
       <<: *income_base_columns
       DYCOL02: *income_activity_status
       DYCOL03: *income_job_code
@@ -1605,39 +1768,46 @@ other_income:
     1369: "P4S3"
     1384: "P4S03"
 
-
-  columns:
-    <<: *income_base_columns
-
-    COL03: &income_retirement
+  items:
+    income_retirement: &income_retirement
       new_name: "Retirement"
       type: "float"
-    DYCOL03: *income_retirement
-
-    COL04: &income_rent
+    income_rent: &income_rent
       new_name: "Rent"
       type: "float"
-    DYCOL04: *income_rent
-
-    COL05: &income_interest
+    income_interest: &income_interest
       new_name: "Interest"
       type: "float"
-    DYCOL05: *income_interest
-
-    COL06: &income_aid
+    income_aid: &income_aid
       new_name: "Aid"
       type: "float"
-    DYCOL06: *income_aid
-
-    COL07: &income_home_production
+    income_home_production: &income_home_production
       new_name: "Home_Production"
       type: "float"
-    DYCOL07: *income_home_production
-
-    COL08: &income_transfer
+    income_transfer: &income_transfer
       new_name: "Transfer"
       type: "float"
-    DYCOL08: *income_transfer
+
+  columns:
+    
+    1363:
+      <<: *income_base_columns
+      COL03: *income_retirement
+      COL04: *income_rent
+      COL05: *income_interest
+      COL06: *income_aid
+      COL07: *income_home_production
+      COL08: *income_transfer
+      TAX: drop
+
+    1384:
+      <<: *income_base_columns
+      DYCOL03: *income_retirement
+      DYCOL04: *income_rent
+      DYCOL05: *income_interest
+      DYCOL06: *income_aid
+      DYCOL07: *income_home_production
+      DYCOL08: *income_transfer
 
 
 subsidy:

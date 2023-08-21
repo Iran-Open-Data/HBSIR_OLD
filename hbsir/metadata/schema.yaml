@@ -366,19 +366,31 @@ Weights:
 Original_Expenditures:
 
   table_list:
-    - food
-    - tobacco
-    - cloth
-    - home
-    - furniture
-    - medical
-    - transportation
-    - communication
-    - entertainment
-    - education
-    - hotel
-    - other
-    - durable
+    1363:
+      - food
+      - cloth
+      - home
+      - furniture
+      - medical
+      - transportation
+      - entertainment
+      - other
+      - durable
+
+    1383:
+      - food
+      - tobacco
+      - cloth
+      - home
+      - furniture
+      - medical
+      - transportation
+      - communication
+      - entertainment
+      - education
+      - hotel
+      - other
+      - durable
 
   instructions:
     - create_column:
@@ -437,19 +449,67 @@ Expenditures:
 Original_Outlays:
 
   table_list:
-    - food
-    - tobacco
-    - cloth
-    - home
-    - furniture
-    - medical
-    - transportation
-    - communication
-    - entertainment
-    - education
-    - hotel
-    - other
-    - durable
+    1363:
+      - food
+      - cloth
+      - home
+      - furniture
+      - medical
+      - transportation
+      - entertainment
+      - other
+      - durable
+
+    1366:
+      - food
+      - cloth
+      - home
+      - furniture
+      - medical
+      - transportation
+      - entertainment
+      - other
+      - durable
+      - investment
+    
+    1375:
+      - food
+      - cloth
+      - home
+      - furniture
+      - medical
+      - transportation
+      - entertainment
+      - other
+      - durable
+
+    1378:
+      - food
+      - cloth
+      - home
+      - furniture
+      - medical
+      - transportation
+      - entertainment
+      - other
+      - durable
+      - investment
+
+    1383:
+      - food
+      - tobacco
+      - cloth
+      - home
+      - furniture
+      - medical
+      - transportation
+      - communication
+      - entertainment
+      - education
+      - hotel
+      - other
+      - durable
+      - investment
 
   instructions:
     - create_column:
@@ -680,17 +740,24 @@ NonCash_Incomes:
 Cash_Incomes:
 
   table_list:
-    - employment_income
-    - self_employed_income
-    - _long_other_income
-    - subsidy
+    1369:
+      - employment_income
+      - self_employed_income
+      - _long_other_income
+    1390:
+      - employment_income
+      - self_employed_income
+      - _long_other_income
+      - subsidy
 
   instructions:
 
     - create_column:
         name: Income
         type: numerical
-        expression: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy"
+        expression:
+          1363: "Yearly_Net_Income + Profit + Other_Incomes"
+          1390: "Yearly_Net_Income + Profit + Other_Incomes + Subsidy"
 
     - create_column:
         name: Income_Type

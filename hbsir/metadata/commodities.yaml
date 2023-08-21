@@ -79,54 +79,44 @@ original_1363:
     food_beverages_and_tobacco:
       level: 1
       farsi_name: "مواد خوراکی، نوشیدنی‌ها و دخانیات"
-      categories:
-        1:
-          duration: 30
-          code:
-            - {start: 11_200, end: 11_300}
-            - {start: 14_000, end: 15_000}
-            - {start: 16_300, end: 16_400}
-            - {start: 17_100, end: 17_200}
-            - {start: 17_400, end: 17_500}
-            - {start: 18_000, end: 19_000}
-        2:
-          duration: 2
-          code:
-            - {start: 11_100, end: 11_200}
-            - {start: 11_300, end: 11_500}
-            - {start: 12_000, end: 14_000}
-            - {start: 15_000, end: 16_000}
-            - {start: 16_100, end: 16_300}
-            - {start: 17_200, end: 17_400}
-            - {start: 19_000, end: 20_000}
-        3:
-          drop: 1
-          code:
-            - 18888
-            - 19993
-            - {start: 911_00, end: 912_00}
+      code: {start: 10_000, end: 20_000}
 
     #                            #### LEVEL 2 ####                            #
     cereals_and_cereal_products:
       level: 2
       farsi_name: "غلات و فرآورده‌های آن"
-      categories:
-        1:
-          duration: 30
-          code:
-            - {start: 11_200, end: 11_300}
-        2:
-          duration: 2
-          code:
-            - {start: 11_100, end: 11_200}
-            - {start: 11_300, end: 11_500}
+      code:
+        1363: {start: 11_000, end: 12_000}
+        1383: {start: 11_100, end: 11_200}
+
+    #                              ## LEVEL 3 ##                              #
+    flour_noodle_and_similar_pasta_products:
+      level: 3
+      code: {start: 11_100, end: 11_200}
+
+    #                              ## LEVEL 3 ##                              #
+    cereals:
+      level: 3
+      code: {start: 11_200, end: 11_300}
+
+    #                              ## LEVEL 3 ##                              #
+    bread_and_bakery_products:
+      level: 3
+      code: {start: 11_300, end: 11_400}
+
+    #                              ## LEVEL 3 ##                              #
+    cake_and_biscuit:
+      level: 3
+      code: {start: 11_400, end: 11_500}
 
     #                            #### LEVEL 2 ####                            #
     meat_and_sea_foods:
       level: 2
       duration: 2
-      farsi_name: "گوشت"
-      code: {start: 12_000, end: 13_000}
+      farsi_name: "گوشت و غذاهای دریایی"
+      code:
+        1363: {start: 12_000, end: 13_000}
+        1383: {start: 11_200, end: 11_400}
 
     #                            #### LEVEL 2 ####                            #
     milk_other_dairy_product_and_eggs:
@@ -799,8 +789,14 @@ Imputed_Rent:
       level: 1
       is_imputed: 1
       code:
-        - 42_111
-        - 42_211
+        1363:
+          - 31_117
+          - 31_128
+          - 31_172
+        1383:
+          - 42_111
+          - 42_211
+          - 42_212
 
 
 Insurance_Benefits:
