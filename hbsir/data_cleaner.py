@@ -60,6 +60,8 @@ def _build_file_path(table_name: str, year: int, is_urban: bool) -> Path:
     file_code = utils.MetadataVersionResolver(
         table_metadata["file_code"], year
     ).get_version()
+    if file_code is None:
+        raise ValueError(f"Table {table_name} is not available for year {year}")
     file_name = f"{urban_rural}{year_string}{file_code}.csv"
     file_path = defaults.extracted_data.joinpath(str(year), file_name)
     return file_path
@@ -130,7 +132,9 @@ def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
         columns_metadata, year
     ).get_version()
     if not isinstance(columns_metadata, dict):
-        raise ValueError("Unvalid metadata")
+        raise ValueError(
+            f"Unvalid metadata for column {column_name}: \n {columns_metadata}"
+        )
     if column_name in columns_metadata:
         column_metadata = columns_metadata[column_name]
     else:
