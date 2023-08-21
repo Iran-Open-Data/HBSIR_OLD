@@ -260,6 +260,8 @@ class TableLoader:
         if table_name not in self.schema:
             raise KeyError(f"Table name {table_name} is not available in schema")
         table_names = self.schema[table_name]["table_list"]
+        table_names = utils.MetadataVersionResolver(table_names, year).get_version()
+        assert isinstance(table_names, (str, list))
 
         table_list = self._collect_schema_tables(table_names, year)
 
