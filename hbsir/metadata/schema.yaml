@@ -20,6 +20,8 @@ household_information:
 
   instructions:
 
+    - add_year
+
     - apply_order:
       - Year
       - ID
