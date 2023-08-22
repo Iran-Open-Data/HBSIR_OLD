@@ -715,7 +715,7 @@ NonCash_Incomes_Excluding_Imputed_Rent:
           NonCash_Donation:         {Provision_Method: Donation}   
           NonCash_HomeProduction:   {Provision_Method: Home_Production}   
 
-    - apply_filter: "(Provision_Method != 'Purchase')"
+    - apply_filter: "(Provision_Method != 'Purchase') & Provision_Method.notnull()"
 
     - apply_order:
       - Year
