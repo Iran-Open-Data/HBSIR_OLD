@@ -130,7 +130,9 @@ class Applier:
             return
         columns_names = re.split(r"[\+\-\*\/\s\.]+", expression)
         columns_names = [name for name in columns_names if not name.isnumeric()]
-        self.table[column_name] = self.table[columns_names].fillna(0).eval(expression)
+        self.table[column_name] = (
+            self.table[columns_names].fillna(0).eval(expression, engine="python")
+        )
 
     def __apply_categorical_instruction(
         self, column_name: str, categories: dict
@@ -176,7 +178,7 @@ class Applier:
 
     def _apply_pandas_function(self, method_input: str) -> None:
         method_input = "self.table" + method_input
-        table = pd.eval(method_input, target=self.table)
+        table = pd.eval(method_input, target=self.table, engine="python")
         assert isinstance(table, pd.DataFrame)
         self.table = table
 
