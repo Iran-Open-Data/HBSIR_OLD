@@ -694,7 +694,7 @@ Imputed_Rent:
 NonCash_Incomes_Excluding_Imputed_Rent:
 
   table_list:
-    - Outlays
+    - Expenditures
 
   instructions:
 
