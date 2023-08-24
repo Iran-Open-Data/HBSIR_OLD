@@ -23,19 +23,19 @@ class TestWithFormalNumbers:
         table = hbsir.add_weight(table)
         table["Weighted_Gross_Expenditure"] = table.eval("Gross_Expenditure * Weight")
         table["Weighted_Net_Expenditure"] = table.eval("Net_Expenditure * Weight")
-        table = hbsir.add_attribute(table, "Urban-Rural")
+        table = hbsir.add_attribute(table, "Urban_Rural")
         return table
 
     @pytest.fixture()
     def weights_sum(self, weight_1400: pd.DataFrame):
         table = weight_1400.copy()
-        table = hbsir.add_attribute(table, "Urban-Rural")
-        table = table.groupby(["Year", "Urban-Rural"])["Weight"].sum()
+        table = hbsir.add_attribute(table, "Urban_Rural")
+        table = table.groupby(["Year", "Urban_Rural"])["Weight"].sum()
         return table
 
     @pytest.fixture()
     def summery_table(self, household_table: pd.DataFrame, weights_sum: pd.DataFrame):
-        table = household_table.groupby(["Year", "Food-NonFood", "Urban-Rural"])[
+        table = household_table.groupby(["Year", "Food-NonFood", "Urban_Rural"])[
             ["Weighted_Net_Expenditure", "Weighted_Gross_Expenditure"]
         ].sum()
         table.columns = ["Net", "Gross"]
