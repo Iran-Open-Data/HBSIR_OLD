@@ -309,7 +309,7 @@ class MetadataCategoryResolver(MetadataVersionResolver):
         for key, item in metadata[self.settings.items_keyword].items():
             item_list = self._get_categories(item)
             for element in item_list:
-                element[self.settings.item_key_name] = key
+                element[self.settings.item_key_name] = key.strip("_")
             items.extend(item_list)
         metadata[self.settings.items_keyword] = items
         return metadata
