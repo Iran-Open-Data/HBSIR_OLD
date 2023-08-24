@@ -223,9 +223,36 @@ class TableLoader:
     def _load_table(self, table_name: str, year: int) -> pd.DataFrame:
         if table_name in metadata_reader.original_tables:
             table = self._load_original_table(table_name, year)
+        elif self.schema[table_name].get("cache_result", False):
+            try:
+                table = self.read_cached_table(table_name, year)
+            except FileNotFoundError:
+                table = self._construct_schema_based_table(table_name, year)
+                self.save_cache(table, table_name, year)
         else:
             table = self._construct_schema_based_table(table_name, year)
         return table
+
+    def read_cached_table(
+        self,
+        table_name: str | None = None,
+        year: int | None = None,
+    ) -> pd.DataFrame:
+        file_name = f"{table_name}_{year}.parquet"
+        file_path = defaults.cached_data.joinpath(file_name)
+        table = pd.read_parquet(file_path)
+        return table
+
+    def save_cache(
+        self,
+        table: pd.DataFrame,
+        table_name: str | None = None,
+        year: int | None = None,
+    ):
+        defaults.cached_data.mkdir(parents=True, exist_ok=True)
+        file_name = f"{table_name}_{year}.parquet"
+        file_path = defaults.cached_data.joinpath(file_name)
+        table.to_parquet(file_path, index=False)
 
     def _apply_schema(
         self,

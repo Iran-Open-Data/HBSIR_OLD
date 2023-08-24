@@ -817,3 +817,5 @@ Total_Income:
       - ID
       - Member_Number
       - Income
+
+  cache_result: true

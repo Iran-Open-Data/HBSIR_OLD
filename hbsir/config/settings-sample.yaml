@@ -42,6 +42,7 @@ unpacked_data: 2_unpacked_data
 extracted_data: 3_extracted_data
 processed_data: processed_data
 external_data: external_data
+cached_data: _cache
 
 # Map
 default_map: humandata
