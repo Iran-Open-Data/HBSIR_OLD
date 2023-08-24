@@ -129,13 +129,13 @@ Next, we incorporate the urban-rural and province attributes into the table and 
 df = df.drop(columns=["Table_Name", "Provision_Method", "Amount", "Duration"])
 
 # Add urban/rural attribute column
-df = hbsir.add_attribute(df, "Urban-Rural")
+df = hbsir.add_attribute(df, "Urban_Rural")
 
 # Add province attribute column
 df = hbsir.add_attribute(df, "Province")
 
 # Filter to only urban Tehran rows
-filt = (df["Urban-Rural"] == "Urban") & (df["Province"] == "Tehran")
+filt = (df["Urban_Rural"] == "Urban") & (df["Province"] == "Tehran")
 df = df.loc[filt]
 ```
 
@@ -148,7 +148,7 @@ df = df.loc[filt]
       <th>Code</th>
       <th>Price</th>
       <th>Expenditure</th>
-      <th>Urban-Rural</th>
+      <th>Urban_Rural</th>
       <th>Province</th>
     </tr>
   </thead>
@@ -210,7 +210,7 @@ df = df.loc[filt]
 In the next phase, we'll incorporate classification and sampling weights to compute weighted expenditures.
 ```python
 # Remove unnecessary columns
-df = df.drop(columns=["Urban-Rural", "Province"])
+df = df.drop(columns=["Urban_Rural", "Province"])
 
 # Classify based on food types
 df = hbsir.add_classification(df, "original", levels=[2], output_column_names=["Food_Type"])
@@ -349,9 +349,9 @@ If method chaining is your preference, this package provides a pandas extension 
 # Calculate the sum of weights
 weights_sum = (
     weights
-    .hbsir.add_attribute(attribute_name="Urban-Rural")
+    .hbsir.add_attribute(attribute_name="Urban_Rural")
     .hbsir.add_attribute(attribute_name="Province")
-    .query("`Urban-Rural`=='Urban' & Province=='Tehran' & Weight.notnull()")
+    .query("`Urban_Rural`=='Urban' & Province=='Tehran' & Weight.notnull()")
     .sum()
     .loc["Weight"]
 )

@@ -15,7 +15,7 @@ PACKAGE_DIRECTORY = Path(__file__).parent
 ROOT_DIRECTORT = Path().absolute()
 
 
-Attribute = Literal["Urban-Rural", "Province", "Region"]
+Attribute = Literal["Urban_Rural", "Province", "Region"]
 
 GeneralTable = Literal[
     "household_information",
@@ -158,6 +158,7 @@ class Defaults(BaseModel):
     extracted_data: Path = local_dir.joinpath(settings[("extracted_data",)])
     processed_data: Path = local_dir.joinpath(settings[("processed_data",)])
     external_data: Path = local_dir.joinpath(settings[("external_data",)])
+    cached_data: Path = local_dir.joinpath(settings[("cached_data",)])
 
     first_year: int = settings[("first_year",)]
     last_year: int = settings[("last_year",)]
