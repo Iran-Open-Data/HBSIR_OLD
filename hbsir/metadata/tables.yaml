@@ -145,6 +145,8 @@ members_properties:
       replace:
         1369: {0: null}
         1370: null
+        1371: {0: null}
+        1372: null
 
     members_sex: &members_sex
       new_name: "Sex"
@@ -201,7 +203,8 @@ members_properties:
           replace:
             1369: {0: null, 9: null}
             1370: {7: null}
-            1371: null
+            1371: {9: null}
+            1372: null
 
     members_education_level: &members_education_level
       new_name: Education_Level
@@ -1559,7 +1562,8 @@ INCOME_ITEMS:
       2: "Private"
     replace:
       1374: {0.0: null}
-      1375: null
+      1375: {3: null}
+      1376: null
 
   income_sector_2: &income_sector_2
     <<: *income_sector_base
