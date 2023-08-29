@@ -142,6 +142,9 @@ members_properties:
         7: "Sister/Brother"
         8: "Other_Family"
         9: "Non-Family"
+      replace:
+        1369: {0: null}
+        1370: null
 
     members_sex: &members_sex
       new_name: "Sex"
@@ -149,6 +152,9 @@ members_properties:
       categories:
         1: "Male"
         2: "Female"
+      replace:
+        1369: {0: null, 3: null, 4: null, 5: null, 6: null, 8: null}
+        1370: null
 
     members_age: &members_age
       new_name: "Age"
@@ -172,20 +178,30 @@ members_properties:
         2: "Widowed"
         3: "Divorced"
         4: "Bachelor"
+      replace:
+        1369: {0: null, 5: null, 7: null, 8: null, 9: null}
+        1370: null
 
     members_activity_state: &members_activity_state
       new_name: "Activity_State"
-      type: "category"
-      categories: 
-        1: "Employed"
-        2: "Unemployed"
-        3: "Income_without_Work"
-        4: "Student"
-        5: "Housekeeper"
-        6: "Other"
-      replace:
-        1370: {7: null}
-        1371: null
+      versions:
+        1363:
+          type: "unsigned"
+          replace:
+            1364: {"ٌق": null}
+        1369:
+          type: "category"
+          categories: 
+            1: "Employed"
+            2: "Unemployed"
+            3: "Income_without_Work"
+            4: "Student"
+            5: "Housekeeper"
+            6: "Other"
+          replace:
+            1369: {0: null, 9: null}
+            1370: {7: null}
+            1371: null
 
     members_education_level: &members_education_level
       new_name: Education_Level
@@ -1510,12 +1526,20 @@ INCOME_ITEMS:
     new_name: "Job_Code"
     type: "unsigned"
     replace:
+      1369: {
+        "X01": null, "X02": null, "X03": null, "X04": null,
+        "x01": null, "x02": null, "x03": null, "x04": null,
+      }
+      1375: null
       1387: {"x0000": null, "x000": null}
       1397: null
   
   income_activity_status: &income_activity_status
     new_name: "Activity_Status"
     type: "unsigned"
+    replace:
+      1369: {"X01": null, "X02": null, "X03": null, "X04": null}
+      1374: null
 
   income_workplace_activity: &income_workplace_activity
     new_name: "Workplace_Activity"
@@ -1533,6 +1557,9 @@ INCOME_ITEMS:
     categories:
       1: "Public"
       2: "Private"
+    replace:
+      1374: {0.0: null}
+      1375: null
 
   income_sector_2: &income_sector_2
     <<: *income_sector_base
@@ -1653,6 +1680,12 @@ INCOME_ITEMS:
     ADDRESS:
       new_name: "ID"
       type: "unsigned"
+      replace:
+        1374: {
+          "00\x04": null, "01\x04": null, "02\x04": null,
+          "10\x04": null, "11\x04": null,  "12\x04": null
+        }
+        1375: null
 
     COL01: *income_member_number
     DYCOL01: *income_member_number

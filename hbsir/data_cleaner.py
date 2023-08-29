@@ -179,8 +179,9 @@ def _apply_type_to_column(column: pd.Series, column_metadata: dict) -> pd.Series
 def _general_cleaning(column: pd.Series):
     if pd.api.types.is_numeric_dtype(column):
         return column
-    chars_to_remove = r"\n\r\,\@\-\+\*\[\]"
+    chars_to_remove = r"\n\r\,\@\-\+\*\[\]\_"
     try:
+        column = column.str.replace(chr(183), ".").str.rstrip(".")
         column = column.str.replace(f"[{chars_to_remove}]+", "", regex=True)
         column = column.replace(r"\A[\s\.]*\Z", np.nan, regex=True)
     except AttributeError:
