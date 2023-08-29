@@ -237,8 +237,8 @@ class Metadata:
 
 
 class LoadTable(BaseModel):
-    data_type: Literal["processed", "cleaned", "original"] = settings[
-        ("functions_defaults", "load_table", "data_type")
+    dataset: Literal["processed", "cleaned", "original"] = settings[
+        ("functions_defaults", "load_table", "dataset")
     ]
     on_missing: Literal["error", "download", "create"] = settings[
         ("functions_defaults", "load_table", "on_missing")

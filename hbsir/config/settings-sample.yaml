@@ -51,7 +51,7 @@ default_map: humandata
 functions_defaults:
   # Load Table
   load_table:
-    data_type: processed
+    dataset: processed
     on_missing: download
     save_downloaded: true
     redownload: false

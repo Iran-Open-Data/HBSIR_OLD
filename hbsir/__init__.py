@@ -47,7 +47,7 @@ _OriginalTable = metadata_reader.OriginalTable
 def load_table(
     table_name: str,
     years: int | Iterable[int] | str | None = None,
-    data_type: Literal["processed", "cleaned", "original"] | None = None,
+    dataset: Literal["processed", "cleaned", "original"] | None = None,
     on_missing: Literal["error", "download", "create"] | None = None,
     save_downloaded: bool | None = None,
     redownload: bool | None = None,
@@ -62,7 +62,7 @@ def load_table(
     Args:
         table_name: Name of table to load.
         years: Year or years to load data for.
-        data_type: What data type to load - 'original', 'cleaned' or 'processed'.
+        dataset: What data type to load - 'original', 'cleaned' or 'processed'.
         on_missing: Action if data is missing - 'error', 'download', or 'create'.
         save_downloaded: Whether to save downloaded data.
         save_created: Whether to save newly created data.
@@ -81,13 +81,13 @@ def load_table(
     metadata_reader.metadata.reload_file("schema")
     optional_vars = {key: value for key, value in locals().items() if value is not None}
     settings = metadata_reader.LoadTable(**optional_vars)
-    if settings.data_type == "original":
+    if settings.dataset == "original":
         years = parse_years(years)
         table_parts = []
         for year in years:
             table_parts.append(data_cleaner.read_table_csv(table_name, year))
         table = pd.concat(table_parts)
-    elif settings.data_type == "cleaned":
+    elif settings.dataset == "cleaned":
         years = parse_years(years)
         table_parts = []
         for year in years:
@@ -109,7 +109,7 @@ def load_table(
 def create_table_with_schema(
     schema: dict,
     years: int | Iterable[int] | str | None = None,
-    data_type: Literal["processed", "cleaned", "original"] | None = None,
+    dataset: Literal["processed", "cleaned", "original"] | None = None,
     on_missing: Literal["error", "download", "create"] | None = None,
     save_downloaded: bool | None = None,
     save_created: bool | None = None,
@@ -121,7 +121,7 @@ def create_table_with_schema(
 
     Args:
         schema: Dictionary defining schema for output DataFrame.
-        data_type: What data type to load or create - 'original',
+        dataset: What data type to load or create - 'original',
             'cleaned' or 'processed'.
         on_missing: Action if data is missing - 'error', 'download', or 'create'.
         save_downloaded: Whether to save downloaded data.
