@@ -1253,6 +1253,11 @@ EXPENDITURE_ITEMS:
       COL4: *expenditure_price_system
       COL5: *expenditure_amount
       COL6: *expenditure_value
+    1370:
+      <<: *expenditure_base_columns
+      COL3: *expenditure_provision_method
+      COL4: *expenditure_price_system
+      COL5: *expenditure_value
     1374: *expenditure_common_columns
 
 
@@ -1343,7 +1348,7 @@ home:
     1383: "P3S04"
 
   columns:
-    <<: *expenditure_common_structure
+    1363: *expenditure_common_structure
     1384:
       <<: *expenditure_base_columns
       DYCOL02: *expenditure_security_deposit
@@ -1766,19 +1771,33 @@ self_employed_income:
   1369:
     file_code: "P4S2"
     columns:
-      <<: *income_base_columns
-      COL02: *income_activity_status
-      COL03: *income_job_code
-      COL04: *income_workplace_activity
-      COL05: *income_work_type
-      COL06: *income_is_agricultural
-      COL07: *income_wages
-      COL08: *income_cost_of_sales
-      COL09: *income_other_operating_costs
-      COL10: *income_other_costs
-      COL11: *income_besiness_tax
-      COL12: *income_sales
-      COL13: *income_profit
+      1369:
+        <<: *income_base_columns
+        COL02: *income_job_code
+        COL03: *income_workplace_activity
+        COL04: *income_work_type
+        COL05: *income_is_agricultural
+        COL06: *income_wages
+        COL07: *income_cost_of_sales
+        COL08: *income_other_operating_costs
+        COL09: *income_other_costs
+        COL10: *income_besiness_tax
+        COL11: *income_sales
+        COL12: *income_profit
+      1374:
+        <<: *income_base_columns
+        COL02: *income_activity_status
+        COL03: *income_job_code
+        COL04: *income_workplace_activity
+        COL05: *income_work_type
+        COL06: *income_is_agricultural
+        COL07: *income_wages
+        COL08: *income_cost_of_sales
+        COL09: *income_other_operating_costs
+        COL10: *income_other_costs
+        COL11: *income_besiness_tax
+        COL12: *income_sales
+        COL13: *income_profit
   1384:
     file_code: "P4S02"
     columns:
