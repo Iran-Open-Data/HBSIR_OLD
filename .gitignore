@@ -12,6 +12,7 @@ hbsir/Data/*
 hbsir/7-Zip/*
 temp/*
 
+*.xlsx
 *.pdf
 *.log
 
