@@ -546,7 +546,7 @@ house_specifications:
         type: "boolean"
         true_condition: 1
     washing_machine: &washing_machine
-        new_name: "Washing Machine"
+        new_name: "Washing_Machine"
         type: "boolean"
         true_condition: 1
     sewing: &sewing
@@ -570,7 +570,7 @@ house_specifications:
         type: "boolean"
         true_condition: 1
     microwave: &microwave
-        new_name: "Microwave"
+        new_name: "Microwave_Oven"
         type: "boolean"
         true_condition: 1
     # TODO what is this?
