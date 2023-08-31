@@ -242,6 +242,9 @@ class IDDecoder:
         return builder
 
     def _create_code_mapper(self, label, year) -> Callable:
+        if label == "code":
+            return self._create_code_builder
+
         household_metadata = self._get_metadata_version(year)
         # pylint: disable=unsubscriptable-object
         mapping = household_metadata[self.settings.name][label]
