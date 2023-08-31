@@ -455,12 +455,12 @@ Total_Expenditure:
   instructions:
 
     - apply_pandas_function: >
-        .groupby(["Year", "ID"], as_index=False)[["Gross_Expenditure"]].sum()
+        .groupby(["Year", "ID"], as_index=False)[["Net_Expenditure"]].sum()
 
     - create_column:
         name: Expenditure
         type: numerical
-        expression: "Gross_Expenditure"
+        expression: "Net_Expenditure"
 
     - apply_order:
       - Year
@@ -596,12 +596,12 @@ Total_Outlay:
   instructions:
 
     - apply_pandas_function: >
-        .groupby(["Year", "ID"], as_index=False)[["Gross_Expenditure"]].sum()
+        .groupby(["Year", "ID"], as_index=False)[["Net_Expenditure"]].sum()
 
     - create_column:
         name: Expenditure
         type: numerical
-        expression: "Gross_Expenditure"
+        expression: "Net_Expenditure"
 
     - apply_order:
       - Year

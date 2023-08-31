@@ -831,6 +831,39 @@ Insurance_Benefits:
         - 125_313
 
 
+isc_main_categories:
+  defaults:
+    levels: [1]
+    output_column_names: ["Food_NonFood"]
+    missing_value_replacements: 
+      Food_NonFood: Non_Food_Goods_and_Services
+
+  items:
+    1383:
+      Food_Beverage_and_Tobacco:
+        level: 0
+        farsi_name: "مخارج خوراکی، آشامیدنی و دخانی"
+        code:
+          - {{original_1383.food_and_non_alcoholic_beverages}}
+          - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
+
+      Food_and_Beverages:
+        level: 1
+        farsi_name: "خوراکی‌ها و آشامیدنی‌ها"
+        code:
+          - {{original_1383.food_and_non_alcoholic_beverages}}
+
+      Tobacco:
+        level: 1
+        farsi_name: "دخانیات"
+        code:
+          - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
+      
+      Non_Food_Goods_and_Services:
+        level: 0
+        farsi_name: "مخارج غیر خوراکی و خدمات"
+
+
 ###############################################################################
 ##          _ _ _   Classification of Individual Consumption   _ _ _         ##
 ##                     According to Purpose (COICOP) 2018                    ##
