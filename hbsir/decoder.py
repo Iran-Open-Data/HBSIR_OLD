@@ -132,8 +132,11 @@ class CommodityDecoder:
         filt = filt & (year_code_pairs["Year"] == row["Year"])
         matched_codes = year_code_pairs.loc[filt].set_index(["Year", "Code"])
         columns = row.drop(["code_range", "Year"]).index
-        code_table = pd.DataFrame(index=matched_codes.index, columns=columns)
-        code_table[columns] = row.loc[columns]
+        code_table = pd.DataFrame(
+            data=[row.loc[columns]]*len(matched_codes.index),
+            index=matched_codes.index,
+            columns=columns
+        )
         return code_table
 
     def create_mapping_table(self) -> pd.DataFrame:
@@ -256,7 +259,7 @@ class IDDecoder:
 
     def map_id_to_label(self, label):
         years = self.year_column.drop_duplicates()
-        attribute_column = pd.Series(index=self.table.index)
+        attribute_column = pd.Series(index=self.table.index, dtype="object")
         for year in years:
             filt = self.year_column == year
             attribute_column.loc[filt] = self._create_code_mapper(label, year)(
