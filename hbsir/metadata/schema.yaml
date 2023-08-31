@@ -588,6 +588,29 @@ Outlays:
       - Net_Expenditure
 
 
+Total_Outlay:
+
+  table_list:
+    - Outlays
+
+  instructions:
+
+    - apply_pandas_function: >
+        .groupby(["Year", "ID"], as_index=False)[["Gross_Expenditure"]].sum()
+
+    - create_column:
+        name: Expenditure
+        type: numerical
+        expression: "Gross_Expenditure"
+
+    - apply_order:
+      - Year
+      - ID
+      - Expenditure
+
+  cache_result: true
+
+
 employment_income:
 
   instructions:
