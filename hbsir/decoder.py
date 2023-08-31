@@ -133,9 +133,9 @@ class CommodityDecoder:
         matched_codes = year_code_pairs.loc[filt].set_index(["Year", "Code"])
         columns = row.drop(["code_range", "Year"]).index
         code_table = pd.DataFrame(
-            data=[row.loc[columns]]*len(matched_codes.index),
+            data=[row.loc[columns]] * len(matched_codes.index),
             index=matched_codes.index,
-            columns=columns
+            columns=columns,
         )
         return code_table
 
