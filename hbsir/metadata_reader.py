@@ -158,6 +158,7 @@ class Defaults(BaseModel):
     extracted_data: Path = local_dir.joinpath(settings[("extracted_data",)])
     processed_data: Path = local_dir.joinpath(settings[("processed_data",)])
     external_data: Path = local_dir.joinpath(settings[("external_data",)])
+    maps: Path = local_dir.joinpath(settings[("maps",)])
     cached_data: Path = local_dir.joinpath(settings[("cached_data",)])
 
     first_year: int = settings[("first_year",)]

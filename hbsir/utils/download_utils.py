@@ -5,7 +5,7 @@ from zipfile import ZipFile
 from tqdm import tqdm
 import requests
 
-from ..metadata_reader import defaults
+from ..metadata_reader import defaults, metadata
 
 
 def download(
@@ -90,3 +90,13 @@ def download_7zip():
 
     if platform.system() == "Linux":
         defaults.package_dir.joinpath("7-Zip", "7zz").chmod(0o771)
+
+
+def download_map(map_name: str, source: str = "original") -> None:
+    url = metadata.maps[map_name][f"{source}_link"]
+    file_path = download(url, show_progress_bar=True)
+    path = defaults.maps.joinpath(map_name)
+    path.mkdir(exist_ok=True, parents=True)
+    with ZipFile(file_path) as zip_file:
+        zip_file.extractall(path)
+    file_path.unlink()
