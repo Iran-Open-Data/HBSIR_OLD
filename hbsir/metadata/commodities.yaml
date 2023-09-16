@@ -75,9 +75,9 @@ tables:
 original_1363:
   items:
 
-    #                        ######## LEVEL 1 ########                        #
+    #                ################ LEVEL 0 ################                #
     food_beverages_and_tobacco:
-      level: 1
+      level: 0
       farsi_name: "مواد خوراکی، نوشیدنی‌ها و دخانیات"
       code: {start: 10_000, end: 20_000}
 
@@ -194,6 +194,67 @@ original_1363:
       farsi_name: "نوشابه‌ها، غذاهای آماده و دخانیات"
       code: {start: 19_000, end: 20_000}
 
+
+    #                ################ LEVEL 0 ################                #
+    clothing_and_footwear:
+      level: 0
+      farsi_name: "پوشاک و کفش"
+      code: {start: 20_000, end: 30_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    housing_water_electricity_gas_and_other_fuels:
+      level: 0
+      farsi_name: "هزینه‌های جاری مسکن، آب و فاضلاب، سوخت و روشنایی"
+      code: {start: 30_000, end: 40_000}
+
+
+    #                        ######## LEVEL 1 ########                        #
+    housing:
+      level: 1
+      farsi_name: "هزینه‌های مسکن"
+      code: {start: 31_000, end: 32_000}
+
+    #                            #### LEVEL 2 ####                            #
+    rentals_for_housing:
+      level: 1
+      farsi_name: "اجاره بهای مسکن"
+      code: {start: 41_000, end: 42_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    furnishings_household_equipment_and_routine_household_maintenance:
+      level: 0
+      farsi_name: ""
+      code: {start: 40_000, end: 50_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    health:
+      level: 0
+      farsi_name: ""
+      code: {start: 50_000, end: 60_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    transport_information_and_communication:
+      level: 0
+      farsi_name: ""
+      code: {start: 60_000, end: 70_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    recreation_sport_and_culture:
+      level: 0
+      farsi_name: ""
+      code: {start: 70_000, end: 80_000}
+
+
+    #                ################ LEVEL 0 ################                #
+    other_commodities:
+      level: 0
+      farsi_name: ""
+      code: {start: 80_000, end: 90_000}
 
 
 ################### - Original Classification After 1383 - ####################
@@ -781,6 +842,15 @@ Food-NonFood:
     missing_value_replacements: {Food-NonFood: Non-Food}
 
   items:
+    1363:
+      Food:
+        level: 1
+        farsi_name: "مخارج خوراکی"
+        code:
+          - {{original_1363.food_beverages_and_tobacco}}
+      Non-Food:
+        level: 1
+        farsi_name: "مخارج غیر خوراکی"
     1383:
       Food:
         level: 1
