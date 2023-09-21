@@ -342,6 +342,14 @@ house_specifications:
       new_name: "ID"
       type: "unsigned"
 
+    house_dwelling: &house_dwelling
+      new_name: "Dwelling_Type"
+      type: "unsigned"
+
+    house_other_dwelling: &house_other_dwelling
+      new_name: "Other_Dwelling_Types"
+      type: "string"
+
     house_tenure: &house_tenure
       new_name: "Tenure"
       type: "category"
@@ -630,6 +638,10 @@ house_specifications:
       new_name: "Seweragenetwork"
       type: "boolean"
       true_condition: 1
+    house_elevator: &house_elevator
+      new_name: Elevator
+      type: "boolean"
+      true_condition: 1
     party_month: &party_month
       new_name: "Party_month"
       type: "boolean"
@@ -790,6 +802,8 @@ house_specifications:
 
     1383:
       ADDRESS: *house_address
+      DYCOL001: *house_dwelling
+      DYCOL002: *house_other_dwelling
       DYCOL01: *house_tenure
       DYCOL02: 
         1383: *rooms
@@ -969,6 +983,8 @@ house_specifications:
         1386: *heatfuel
         1387: *cookfuel
         1391: *seweragenetwork
+      DYCOL42_14:
+        1401: *house_elevator
       DYCOL43:
         1384: *homerepair_year
         1385: *party_year
@@ -1127,15 +1143,28 @@ EXPENDITURE_ITEMS:
 
   expenditure_provision_method_5: &expenditure_provision_method_5
     <<: *expenditure_provision_method_dase
-    categories: 
-      1: "Purchase"
-      2: "Home_Production"
-      3: "Instead_of_Public_Service"
-      4: "Instead_of_Cooperative_Service"
-      5: "Instead_of_Private_Service"
-      6: "Agricultural_Work"
-      7: "Non_Agricultural_Work"
-      8: "Donation"
+    versions:
+      1383:
+        categories:
+          1: "Purchase"
+          2: "Home_Production"
+          3: "Instead_of_Public_Service"
+          4: "Instead_of_Cooperative_Service"
+          5: "Instead_of_Private_Service"
+          6: "Agricultural_Work"
+          7: "Non_Agricultural_Work"
+          8: "Donation"
+      1401:
+        categories:
+          0: "Secondhand_Sale"
+          1: "Purchase"
+          2: "Home_Production"
+          3: "Instead_of_Public_Service"
+          4: "Instead_of_Cooperative_Service"
+          5: "Instead_of_Private_Service"
+          6: "Agricultural_Work"
+          7: "Non_Agricultural_Work"
+          8: "Donation"
 
   expenditure_provision_method: &expenditure_provision_method
       1363: *expenditure_provision_method_1
@@ -1465,7 +1494,14 @@ durable:
       DYCOL05: *expenditure_secondhand_sale
 
     1388:
-      <<: *expenditure_base_columns
+      ADDRESS:
+        new_name: "ID"
+        type: "unsigned"
+      DYCOL01:
+        new_name: "Code"
+        type: "unsigned"
+        replace:
+          1401: {09511A: null, 01232A: null}
       DYCOL02: *expenditure_insurance_and_loan_info
       DYCOL03: *expenditure_lender
       DYCOL04: *expenditure_provision_method

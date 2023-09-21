@@ -119,6 +119,8 @@ def _apply_metadata_to_table(table: pd.DataFrame, table_metadata: dict) -> pd.Da
         column_metadata = _get_column_metadata(table_metadata, column_name.upper())
         if column_metadata == "drop":
             continue
+        if column_metadata == "error":
+            raise ValueError(f"Error: The column '{column_name}' was not found in the metadata.")
         column = _apply_metadata_to_column(column, column_metadata)
         cleaned_table[column_metadata["new_name"]] = column
     return cleaned_table
@@ -179,7 +181,7 @@ def _apply_type_to_column(column: pd.Series, column_metadata: dict) -> pd.Series
 def _general_cleaning(column: pd.Series):
     if pd.api.types.is_numeric_dtype(column):
         return column
-    chars_to_remove = r"\n\r\,\@\-\+\*\[\]\_"
+    chars_to_remove = r"\n\r\,\@\-\+\*\[\]\_\?"
     try:
         column = column.str.replace(chr(183), ".").str.rstrip(".")
         column = column.str.replace(f"[{chars_to_remove}]+", "", regex=True)
