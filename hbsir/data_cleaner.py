@@ -120,7 +120,9 @@ def _apply_metadata_to_table(table: pd.DataFrame, table_metadata: dict) -> pd.Da
         if column_metadata == "drop":
             continue
         if column_metadata == "error":
-            raise ValueError(f"Error: The column '{column_name}' was not found in the metadata.")
+            raise ValueError(
+                f"Error: The column '{column_name}' was not found in the metadata."
+            )
         column = _apply_metadata_to_column(column, column_metadata)
         cleaned_table[column_metadata["new_name"]] = column
     return cleaned_table
