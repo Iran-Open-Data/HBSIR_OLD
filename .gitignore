@@ -15,6 +15,7 @@ temp/*
 *.xlsx
 *.pdf
 *.log
+*.png
 
 *settings.yaml
 *tokens.toml
