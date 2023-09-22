@@ -39,6 +39,8 @@ from . import (
 )
 from .utils import parse_years
 
+__version__ = "0.2.2"
+
 _OriginalTable = metadata_reader.OriginalTable
 
 
@@ -256,6 +258,3 @@ def setup(
     """
     archive_handler.setup(years, replace)
     data_cleaner.save_cleaned_tables_as_parquet(table_names, years)
-
-
-__version__ = "0.2.1"
