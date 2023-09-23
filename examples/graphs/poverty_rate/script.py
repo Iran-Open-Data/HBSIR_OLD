@@ -1,14 +1,30 @@
 from pathlib import Path
 
 from matplotlib import pyplot as plt, style
-
+from matplotlib.font_manager import fontManager
 import hbsir
+
+
+def add_fonts():
+    file_path = Path(__file__)
+    while file_path.name != "HBSIR":
+        file_path = file_path.parent
+    fonts_path = file_path.joinpath("fonts")
+    try:
+        fontManager.addfont(fonts_path.joinpath("xkcd", "xkcd-Regular.otf"))
+        fontManager.addfont(fonts_path.joinpath("xkcd_scripts", "xkcd-script.ttf"))
+        fontManager.addfont(fonts_path.joinpath("humor_sans", "Humor Sans.ttf"))
+        fontManager.addfont(fonts_path.joinpath("comic_neue", "ComicNeue-Regular.ttf"))
+    except FileNotFoundError:
+        pass
+
+add_fonts()
 
 style.use("fivethirtyeight")
 plt.xkcd()
 
-FIRST_YEAR = 1376
-LAST_YEAR = 1388
+FIRST_YEAR = 1396
+LAST_YEAR = 1401
 
 plot_data = (
     hbsir.load_table("Expenditures", [FIRST_YEAR, LAST_YEAR])
@@ -84,6 +100,6 @@ fig.text(
     fontdict={"size": 10}
 )
 
-fig.subplots_adjust(left=0.38, bottom=0.12, top=0.92)
+fig.subplots_adjust(left=0.35, bottom=0.12, right=0.98, top=0.92)
 path = Path(__file__).parent.joinpath(f"{FIRST_YEAR}-{LAST_YEAR}.png")
-fig.savefig(str(path), format="png")
+fig.savefig(str(path), format="png", facecolor="white")
