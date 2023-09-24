@@ -290,21 +290,171 @@ original_1383:
     #                              ## LEVEL 3 ##                              #
     cereals:
       level: 3
+      farsi_name: "غلات"
       code: {start: 11_110, end: 11_130}
+
+    #                               # LEVEL 4 #                               #
+    rice_1:
+      level: 4
+      farsi_name: "برنج صدری، دمسیاه و استخوانی"
+      code: 11_111
+
+    #                               # LEVEL 4 #                               #
+    rice_2:
+      level: 4
+      farsi_name: "برنج طارم"
+      code: 11_112
+      fdc_id: 2512381
+
+    #                               # LEVEL 4 #                               #
+    rice_3:
+      level: 4
+      farsi_name: "برنج بی‌نام"
+      code: 11_113
+      fdc_id: 2512381
+
+    #                               # LEVEL 4 #                               #
+    rice_4:
+      level: 4
+      farsi_name: "برنج آشی"
+      code: 11_114
+      fdc_id: 2512381
+
+    #                               # LEVEL 4 #                               #
+    rice_5:
+      level: 4
+      farsi_name: "برنج‌های محلی غیر شمالی (شامل کامفیروزی، چمپای خوزستان، لنجان اصفهان و ...)"
+      code: 11_115
+      fdc_id: 2512381
+
+    #                               # LEVEL 4 #                               #
+    rice_6:
+      level: 4
+      farsi_name: "برنج گرده، خرده"
+      code: 11_116
+      fdc_id: 2512381
+
+    #                               # LEVEL 4 #                               #
+    rice_7:
+      level: 4
+      farsi_name: "برنج خارجی درجه یک"
+      code: 11_117
+      fdc_id: 2512381
+
+    #                               # LEVEL 4 #                               #
+    rice_8:
+      level: 4
+      farsi_name: "برنج خارجی درجه دو"
+      code: 11_118
+      fdc_id: 2512381
+
+    #                               # LEVEL 4 #                               #
+    wheat:
+      level: 4
+      farsi_name: "گندم"
+      code: 11_121
+      fdc_id: 169719
+
+    #                               # LEVEL 4 #                               #
+    bulgur_tarhana_and_cereal_germ:
+      level: 4
+      farsi_name: "بلغور، ترخینه و جوانه انواع غلات"
+      code: 11_122
+      fdc_id: 168892
+
+    #                               # LEVEL 4 #                               #
+    Maize:
+      level: 4
+      farsi_name: "ذرت"
+      code: 11_123
+      fdc_id: 2345303
+
+    #                               # LEVEL 4 #                               #
+    barley:
+      level: 4
+      farsi_name: "جو"
+      code: 11_124
+      fdc_id: 170284
+
+    #                               # LEVEL 4 #                               #
+    other_cereals:
+      level: 4
+      farsi_name: "سایر غلات آسیاب نشده"
+      code: 11_125
+      fdc_id: 169719  # Wheat
 
     #                              ## LEVEL 3 ##                              #
     bread_and_bakery_products:
       level: 3
+      farsi_name: "انواع نان"
       code: {start: 11_140, end: 11_160}
+
+    #                               # LEVEL 4 #                               #
+    bread_1:
+      level: 4
+      farsi_name: "نان تافتون"
+      code: 11_141
+      fdc_id:
+
+    #                               # LEVEL 4 #                               #
+    bread_2:
+      level: 4
+      farsi_name: "نان لواش"
+      code: 11_142
+      fdc_id:
+
+    #                               # LEVEL 4 #                               #
+    bread_3:
+      level: 4
+      farsi_name: "نان سنگک"
+      code: 11_143
+      fdc_id:
+
+    #                               # LEVEL 4 #                               #
+    bread_4:
+      level: 4
+      farsi_name: "نان بربری"
+      code: 11_144
+      fdc_id:
+
+    #                               # LEVEL 4 #                               #
+    bread_5:
+      level: 4
+      farsi_name: "نان ماشینی (لواش، تافتون، سنگک، بربری و سایر انواع نان ماشینی)"
+      code: 11_151
+      fdc_id:
+
+    #                               # LEVEL 4 #                               #
+    bread_6:
+      level: 4
+      farsi_name: "نان فانتزی، باگت و نظایر آن"
+      code: 11_152
+      fdc_id:
+
+    #                               # LEVEL 4 #                               #
+    bread_7:
+      level: 4
+      farsi_name: "نان خشک، روغنی، شیرمال، رژیمی، جو و سایر انواع نان"
+      code: 11_153
+      fdc_id:
+
+    #                               # LEVEL 4 #                               #
+    cookie_and_pirozhki:
+      level: 4
+      farsi_name: "کلوچه و پیراشکی"
+      code: 11_154
+      fdc_id:
 
     #                              ## LEVEL 3 ##                              #
     flour_noodle_and_similar_pasta_products:
       level: 3
+      farsi_name: "آرد رشته و فرآورده‌های آن"
       code: {start: 11_160, end: 11_170}
 
     #                              ## LEVEL 3 ##                              #
     cake_and_biscuit:
       level: 3
+      farsi_name: "بیسکویت و کیک"
       code: {start: 11_170, end: 11_180}
 
 
@@ -317,16 +467,19 @@ original_1383:
     #                              ## LEVEL 3 ##                              #
     red_meat:
       level: 3
+      farsi_name: "گوشت دام"
       code: {start: 11_210, end: 11_230}
 
     #                              ## LEVEL 3 ##                              #
     poultry:
       level: 3
+      farsi_name: "گوشت پرندگان"
       code: {start: 11_230, end: 11_240}
 
     #                              ## LEVEL 3 ##                              #
     ready_to_cook_meat:
       level: 3
+      farsi_name: "گوشت آماده برای طبخ"
       code: {start: 11_240, end: 11_250}
 
 
@@ -352,11 +505,13 @@ original_1383:
     #                              ## LEVEL 3 ##                              #
     milk:
       level: 3
+      farsi_name: "شیر"
       code: {start: 11_410, end: 11_420}
 
     #                               # LEVEL 4 #                               #
     dried_milk:
       level: 4
+      farsi_name: "شیر خشک"
       code: 11_413
 
     #                              ## LEVEL 3 ##                              #
@@ -974,6 +1129,51 @@ coicop:
       description: "Cereals (ND)"
       code:
 
+    '01.1.1.1.1':
+      level: 4
+      description: "Wheat"
+      code: 11_121
+
+    '01.1.1.1.2':
+      level: 4
+      description: "Rice"
+      code: {start: 11_110, end: 11_120}
+
+    '01.1.1.1.3':
+      level: 4
+      description: "Sorghum"
+      code:
+
+    '01.1.1.1.4':
+      level: 4
+      description: "Barley"
+      code: 11_124
+
+    '01.1.1.1.5':
+      level: 4
+      description: "Millet"
+      code:
+
+    '01.1.1.1.6':
+      level: 4
+      description: "Maize (corn)"
+      code: 11_123
+
+    '01.1.1.1.7':
+      level: 4
+      description: "Quinoa"
+      code:
+
+    '01.1.1.1.8':
+      level: 4
+      description: "Teff"
+      code: 
+
+    '01.1.1.1.9':
+      level: 4
+      description: "Other cereals"
+      code: [11_122, 11_125]
+      
     '01.1.1.2':
       level: 3
       description: "Flour of cereals (ND)"
