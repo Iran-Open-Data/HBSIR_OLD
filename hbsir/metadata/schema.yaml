@@ -716,7 +716,7 @@ Imputed_Rent:
         classification_name: Imputed_Rent
         labels: [is_imputed]
 
-    - apply_filter: Imputed_Rent.notnull()
+    - apply_filter: "Imputed_Rent.notnull() & (Provision_Method.isnull() or Provision_Method == 'Purchase')"
 
     - create_column:
         name: Income
