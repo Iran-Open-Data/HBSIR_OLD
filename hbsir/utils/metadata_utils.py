@@ -102,7 +102,7 @@ class MetadataVersionResolver:
 
     def __init__(
         self,
-        metadata: dict | list | str | int | None,
+        metadata: dict | list | str | int | float | None,
         year: int | None = None,
         settings: MetadataVersionSettings = default_settings,
     ):
@@ -115,7 +115,7 @@ class MetadataVersionResolver:
         elif self._is_versioned(metadata):
             raise NameError("Versioned metadata requires year parameter.")
 
-    def get_version(self) -> dict | list | str | int | None:
+    def get_version(self) -> dict | list | str | int | float | None:
         """
         Retrieves metadata version for given year.
 
@@ -130,7 +130,7 @@ class MetadataVersionResolver:
         return self._retrive_version(self.metadata)
 
     @overload
-    def _retrive_version(self, element: dict) -> dict | list | str | int | None:
+    def _retrive_version(self, element: dict) -> dict | list | str | int | float | None:
         ...
 
     @overload
@@ -146,11 +146,15 @@ class MetadataVersionResolver:
         ...
 
     @overload
+    def _retrive_version(self, element: float) -> float:
+        ...
+
+    @overload
     def _retrive_version(self, element: None) -> None:
         ...
 
     def _retrive_version(self, element):
-        if (element is None) or isinstance(element, (int, str)):
+        if (element is None) or isinstance(element, (int, float, str)):
             pass
         elif isinstance(element, list):
             element = [self._retrive_version(value) for value in element]
@@ -166,7 +170,7 @@ class MetadataVersionResolver:
             else:
                 element = self._retrive_version(element)
         else:
-            raise TypeError
+            raise TypeError(f"Element {element} is not resolved")
 
         return element
 
