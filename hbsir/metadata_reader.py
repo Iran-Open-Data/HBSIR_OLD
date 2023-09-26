@@ -210,14 +210,14 @@ class Metadata:
 
     def get_interpreter(
         self, file_name: str, context: dict | None = None
-    ) -> Callable[[str], str]:
+    ) -> Callable[[str], str] | None:
         context = context or {}
         if f"{file_name}_interpreter" in dir(self):
             interpreter = getattr(self, f"{file_name}_interpreter")
             interpreter = functools.partial(interpreter, context=context)
         else:
             interpreter = None
-        return interpreter  # type: ignore
+        return interpreter
 
     @staticmethod
     def commodities_interpreter(yaml_text: str, context: dict) -> str:
