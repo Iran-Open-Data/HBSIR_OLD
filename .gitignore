@@ -11,10 +11,12 @@ hbsir/Data/*
 7-Zip/*
 hbsir/7-Zip/*
 temp/*
+fonts/*
 
 *.xlsx
 *.pdf
 *.log
+*.png
 
 *settings.yaml
 *tokens.toml
