@@ -143,7 +143,8 @@ class CommodityDecoder:
         code_table_list = []
         for _, row in self.classification_table.iterrows():
             code_table = self._build_year_code_table(self.year_code_pairs, row)
-            code_table_list.append(code_table)
+            if not code_table.empty:
+                code_table_list.append(code_table)
         mapping_table = pd.concat(code_table_list)
         mapping_table = mapping_table.set_index("level", append=True)
         self._validate_mapping_table(mapping_table)
