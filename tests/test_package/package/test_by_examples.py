@@ -10,13 +10,13 @@ class TestWithFormalNumbers:
     @pytest.fixture()
     def commodity_table(self, expenditures_1400: pd.DataFrame) -> pd.DataFrame:
         table = expenditures_1400.copy()
-        table = hbsir.add_classification(table, "Food-NonFood")
+        table = hbsir.add_classification(table, "Food_NonFood")
         return table
 
     @pytest.fixture()
     def household_table(self, commodity_table: pd.DataFrame) -> pd.DataFrame:
         table = commodity_table.copy()
-        table = table.groupby(["Year", "ID", "Food-NonFood"])[
+        table = table.groupby(["Year", "ID", "Food_NonFood"])[
             ["Gross_Expenditure", "Net_Expenditure"]
         ].sum()
         table = table.reset_index()
@@ -35,7 +35,7 @@ class TestWithFormalNumbers:
 
     @pytest.fixture()
     def summery_table(self, household_table: pd.DataFrame, weights_sum: pd.DataFrame):
-        table = household_table.groupby(["Year", "Food-NonFood", "Urban_Rural"])[
+        table = household_table.groupby(["Year", "Food_NonFood", "Urban_Rural"])[
             ["Weighted_Net_Expenditure", "Weighted_Gross_Expenditure"]
         ].sum()
         table.columns = ["Net", "Gross"]
@@ -55,14 +55,14 @@ class TestWithFormalNumbers:
             ("Total", "Urban", "Gross"): 94,
             ("Food", "Urban", "Net"): 24,
             ("Food", "Urban", "Gross"): 24,
-            ("Non-Food", "Urban", "Net"): 67,
-            ("Non-Food", "Urban", "Gross"): 69,
+            ("NonFood", "Urban", "Net"): 67,
+            ("NonFood", "Urban", "Gross"): 69,
             ("Total", "Rural", "Net"): 51,
             ("Total", "Rural", "Gross"): 52,
             ("Food", "Rural", "Net"): 20,
             ("Food", "Rural", "Gross"): 20,
-            ("Non-Food", "Rural", "Net"): 31,
-            ("Non-Food", "Rural", "Gross"): 32,
+            ("NonFood", "Rural", "Net"): 31,
+            ("NonFood", "Rural", "Gross"): 32,
         }
         table = summery_table.copy()
         table = table / 10_000

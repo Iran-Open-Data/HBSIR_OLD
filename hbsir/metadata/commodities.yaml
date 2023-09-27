@@ -1004,11 +1004,11 @@ original:
     1383: {{original_1383}}
 
 
-Food-NonFood:
+Food_NonFood:
   defaults:
     levels: [1]
-    output_column_names: ["Food-NonFood"]
-    missing_value_replacements: {Food-NonFood: Non-Food}
+    output_column_names: ["Food_NonFood"]
+    missing_value_replacements: {Food_NonFood: NonFood}
 
   items:
     1363:
@@ -1017,7 +1017,7 @@ Food-NonFood:
         farsi_name: "مخارج خوراکی"
         code:
           - {{original_1363.food_beverages_and_tobacco}}
-      Non-Food:
+      NonFood:
         level: 1
         farsi_name: "مخارج غیر خوراکی"
     1383:
@@ -1028,7 +1028,7 @@ Food-NonFood:
           - {{original_1383.food_and_non_alcoholic_beverages}}
           - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
           - {{original_1383.food_and_beverage_serving_services}}
-      Non-Food:
+      NonFood:
         level: 1
         farsi_name: "مخارج غیر خوراکی"
 

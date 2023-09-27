@@ -40,7 +40,7 @@
 #         """Add necessary attribute and classification to expenditure table"""
 #         exp = expenditures_1400.copy()
 #         exp = add_attribute(exp, attribute="Urban-Rural")
-#         exp = add_classification(exp, "Food-NonFood")
+#         exp = add_classification(exp, "Food_NonFood")
 #         exp = exp.rename(
 #             columns={"Net_Expenditure": "Net", "Gross_Expenditure": "Gross"}
 #         )
@@ -57,7 +57,7 @@
 #     def _calc_hh_agg(self, frame, urban_rural):
 #         frame = frame.copy()
 #         filt = frame["Urban-Rural"] == urban_rural
-#         frame = frame.loc[filt].groupby(["ID", "Food-NonFood"])[["Net", "Gross"]].sum()
+#         frame = frame.loc[filt].groupby(["ID", "Food_NonFood"])[["Net", "Gross"]].sum()
 #         frame = frame.unstack([1])
 #         return frame
 
@@ -76,7 +76,7 @@
 #         for ur_ru in ["Urban", "Rural"]:
 #             frame = self._calc_hh_agg(prepared_expenditure, ur_ru)
 #             frame = self._calc_wghtd_avrg(frame, prepared_hh_info, ur_ru)
-#             frame.index.rename(["Net-Gross", "Food-NonFood"], inplace=True)
+#             frame.index.rename(["Net-Gross", "Food_NonFood"], inplace=True)
 #             agg_tables.append(frame)
 #         year_table = pd.concat(
 #             agg_tables, keys=["Urban", "Rural"], names=["Urban-Rural"]
@@ -87,26 +87,26 @@
 #         """
 #         # Compare output numbers with summary expenditure table of 1400
 
-#             Urban-Rural    Net-Gross    Food-NonFood     Value
+#             Urban-Rural    Net-Gross    Food_NonFood     Value
 #             -------------  -----------  --------------  --------
 #             Urban          Net          Food             246,537
-#             Urban          Net          Non-Food         678,479
+#             Urban          Net          NonFood         678,479
 #             Urban          Gross        Food             246,537
-#             Urban          Gross        Non-Food         694,814
+#             Urban          Gross        NonFood         694,814
 #             Rural          Net          Food             207,037
-#             Rural          Net          Non-Food         312,090
+#             Rural          Net          NonFood         312,090
 #             Rural          Gross        Food             207,037
-#             Rural          Gross        Non-Food         322,389
+#             Rural          Gross        NonFood         322,389
 #         """
 #         index_value = [
 #             [("Urban", "Net", "Food"), 246_537],
-#             [("Urban", "Net", "Non-Food"), 678_480],
+#             [("Urban", "Net", "NonFood"), 678_480],
 #             [("Urban", "Gross", "Food"), 246_537],
-#             [("Urban", "Gross", "Non-Food"), 694_815],
+#             [("Urban", "Gross", "NonFood"), 694_815],
 #             [("Rural", "Net", "Food"), 207_034],
-#             [("Rural", "Net", "Non-Food"), 312_085],
+#             [("Rural", "Net", "NonFood"), 312_085],
 #             [("Rural", "Gross", "Food"), 207_034],
-#             [("Rural", "Gross", "Non-Food"), 322_383],
+#             [("Rural", "Gross", "NonFood"), 322_383],
 #         ]
 #         for index, value in index_value:
 #             assert abs(year_table.loc[index] - value) < 10

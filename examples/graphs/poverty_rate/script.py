@@ -31,11 +31,10 @@ plot_data = (
     hbsir.load_table("Expenditures", [FIRST_YEAR, LAST_YEAR])
     .pipe(hbsir.add_attribute, "Urban_Rural")
     .query("Urban_Rural=='Urban'")
-    .pipe(hbsir.add_classification, "Food-NonFood")
-    .groupby(["Year", "ID", "Food-NonFood"])["Gross_Expenditure"]
+    .pipe(hbsir.add_classification, "Food_NonFood")
+    .groupby(["Year", "ID", "Food_NonFood"])["Gross_Expenditure"]
     .sum()
     .unstack()
-    .rename(columns={"Non-Food": "NonFood"})
     .assign(Ratio=lambda df: df.eval("Food / (Food + NonFood) * 100"))
     .dropna(subset="Ratio")
     .pipe(hbsir.add_weight)
