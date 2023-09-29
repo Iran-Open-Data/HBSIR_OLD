@@ -844,6 +844,8 @@ Income_Breakdown:
       - Income_Type
       - Income
 
+  cache_result: true
+
 
 Total_Income:
   table_list:
