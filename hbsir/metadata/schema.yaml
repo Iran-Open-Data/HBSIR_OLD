@@ -50,9 +50,8 @@ Number_of_Members:
 
   instructions:
 
-    - apply_pandas_function: >
-        .groupby(["Year", "ID"], as_index=False)
-        .agg(Members = pd.NamedAgg("Member_Number", "count"))
+    - apply_external_function: hbsir.schema_functions.standard_tables.number_of_members
+
 
 
 food:
