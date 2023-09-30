@@ -155,7 +155,6 @@ class Quantiler:
         return table
 
     def calculate_quantile(self) -> pd.Series:
-        simple_quantile = self.calculate_simple_quantile()
         members_table = api.load_table("Number_of_Members", years=self.years).set_index(
             ["Year", "ID"]
         )
@@ -169,8 +168,10 @@ class Quantiler:
             members = members_table["Members"].apply(np.sqrt)
         else:
             members = pd.Series(1, index=members_table.index)
+        self.value_table.loc[:, "Values"] = self.value_table["Values"].div(members)
+        quantile = self.calculate_simple_quantile()
 
-        return simple_quantile.div(members)
+        return quantile
 
 
 # pylint: disable=too-many-arguments
