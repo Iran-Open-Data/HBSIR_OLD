@@ -29,10 +29,12 @@ class QuantileSettings(BaseModel):
     equivalence_scale: _EquivalenceScale = "Constant"
     for_all: bool = True
     annual: bool = True
-    groupby: _Attribute | Iterable[_Attribute] = ()
+    groupby: _Attribute | Iterable[_Attribute] | None = None
     years: int | Iterable[int] | str | None = None
 
     def model_post_init(self, __context=None) -> None:
+        if self.groupby is None:
+            self.groupby = []
         if isinstance(self.groupby, str):
             self.groupby = [self.groupby]
         else:
@@ -148,7 +150,7 @@ class Quantiler:
         return table.assign(Weight=1)
 
     def _add_attributes(self, table: pd.DataFrame) -> pd.DataFrame:
-        for attribute in self.settings.groupby:
+        for attribute in self.settings.groupby:  # type: ignore
             table = api.add_attribute(table, attribute)  # type: ignore
         return table
 
@@ -169,3 +171,49 @@ class Quantiler:
             members = pd.Series(1, index=members_table.index)
 
         return simple_quantile.div(members)
+
+
+# pylint: disable=too-many-arguments
+# pylint: disable=unused-argument
+def calculate_quantile(
+    *,
+    table: pd.DataFrame | pd.Series | None = None,
+    on: _QuantileBase | None = None,
+    on_column: str | None = None,
+    weighted: bool = True,
+    weight_column: str | None = None,
+    equivalence_scale: _EquivalenceScale = "Constant",
+    for_all: bool = True,
+    annual: bool = True,
+    groupby: _Attribute | Iterable[_Attribute] | None = None,
+    years: int | Iterable[int] | str | None = None,
+):
+    settings_vars = {key: value for key, value in locals().items() if key != "table"}
+    settings = QuantileSettings(**settings_vars)
+    return Quantiler(table=table, settings=settings).calculate_quantile()
+
+
+def calculate_decile(
+    *,
+    table: pd.DataFrame | pd.Series | None = None,
+    on: _QuantileBase | None = None,
+    on_column: str | None = None,
+    weighted: bool = True,
+    weight_column: str | None = None,
+    equivalence_scale: _EquivalenceScale = "Constant",
+    for_all: bool = True,
+    annual: bool = True,
+    groupby: _Attribute | Iterable[_Attribute] | None = None,
+    years: int | Iterable[int] | str | None = None,
+):
+    settings_vars = {key: value for key, value in locals().items() if key != "table"}
+    settings = QuantileSettings(**settings_vars)
+    quantile = Quantiler(table=table, settings=settings).calculate_quantile()
+    return (
+        quantile.multiply(10)
+        .floordiv(1)
+        .add(1)
+        .clip(1, 10)
+        .astype(int)
+        .rename("Decile")
+    )
