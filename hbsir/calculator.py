@@ -17,7 +17,7 @@ _QuantileBase = Literal[
 
 
 _EquivalenceScale = Literal[
-    "Constant", "Per_Capita", "OECD", "OECD_Modified", "Square_Root"
+    "Household", "Per_Capita", "OECD", "OECD_Modified", "Square_Root"
 ]
 
 
@@ -26,7 +26,7 @@ class QuantileSettings(BaseModel):
     on_column: str | None = None
     weighted: bool = True
     weight_column: str | None = None
-    equivalence_scale: _EquivalenceScale = "Constant"
+    equivalence_scale: _EquivalenceScale = "Household"
     for_all: bool = True
     annual: bool = True
     groupby: _Attribute | Iterable[_Attribute] | None = None
@@ -183,7 +183,7 @@ def calculate_quantile(
     on_column: str | None = None,
     weighted: bool = True,
     weight_column: str | None = None,
-    equivalence_scale: _EquivalenceScale = "Constant",
+    equivalence_scale: _EquivalenceScale = "Household",
     for_all: bool = True,
     annual: bool = True,
     groupby: _Attribute | Iterable[_Attribute] | None = None,
@@ -201,7 +201,7 @@ def calculate_decile(
     on_column: str | None = None,
     weighted: bool = True,
     weight_column: str | None = None,
-    equivalence_scale: _EquivalenceScale = "Constant",
+    equivalence_scale: _EquivalenceScale = "Household",
     for_all: bool = True,
     annual: bool = True,
     groupby: _Attribute | Iterable[_Attribute] | None = None,
@@ -227,7 +227,7 @@ def calculate_percentile(
     on_column: str | None = None,
     weighted: bool = True,
     weight_column: str | None = None,
-    equivalence_scale: _EquivalenceScale = "Constant",
+    equivalence_scale: _EquivalenceScale = "Household",
     for_all: bool = True,
     annual: bool = True,
     groupby: _Attribute | Iterable[_Attribute] | None = None,
