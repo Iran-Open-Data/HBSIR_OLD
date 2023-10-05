@@ -53,6 +53,24 @@ Number_of_Members:
     - apply_external_function: hbsir.schema_functions.standard_tables.number_of_members
 
 
+Equivalence_Scale:
+
+  table_list:
+    Number_of_Members
+
+  instructions:
+
+    - apply_external_function: hbsir.schema_functions.standard_tables.equivalence_scale
+
+    - apply_order:
+      - Year
+      - ID
+      - Household
+      - Per_Capita
+      - OECD
+      - OECD_Modified
+      - Square_Root
+
 
 food:
 
@@ -464,6 +482,13 @@ Total_Expenditure:
       - Net_Expenditure
 
   cache_result: true
+
+
+Expenditure_Breakdown:
+
+  table_list:
+    - Expenditures
+
 
 # Expenditures and Investments
 Original_Outlays:
