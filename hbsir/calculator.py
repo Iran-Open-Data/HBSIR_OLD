@@ -2,7 +2,6 @@ from typing import Literal, Iterable
 
 import pandas as pd
 from pydantic import BaseModel, Field
-import numpy as np
 
 from .metadata_reader import Attribute as _Attribute
 from . import api, utils
@@ -71,10 +70,10 @@ class Quantiler:
         self.table = table
         self.years = self._find_years()
 
-        if self.settings.on_variable is not None:
-            self.value_table = self._get_external_value_table(self.settings.on_variable)
-        elif self.table is not None:
+        if (self.settings.on_column is not None) and (self.table is not None):
             self.value_table = self._extract_value_table(self.table)
+        elif self.settings.on_variable is not None:
+            self.value_table = self._get_external_value_table(self.settings.on_variable)
         else:
             raise ValueError
 
@@ -155,22 +154,14 @@ class Quantiler:
         return table
 
     def calculate_quantile(self) -> pd.Series:
-        members_table = api.load_table("Number_of_Members", years=self.years).set_index(
-            ["Year", "ID"]
+        equivalence_scale = (
+            api.load_table("Equivalence_Scale", years=self.years)
+            .set_index(["Year", "ID"])
+            .loc[:, self.settings.equivalence_scale]
         )
-        if self.settings.equivalence_scale == "Per_Capita":
-            members = members_table["Members"]
-        elif self.settings.equivalence_scale == "OECD":
-            members = members_table.eval("1 + (Adults-1) * 0.7 + Childs * 0.5")
-        elif self.settings.equivalence_scale == "OECD_Modified":
-            members = members_table.eval("1 + (Adults-1) * 0.5 + Childs * 0.3")
-        elif self.settings.equivalence_scale == "Square_Root":
-            members = members_table["Members"].apply(np.sqrt)
-        else:
-            members = pd.Series(1, index=members_table.index)
-        self.value_table.loc[:, "Values"] = self.value_table["Values"].div(members)
+        new_values = self.value_table["Values"].div(equivalence_scale)
+        self.value_table.loc[:, "Values"] = new_values
         quantile = self.calculate_simple_quantile()
-
         return quantile
 
 
@@ -179,7 +170,7 @@ class Quantiler:
 def calculate_quantile(
     *,
     table: pd.DataFrame | pd.Series | None = None,
-    on: _QuantileBase | None = None,
+    on: _QuantileBase | None = "Gross_Expenditure",
     on_column: str | None = None,
     weighted: bool = True,
     weight_column: str | None = None,
@@ -197,7 +188,7 @@ def calculate_quantile(
 def calculate_decile(
     *,
     table: pd.DataFrame | pd.Series | None = None,
-    on: _QuantileBase | None = None,
+    on: _QuantileBase | None = "Gross_Expenditure",
     on_column: str | None = None,
     weighted: bool = True,
     weight_column: str | None = None,
@@ -223,7 +214,7 @@ def calculate_decile(
 def calculate_percentile(
     *,
     table: pd.DataFrame | pd.Series | None = None,
-    on: _QuantileBase | None = None,
+    on: _QuantileBase | None = "Gross_Expenditure",
     on_column: str | None = None,
     weighted: bool = True,
     weight_column: str | None = None,
