@@ -130,8 +130,10 @@ class Applier:
         if isinstance(expression, int):
             self.table.loc[:, column_name] = expression
             return
-        columns_names = re.split(r"[\+\-\*\/\s\.]+", expression)
-        columns_names = [name for name in columns_names if not name.isnumeric()]
+        columns_names = re.split(r"[\+\-\*\/\s\.\(\)]+", expression)
+        columns_names = [
+            name for name in columns_names if not (name.isnumeric() or (name is None))
+        ]
         self.table[column_name] = (
             self.table[columns_names].fillna(0).eval(expression, engine="python")
         )
