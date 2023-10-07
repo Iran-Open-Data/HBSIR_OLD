@@ -26,7 +26,11 @@ household_information:
       - Year
       - ID
       - Season
+      - Month
       - Weight
+      - Household_Type
+      - Main_Household
+      - Alternative_Household
 
 
 house_specifications:

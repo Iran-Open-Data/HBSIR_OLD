@@ -106,14 +106,30 @@ household_information:
         3: "Autumn"
         4: "Winter"
 
+    MAHMORAJEH:
+      new_name: "Month"
+      type: unsigned
+
     WEIGHT:
       new_name: Weight
       type: unsigned
 
     NOEKHN:
-      new_name: Household_Type
-      type: unsigned
+      new_name: "Household_Type"
+      type: "category"
+      categories: 
+        1: "Normal"
+        2: "Group"
 
+    TAKMIL:
+      new_name: "Main_Household"
+      type: "boolean"
+      true_condition: 1
+
+    JAYGOZIN:
+      new_name: "Alternative_Household"
+      type: "boolean"
+      true_condition: 1
 
 
 members_properties:
