@@ -45,7 +45,8 @@
 
 # The range of years during which the table is available
 yearly_table_availability:
-  household_information:      {start: 1388}
+  household_information:      {start: 1387}
+  census_month:               [1387, 1390, 1391]
   members_properties:         {start: 1363}
   house_specifications:       {start: 1363}
 
@@ -89,7 +90,7 @@ household_information:
 
   file_code:
     1363: null
-    1388: "Data"
+    1387: "Data"
 
 
   columns:
@@ -130,6 +131,25 @@ household_information:
       new_name: "Alternative_Household"
       type: "boolean"
       true_condition: 1
+
+
+census_month:
+
+  file_code:
+    1363: null
+    1387: ""
+    1389: null
+    1390: ""
+    1392: null
+
+  columns:
+    ADDRESS:
+      new_name: "ID"
+      type: "unsigned"
+
+    MAHMORAJEH:
+      new_name: "Month"
+      type: unsigned
 
 
 members_properties:

@@ -19,6 +19,7 @@ Attribute = Literal["Urban_Rural", "Province", "Region"]
 
 GeneralTable = Literal[
     "household_information",
+    "census_month",
     "members_properties",
     "house_specifications",
 ]

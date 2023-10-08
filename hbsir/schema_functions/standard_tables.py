@@ -24,3 +24,14 @@ def equivalence_scale(table: pd.DataFrame) -> pd.DataFrame:
         .add(table["Childs"].multiply(0.3)),
         Square_Root=table.eval("sqrt(Members)"),
     )
+
+def create_season(table: pd.DataFrame) -> pd.DataFrame:
+    seasons = {1: "Spring", 2: "Summer", 3: "Autumn", 4: "Winter"}
+    season_series = pd.Series(
+        data = pd.Categorical(
+            table["Month"].floordiv(3).add(1).astype("Int16").map(seasons)
+        ),
+        index = table.index
+    )
+    table["Season"] = season_series
+    return table

@@ -22,6 +22,15 @@ household_information:
 
     - add_year
 
+    - join:
+        1387: null
+        1388: census_month
+        1389: null
+
+    - apply_external_function:
+        1387: hbsir.schema_functions.standard_tables.create_season
+        1396: null
+
     - apply_order:
       - Year
       - ID
@@ -31,6 +40,13 @@ household_information:
       - Household_Type
       - Main_Household
       - Alternative_Household
+
+
+census_month:
+
+  instructions:
+
+    - add_year
 
 
 house_specifications:
