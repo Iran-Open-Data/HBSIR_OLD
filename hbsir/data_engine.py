@@ -109,7 +109,7 @@ class Applier:
         settings = decoder.IDDecoderSettings(**method_input)
         self.table = decoder.IDDecoder(self.table, settings).add_attribute()
 
-    def _apply_order(self, method_input):
+    def _apply_order(self, method_input: list):
         new_columns = [
             column for column in method_input if column in self.table.columns
         ]
@@ -180,13 +180,17 @@ class Applier:
         for condition in conditions:
             self.table = self.table.query(condition)
 
-    def _apply_pandas_function(self, method_input: str) -> None:
+    def _apply_pandas_function(self, method_input: str | None = None) -> None:
+        if method_input is None:
+            return
         method_input = "self.table" + method_input
         table = pd.eval(method_input, target=self.table, engine="python")
         assert isinstance(table, pd.DataFrame)
         self.table = table
 
-    def _apply_external_function(self, method_input: str) -> None:
+    def _apply_external_function(self, method_input: str | None = None) -> None:
+        if method_input is None:
+            return
         module_name, func_name = method_input.rsplit(".", 1)
         self.__load_module(module_name)
         func = getattr(self.modules[module_name], func_name)
@@ -195,6 +199,24 @@ class Applier:
     def __load_module(self, module_name: str) -> None:
         if module_name not in self.modules:
             self.modules[module_name] = importlib.import_module(module_name)
+
+    def _join(self, method_input: dict | str | None = None):
+        if method_input is None:
+            return
+        if isinstance(method_input, str):
+            table_name = method_input
+            columns = ["Year", "ID"]
+            years = None
+        elif isinstance(method_input, dict):
+            table_name = method_input["table_name"]
+            columns = method_input["columns"]
+            years = method_input.get("year", None)
+        else:
+            raise TypeError
+        years = list(self.table["Year"].unique())
+        settings = LoadTable()
+        other_table = TableLoader(table_name, years, settings).load()
+        self.table = self.table.merge(other_table, on=columns)
 
 
 class TableLoader:
