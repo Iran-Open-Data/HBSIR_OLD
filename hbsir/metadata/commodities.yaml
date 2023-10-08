@@ -466,6 +466,18 @@ original_1383:
       code: {start: 11_160, end: 11_170}
 
     #                               # LEVEL 4 #                               #
+    wheat_flour:
+      level: 4
+      farsi_name: "آرد گندم"
+      code: 11_161
+
+    #                               # LEVEL 4 #                               #
+    other_flour:
+      level: 4
+      farsi_name: "سایر انواع آرد"
+      code: 11_162
+
+    #                               # LEVEL 4 #                               #
     pasta:
       level: 4
       farsi_name: "ماکارونی، ورمیشل، لازانیا و خمیر پیتزا"
@@ -488,6 +500,12 @@ original_1383:
       level: 4
       farsi_name: "بیسکوئیت و ویفر"
       code: 11_171
+
+    #                               # LEVEL 4 #                               #
+    cake:
+      level: 4
+      farsi_name: "کیک"
+      code: 11_172
 
 
     #                            #### LEVEL 2 ####                            #
@@ -749,6 +767,24 @@ original_1383:
       level: 3
       code: {start: 11_520, end: 11_530}
 
+    #                               # LEVEL 4 #                               #
+    pasteurized_butter:
+      level: 4
+      farsi_name: "کره پاستوریزه"
+      code: 11_521
+
+    #                               # LEVEL 4 #                               #
+    unpasteurized_butter:
+      level: 4
+      farsi_name: "کره غیر پاستوریزه"
+      code: 11_522
+
+    #                               # LEVEL 4 #                               #
+    vegan_butter:
+      level: 4
+      farsi_name: "کره غیر حیوانی"
+      code: 11_523
+
     #                              ## LEVEL 3 ##                              #
     vegetable_oils:
       level: 3
@@ -791,6 +827,66 @@ original_1383:
       code: 11_611
 
     #                               # LEVEL 4 #                               #
+    pear:
+      level: 4
+      farsi_name: "گلابی"
+      code: 11_612
+
+    #                               # LEVEL 4 #                               #
+    plum:
+      level: 4
+      farsi_name: "زردآلو، آلو و گوجه سبز"
+      code: 11_613
+
+    #                               # LEVEL 4 #                               #
+    peach:
+      level: 4
+      farsi_name: "هلو، شلیل و شفتالو"
+      code: 11_614
+
+    #                               # LEVEL 4 #                               #
+    cherry:
+      level: 4
+      farsi_name: "آلبالو و گیلاس"
+      code: 11_615
+
+    #                               # LEVEL 4 #                               #
+    berries:
+      level: 4
+      farsi_name: "توت، شاه‌توت، توت فرنگی و تمشک"
+      code: 11_616
+
+    #                               # LEVEL 4 #                               #
+    grapes:
+      level: 4
+      farsi_name: "انگور"
+      code: 11_617
+
+    #                               # LEVEL 4 #                               #
+    fig_quince_persimmon:
+      level: 4
+      farsi_name: "انجیر تازه، ازگیل، به، خرمالو، زالزالک و زغال اخته"
+      code: 11_618
+
+    #                               # LEVEL 4 #                               #
+    pomegranate:
+      level: 4
+      farsi_name: "انار"
+      code: 11_619
+
+    #                               # LEVEL 4 #                               #
+    banana_and_coconut:
+      level: 4
+      farsi_name: "موز و نارگیل"
+      code: 11_621
+
+    #                               # LEVEL 4 #                               #
+    date:
+      level: 4
+      farsi_name: "خرمای تازه"
+      code: 11_622
+
+    #                               # LEVEL 4 #                               #
     orange:
       level: 4
       farsi_name: "پرتقال"
@@ -830,6 +926,12 @@ original_1383:
       level: 3
       farsi_name: "خشکبار"
       code: {start: 11_650, end: 11_670}
+
+    #                               # LEVEL 4 #                               #
+    kuaci:
+      level: 4
+      farsi_name: "تخمه"
+      code: 11_661
 
     #                               # LEVEL 4 #                               #
     crisps:
@@ -961,10 +1063,58 @@ original_1383:
       code: {start: 11_760, end: 11_770}
 
     #                               # LEVEL 4 #                               #
+    chickpea:
+      level: 4
+      farsi_name: "نخود"
+      code: 11_761
+
+    #                               # LEVEL 4 #                               #
+    split_pea:
+      level: 4
+      farsi_name: "لپه نخود"
+      code: 11_762
+
+    #                               # LEVEL 4 #                               #
+    pinto_bean:
+      level: 4
+      farsi_name: "لوبیا چیتی"
+      code: 11_763
+
+    #                               # LEVEL 4 #                               #
+    kidney_bean:
+      level: 4
+      farsi_name: "لوبیا قرمز"
+      code: 11_764
+
+    #                               # LEVEL 4 #                               #
+    other_beans:
+      level: 4
+      farsi_name: "سایر انواع لوبیا"
+      code: 11_765
+
+    #                               # LEVEL 4 #                               #
+    soybean:
+      level: 4
+      farsi_name: "سویا"
+      code: 11_766
+
+    #                               # LEVEL 4 #                               #
+    mixed_chickpea_and_bean:
+      level: 4
+      farsi_name: "نخود و لوبیای مخلوط"
+      code: 11_767
+
+    #                               # LEVEL 4 #                               #
     lentil:
       level: 4
       farsi_name: "عدس"
       code: 11_768
+
+    #                               # LEVEL 4 #                               #
+    other_pulses:
+      level: 4
+      farsi_name: "ماش، باقالا خشک، لپه‌باقالا، جوانه انواع حبوب و سایر حبوب"
+      code: 11_769
 
 
     #                            #### LEVEL 2 ####                            #
@@ -976,6 +1126,7 @@ original_1383:
     #                              ## LEVEL 3 ##                              #
     sugar:
       level: 3
+      farsi_name: "قند و شکر"
       code: {start: 11_810, end: 11_820}
 
 
@@ -988,7 +1139,7 @@ original_1383:
     #                               # LEVEL 4 #                               #
     other_sugars:
       level: 4
-      farsi_name: "انواع شکر"
+      farsi_name: "شکر"
       code: 11_812
 
     #                              ## LEVEL 3 ##                              #
@@ -996,6 +1147,30 @@ original_1383:
       level: 3
       code: {start: 11_820, end: 11_850}
 
+    #                               # LEVEL 4 #                               #
+    jam:
+      level: 4
+      farsi_name: "مربا"
+      code: 11_823
+
+    #                               # LEVEL 4 #                               #
+    chocolate:
+      level: 4
+      farsi_name: "شکلات"
+      code: 11_839
+
+    #                               # LEVEL 4 #                               #
+    other_sweets:
+      level: 4
+      farsi_name: >
+        آب‌نبات و پولکی، نبات، نقل، پشمک، شکر پنیر و سایر انواع شیرینی
+      code: 11_841
+
+    #                               # LEVEL 4 #                               #
+    chewing_gum:
+      level: 4
+      farsi_name: "آدامس"
+      code: 11_842
 
     #                            #### LEVEL 2 ####                            #
     spices_condiments_and_other_food_products:
@@ -1020,6 +1195,36 @@ original_1383:
       farsi_name: "سنگ نمک"
       code: 11_912
 
+    #                               # LEVEL 4 #                               #
+    pepper:
+      level: 4
+      farsi_name: فلفل
+      code: 11_913
+
+    #                               # LEVEL 4 #                               #
+    turmeric:
+      level: 4
+      farsi_name: "زردچوبه"
+      code: 11_914
+
+    #                               # LEVEL 4 #                               #
+    saffron:
+      level: 4
+      farsi_name: زعفران
+      code: 11_915
+
+    #                               # LEVEL 4 #                               #
+    cinnamon_cardamom_ginger_and_golpar:
+      level: 4
+      farsi_name: "دارچین، هل، زنجبیل و گلپر"
+      code: 11_916
+
+    #                               # LEVEL 4 #                               #
+    other_spices:
+      level: 4
+      farsi_name: "لیموعمانی، سماق، كاری، خردل و سایر انواع ادویه"
+      code: 11_917
+
     #                              ## LEVEL 3 ##                              #
     condiments_and_other_food_products:
       level: 3
@@ -1042,6 +1247,18 @@ original_1383:
       level: 4
       farsi_name: "آب لیمو"
       code: 11_923
+
+    #                               # LEVEL 4 #                               #
+    other_sauces:
+      level: 4
+      farsi_name: "سایر انواع سس (مایونز، سالاد و ...)"
+      code: 11_924
+
+    #                               # LEVEL 4 #                               #
+    torshi_olive_and_pickle:
+      level: 4
+      farsi_name: "ترشی، زیتون، خیارشور، مخلوط شور و ..."
+      code: 11_928
 
     #                        ######## LEVEL 1 ########                        #
     non_alcoholic_beverages:
@@ -1109,6 +1326,36 @@ original_1383:
       level: 4
       farsi_name: "دوغ"
       code: 12_212
+
+    #                               # LEVEL 4 #                               #
+    zero_alcohol_beer:
+      level: 4
+      farsi_name: "ماء الشعیر و دلستر"
+      code: 12_213
+
+    #                               # LEVEL 4 #                               #
+    juice:
+      level: 4
+      farsi_name: "انواع آبمیوه و ساندیس،افشره یا آب سبزی"
+      code: 12_214
+
+    #                               # LEVEL 4 #                               #
+    bottled_water:
+      level: 4
+      farsi_name: "آب معدنی، آب بطری و آب گالنی"
+      code: 12_215
+
+    #                               # LEVEL 4 #                               #
+    soft_drink_concentrate:
+      level: 4
+      farsi_name: "انواع شربت و کنسانتره برای تهیه‌ی نوشابه‌ها"
+      code: 12_216
+
+    #                               # LEVEL 4 #                               #
+    ice:
+      level: 4
+      farsi_name: "یخ"
+      code: 12_218
 
     #                ################ LEVEL 0 ################                #
     alcoholic_beverages_tobacco_and_norcotics:
