@@ -14,6 +14,7 @@ package_metadata:
   commodities: "metadata/commodities.yaml"
   schema: "metadata/schema.yaml"
   other: "metadata/other.yaml"
+  external_data: "metadata/external_data.yaml"
 
 # Local Metadata
 local_metadata:
@@ -24,6 +25,7 @@ local_metadata:
   commodities: "metadata/commodities.yaml"
   schema: "metadata/schema.yaml"
   other: "metadata/other.yaml"
+  external_data: "metadata/external_data.yaml"
 
 # Local Directorie
 local_directory: Data

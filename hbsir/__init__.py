@@ -37,6 +37,7 @@ from . import (
     decoder,
     hbsframe,
     calculator,
+    external_data,
 )
 from .utils import parse_years
 

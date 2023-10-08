@@ -180,6 +180,7 @@ class Metadata:
         "commodities",
         "schema",
         "other",
+        "external_data",
     ]
     instruction: dict[str, Any]
     tables: dict[str, Any]
@@ -188,6 +189,7 @@ class Metadata:
     commodities: dict[str, Any]
     schema: dict[str, Any]
     other: dict[str, Any]
+    external_data: dict[str, Any]
 
     def __init__(self) -> None:
         self.reload()
