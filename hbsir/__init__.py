@@ -43,6 +43,18 @@ from .utils import parse_years
 
 __version__ = "0.2.3"
 
+__all__ = [
+    "load_table",
+    "create_table_with_schema",
+    "add_classification",
+    "add_attribute",
+    "add_weight",
+    "setup",
+    "hbsframe",
+    "calculator",
+    "external_data",
+]
+
 _OriginalTable = metadata_reader.OriginalTable
 
 
