@@ -40,7 +40,7 @@ from . import (
 )
 from .utils import parse_years
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 _OriginalTable = metadata_reader.OriginalTable
 
