@@ -62,10 +62,10 @@ StandardTable = Literal[
 Table = Literal[OriginalTable, StandardTable]
 
 
-general_tables: tuple[GeneralTable] = get_args(GeneralTable)
-expenditure_tables: tuple[ExpenditureTable] = get_args(ExpenditureTable)
-original_tables: tuple[OriginalTable] = get_args(OriginalTable)
-standard_tables: tuple[StandardTable] = get_args(StandardTable)
+general_tables: tuple[GeneralTable] = get_args(GeneralTable)  # type: ignore
+expenditure_tables: tuple[ExpenditureTable] = get_args(ExpenditureTable)  # type: ignore
+original_tables: tuple[OriginalTable] = get_args(OriginalTable)  # type: ignore
+standard_tables: tuple[StandardTable] = get_args(StandardTable)  # type: ignore
 
 
 def open_yaml(
