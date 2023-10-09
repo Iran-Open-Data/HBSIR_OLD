@@ -1703,6 +1703,139 @@ Food_NonFood:
         farsi_name: "مخارج غیر خوراکی"
 
 
+Durability:
+  defaults:
+    levels: [1]
+    output_column_names: ["Durability"]
+  items:
+    1383:
+      NonDurable:
+        level: 1
+        farsi_name: "بی دوام"
+        code:
+          - {start: 10_000, end: 20_000}
+
+          - {start: 20_000, end: 30_000}
+
+          - {start: 43_100, end: 43_200}
+          - {start: 44_100, end: 44_200}
+          - {start: 45_000, end: 46_000}
+
+          - {start: 56_100, end: 56_200}
+
+          - {start: 61_100, end: 61_200}
+          - {start: 61_200, end: 61_300}
+
+          - {start: 72_200, end: 72_300}
+
+          - {start: 93_300, end: 93_400}
+          - {start: 95_200, end: 95_300}
+          - {start: 95_300, end: 95_400}
+          - {start: 95_400, end: 95_500}
+
+          - {start: 121_300, end: 121_400}
+
+      SemiDurable:
+        level: 1
+        farsi_name: "کم دوام"
+        code:
+          - {start: 31_100, end: 31_200}
+          - {start: 31_200, end: 31_300}
+          - {start: 31_300, end: 31_400}
+          - {start: 32_100, end: 32_200}
+
+          - {start: 52_110, end: 52_120}
+          - {start: 53_200, end: 53_300}
+          - {start: 54_000, end: 55_000}
+          - {start: 55_200, end: 55_300}
+
+          - {start: 72_100, end: 72_200}
+
+          - {start: 91_400, end: 91_500}
+          - {start: 93_100, end: 93_200}
+          - {start: 93_200, end: 93_300}
+          - {start: 93_400, end: 93_500}
+          - {start: 95_100, end: 95_200}
+
+          - {start: 121_200, end: 121_300}
+          - {start: 123_200, end: 123_300}
+
+      Durable:
+        level: 1
+        farsi_name: "با دوام"
+        code:
+          - {start: 51_100, end: 51_200}
+          - {start: 51_200, end: 51_300}
+          - {start: 53_100, end: 53_200}
+          - {start: 55_100, end: 55_200}
+
+          - {start: 61_300, end: 61_400}
+
+          - {start: 71_000, end: 72_000}
+
+          - {start: 82_000, end: 83_000}
+
+          - {start: 91_100, end: 91_200}
+          - {start: 91_210, end: 91_220}
+          - {start: 91_220, end: 91_230}
+          - {start: 91_300, end: 91_400}
+          - {start: 92_000, end: 93_000}
+
+          - {start: 123_100, end: 123_200}
+
+      Service:
+        level: 1
+        farsi_name: "خدمات"
+        code:
+          - {start: 31_400, end: 31_500}
+          - {start: 32_200, end: 32_300}
+
+          - {start: 41_000, end: 42_000}
+          - {start: 42_000, end: 43_000}
+          - {start: 43_200, end: 43_300}
+          - {start: 44_310, end: 44_320}
+          - {start: 44_320, end: 44_330}
+          - {start: 44_410, end: 44_420}
+          - {start: 44_490, end: 44_500}
+
+          - {start: 51_300, end: 51_400}
+          - {start: 52_120, end: 52_130}
+          - {start: 53_300, end: 53_400}
+          - {start: 56_200, end: 56_300}
+
+          - {start: 62_000, end: 63_000}
+          - {start: 63_000, end: 64_000}
+          - {start: 64_000, end: 65_000}
+
+          - {start: 72_300, end: 72_400}
+          - {start: 72_400, end: 72_500}
+          - {start: 73_000, end: 74_000}
+
+          - {start: 81_000, end: 82_000}
+          - {start: 83_000, end: 84_000}
+
+          - {start: 91_500, end: 91_600}
+          - {start: 93_500, end: 93_600}
+          - {start: 94_000, end: 95_000}
+          - {start: 96_000, end: 97_000}
+
+          - {start: 100_000, end: 110_000}
+          - {start: 110_000, end: 120_000}
+          - {start: 121_100, end: 121_200}
+          - {start: 124_000, end: 125_000}
+          - {start: 125_000, end: 126_000}
+          - {start: 126_000, end: 127_000}
+          - {start: 127_000, end: 128_000}
+          - {start: 139_000, end: 140_000}
+
+      Investment:
+        level: 1
+        farsi_name: "سرمایه‌گذاری"
+        code:
+          - {start: 33_000, end: 34_000}
+          - {start: 34_000, end: 35_000}
+
+
 Imputed_Rent:
   defaults:
     levels: [1]
@@ -1741,7 +1874,7 @@ Insurance_Benefits:
         - 125_313
 
 
-isc_main_categories:
+sci_main_categories:
   defaults:
     levels: [1]
     output_column_names: ["Food_NonFood"]
