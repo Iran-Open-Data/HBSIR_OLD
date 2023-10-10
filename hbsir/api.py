@@ -47,6 +47,12 @@ from .metadata_reader import (
 _Default = Any
 
 
+def _extract_parameters(local_variables: dict) -> dict:
+    return {
+        key: value for key, value in local_variables.items() if value is not _Default
+    }
+
+
 # pylint: disable=too-many-arguments
 # pylint: disable=unused-argument
 def load_table(
@@ -84,7 +90,7 @@ def load_table(
 
     """
     metadata.reload_file("schema")
-    parameters = {key: value for key, value in locals().items() if value is not _Default}
+    parameters = _extract_parameters(locals())
     settings = LoadTable(**parameters)
     if settings.dataset == "original":
         years = utils.parse_years(years)
@@ -143,7 +149,7 @@ def create_table_with_schema(
 
     """
     metadata.reload_file("schema")
-    parameters = {key: value for key, value in locals().items() if value is not _Default}
+    parameters = _extract_parameters(locals())
     settings = LoadTable(**parameters)
     if years is None and "years" in schema:
         years = schema["years"]
@@ -186,7 +192,7 @@ def add_classification(
         pd.DataFrame: Input DataFrame with added classification columns.
 
     """
-    parameters = {key: value for key, value in locals().items() if value is not _Default}
+    parameters = _extract_parameters(locals())
     settings = decoder.CommodityDecoderSettings(**parameters)
     table = decoder.CommodityDecoder(
         table=table, settings=settings
@@ -224,7 +230,7 @@ def add_attribute(
         pd.DataFrame: Input DataFrame with added attribute columns.
 
     """
-    parameters = {key: value for key, value in locals().items() if value is not _Default}
+    parameters = _extract_parameters(locals())
     settings = decoder.IDDecoderSettings(**parameters)
     table = decoder.IDDecoder(table=table, settings=settings).add_attribute()
     return table
