@@ -1,18 +1,39 @@
 
-sci.cpi_by1395_overall.monthly:
-  url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9346/2302n220140111.xlsx
+sci:
+  cpi_by1395_urban_singleindex:
+    monthly:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/13026/2302u220940111.xlsx
 
-sci.cpi_by1395_urban_singleindex.monthly:
-  url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/13026/2302u220940111.xlsx
-  cleaning_function: cpi_by1395_urban_singleindex
+    annual:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/13025/2302u220311400_V2-14010505.xlsx
 
-sci.cpi_by1395_rural_maingroups.monthly:
-  url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9813/2302r220140111.xlsx
-  cleaning_function: cpi_by1395_rural_maingroups
 
-sci.cpi_by1395.monthly:
-  from:
-    - sci.cpi_by1395_urban_singleindex.monthly
-    - sci.cpi_by1395_rural_maingroups.monthly
+  cpi_by1395_rural_maingroups:
+    monthly:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9813/2302r220140111.xlsx
 
-  cleaning_function: cpi_by1395
+    annual:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9862/2302r220111400_V2-14011013.xlsx
+
+  cpi_by1395:
+    monthly:
+      urban_rural:
+        from:
+          - sci.cpi_by1395_urban_singleindex.monthly
+          - sci.cpi_by1395_rural_maingroups.monthly
+
+    annual:
+      urban_rural:
+        from:
+          - sci.cpi_by1395_urban_singleindex.annual
+          - sci.cpi_by1395_rural_maingroups.annual
+
+  gini:
+    annual:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/6539/2802z112111401.xlsx
+
+
+cbi:
+  gini:
+    annual:
+      manual

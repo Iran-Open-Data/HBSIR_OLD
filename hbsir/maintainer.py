@@ -1,10 +1,11 @@
 """For maintainer"""
 
+from pathlib import Path
 import tomllib
+from typing import Iterable
 
 import requests
 from tqdm import tqdm
-from typing import Iterable
 import boto3
 
 from .metadata_reader import (
@@ -14,25 +15,37 @@ from .metadata_reader import (
 from . import utils
 
 
-def update_online_directory() -> None:
-    file_stats = _scan_local_directory()
+def update_online_files() -> None:
+    for directories in [
+        (defaults.processed_data, "parquet_files"),
+        (defaults.external_data, "external_data"),
+    ]:
+        update_online_directory(*directories)
+
+
+def update_online_directory(local_directory: Path, online_directory: str) -> None:
+    file_stats = _scan_directory(local_directory, online_directory)
     to_up_files = [file for file, stat in file_stats.items() if stat != "UpToDate"]
     pbar = tqdm(total=len(to_up_files), desc="Preparing ...", unit="Table")
     for file in to_up_files:
         pbar.update()
         pbar.desc = f"Checking file: {file}"
-        _publish_parquet_file(file)
+        _publish_parquet_file(local_directory.joinpath(file), online_directory)
     pbar.close()
 
 
-def _scan_local_directory():
+def _scan_directory(local_directory: Path, online_directory: str):
     file_stats = {}
-    number_of_files = len(list(defaults.processed_data.glob("*")))
+    number_of_files = len(
+        [file for file in local_directory.glob("*") if file.is_file()]
+    )
     pbar = tqdm(total=number_of_files, desc="Preparing ...", unit="Table")
-    for path in defaults.processed_data.iterdir():
+    for path in local_directory.iterdir():
         pbar.update()
         pbar.desc = f"Checking file: {path.name}"
-        online_file_size = _get_file_size_online_directory(path.name)
+        if path.is_dir():
+            continue
+        online_file_size = _get_file_size_online_directory(path.name, online_directory)
         local_size = path.stat().st_size
 
         if online_file_size is None:
@@ -45,8 +58,8 @@ def _scan_local_directory():
     return file_stats
 
 
-def _get_file_size_online_directory(file_name):
-    url = f"{defaults.online_dir}/parquet_files/{file_name}"
+def _get_file_size_online_directory(file_name: str, directory):
+    url = f"{defaults.online_dir}/{directory}/{file_name}"
     response = requests.head(url, timeout=10)
     try:
         return int(response.headers["Content-Length"])
@@ -54,9 +67,10 @@ def _get_file_size_online_directory(file_name):
         return None
 
 
-def publish_data(
+def publish_processed_table(
     table_name: _OriginalTable | Iterable[_OriginalTable] | None = None,
     years: int | Iterable[int] | str | None = None,
+    online_directory: str = "parquet_files",
 ) -> None:
     assert isinstance(table_name, str)
     table_year = utils.construct_table_year_pairs(table_name, years)
@@ -65,14 +79,14 @@ def publish_data(
         pbar.update()
         pbar.desc = f"Uploading table: {_table_name}, for year: {year}"
         file_name = f"{year}_{_table_name}.parquet"
-        _publish_parquet_file(file_name)
+        file_path = defaults.processed_data.joinpath(file_name)
+        _publish_parquet_file(file_path, online_directory)
     pbar.close()
 
 
-def _publish_parquet_file(file_name: str) -> None:
-    path = defaults.processed_data.joinpath(file_name)
-    url = f"HBSIR/parquet_files/{file_name}"
-    _upload_file_to_online_directory(path, url)
+def _publish_parquet_file(file_path: Path, directory: str) -> None:
+    url = f"HBSIR/{directory}/{file_path.name}"
+    _upload_file_to_online_directory(file_path, url)
 
 
 def _upload_file_to_online_directory(file_path, file_name):

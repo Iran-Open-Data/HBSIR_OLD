@@ -1,5 +1,6 @@
 from typing import Callable
 import importlib
+from pathlib import Path
 
 import pandas as pd
 
@@ -8,36 +9,34 @@ from ..metadata_reader import defaults, metadata
 
 
 class ExternalDataCleaner:
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, download_cleaned: bool = False) -> None:
         self.name = name
-        raw_folder_path = defaults.external_data.joinpath("_raw")
-        raw_folder_path.mkdir(exist_ok=True, parents=True)
+        self.download_cleaned = download_cleaned
+        self.metadata = self._get_metadata()
 
-        self.metadata = metadata.external_data.get(self.name, None)
-        extension = self._find_extension()
-        if extension is not None:
-            self.raw_file_path = raw_folder_path.joinpath(f"{self.name}.{extension}")
-        else:
-            self.raw_file_path = None
-
-    def load_data(self):
+    def load_data(self, save_cleaned: bool = True):
         external_data = [file.stem for file in defaults.external_data.iterdir()]
         if self.name in external_data:
-            return pd.read_parquet(
-                defaults.external_data.joinpath(f"{self.name}.parquet")
-            )
-        if self.metadata is None:
-            raise ValueError("Metadata is not available for this table")
-        if "url" in self.metadata:
+            table = self.open_cleaned_data()
+        elif self.download_cleaned or (self.metadata == "manual"):
+            table = self.read_from_online_directory()
+        elif "url" in self.metadata:
             table = self.clean_raw_file()
         elif "from" in self.metadata:
             table = self.collect_and_clean()
         else:
             raise ValueError
-        self.save_data(table)
+        if save_cleaned:
+            self.save_data(table)
         return table
 
-    def _find_extension(self) -> str | None:
+    def _get_metadata(self) -> dict:
+        meta = metadata.external_data.copy()
+        for part in self.name.split("."):
+            meta = meta[part]
+        return meta
+
+    def _find_extension(self) -> str:
         available_extentions = ["xlsx"]
         extension = self.metadata.get("extension", None)
         url = self.metadata.get("url", None)
@@ -45,9 +44,18 @@ class ExternalDataCleaner:
         if (extension is None) and (url is not None):
             extension = url.rsplit(".", maxsplit=1)[1]
 
-        if extension is not None:
-            assert extension in available_extentions
+        assert extension in available_extentions
         return extension
+
+    def open_cleaned_data(self) -> pd.DataFrame:
+        return pd.read_parquet(defaults.external_data.joinpath(f"{self.name}.parquet"))
+
+    @property
+    def raw_file_path(self) -> Path:
+        raw_folder_path = defaults.external_data.joinpath("_raw")
+        raw_folder_path.mkdir(exist_ok=True, parents=True)
+        extension = self._find_extension()
+        return raw_folder_path.joinpath(f"{self.name}.{extension}")
 
     def download_raw_file(self) -> None:
         url = self.metadata["url"]
@@ -83,7 +91,11 @@ class ExternalDataCleaner:
         cleaning_module = importlib.import_module(
             "hbsir.external_data.cleaning_scripts"
         )
-        return getattr(cleaning_module, self.metadata["cleaning_function"])
+        return getattr(cleaning_module, self.name.replace(".", "_"))
 
     def save_data(self, table: pd.DataFrame) -> None:
         table.to_parquet(defaults.external_data.joinpath(f"{self.name}.parquet"))
+
+    def read_from_online_directory(self) -> pd.DataFrame:
+        url = f"{defaults.online_dir}/external_data/{self.name}.parquet"
+        return pd.read_parquet(url)
