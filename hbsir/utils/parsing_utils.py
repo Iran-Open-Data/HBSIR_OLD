@@ -1,43 +1,58 @@
 from typing import Iterable
 
-from ..metadata_reader import defaults, metadata, Table as _Table
+from ..metadata_reader import defaults, metadata, _Years
 from .argham import Argham
 
 
-def parse_years(years: int | Iterable[int] | str | None) -> list[int]:
+def parse_years(years: _Years) -> list[int]:
     """Convert different year representations to a list of integer years.
 
-    This function handles converting various different input types representing
+    This function handles converting various input types representing
     years into a standardized list of integer years.
 
-    Args:
-        year: The input year value. Can be one of the following types:
-            - int: A single year
-            - Iterable[int]: A collection of years
-            - str: A comma-separated string of years or ranges
+    The input `years` can be specified as:
 
-    Returns:
-        list[int]: The converted years as a list of integer values.
+    - int: A single year
+    - Iterable[int]: A collection of years like [94, 95, 96] or range(1390, 1400)
+    - str: A comma-separated string of years or ranges like '86-90, 1396-1400'
+    - "all": All available years
+    - "last": Just the last year
 
-    Raises:
-        TypeError: If the input year is not one of the accepted types.
+    Years are validated before returning.
 
-    Examples:
-        >>> get_year_list(1399)
-        [1399]
+    Parameters
+    ----------
+    years : _Years
+        The input years to parse
 
-        >>> get_year_list([98, 99, 1400])
-        [1398, 1399, 1400]
+    Returns
+    -------
+    list[int]
+        The converted years as a list of integer values
 
-        >>> get_year_list('1365, 80-83, 99')
-        [1365, 1380, 1381, 1382, 1383, 1399]
+    Examples
+    --------
+    >>> parse_years(1399)
+    [1399]
+
+    >>> parse_years([98, 99, 1400])
+    [1398, 1399, 1400]
+
+    >>> parse_years(range(1380, 1390))
+    [1380, 1381, 1382, 1383, 1384, 1385, 1386, 1387, 1388, 1389]
+
+    >>> parse_years('1365, 80-83, 99')
+    [1365, 1380, 1381, 1382, 1383, 1399]
     """
-    if years is None:
-        year_list = [defaults.last_year]
-    elif isinstance(years, int):
+    if isinstance(years, int):
         year_list = [_check_year_validity(years)]
     elif isinstance(years, str):
-        year_list = _parse_year_str(years)
+        if years.lower() == "all":
+            year_list = list(range(defaults.first_year, defaults.last_year))
+        elif years.lower() == "last":
+            year_list = [defaults.last_year]
+        else:
+            year_list = _parse_year_str(years)
     elif isinstance(years, Iterable):
         year_list = [_check_year_validity(year) for year in years]
     else:
@@ -81,7 +96,7 @@ def _parse_year_str(year: str) -> list[int]:
 
 
 def construct_table_year_pairs(
-    table_names: str | Iterable[str], years: int | Iterable[int] | str | None
+    table_names: str | Iterable[str], years: _Years
 ) -> list[tuple[str, int]]:
     years = parse_years(years)
     table_names = [table_names] if isinstance(table_names, str) else table_names
