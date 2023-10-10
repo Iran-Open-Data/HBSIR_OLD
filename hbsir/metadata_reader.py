@@ -5,7 +5,7 @@ import functools
 import re
 
 from pathlib import Path
-from typing import Any, Literal, Callable, get_args
+from typing import Any, Literal, Callable, Iterable, get_args
 
 from pydantic import BaseModel
 import yaml
@@ -15,16 +15,17 @@ PACKAGE_DIRECTORY = Path(__file__).parent
 ROOT_DIRECTORT = Path().absolute()
 
 
-Attribute = Literal["Urban_Rural", "Province", "Region"]
+_Attribute = Literal["Urban_Rural", "Province", "Region"]
+_Years = int | Iterable[int] | str | Literal["all", "last"]
 
-GeneralTable = Literal[
+_GeneralTable = Literal[
     "household_information",
     "census_month",
     "members_properties",
     "house_specifications",
 ]
 
-ExpenditureTable = Literal[
+_ExpenditureTable = Literal[
     "food",
     "tobacco",
     "cloth",
@@ -41,7 +42,7 @@ ExpenditureTable = Literal[
     "investment",
 ]
 
-IncomeTable = Literal[
+_IncomeTable = Literal[
     "employment_income",
     "self_employed_income",
     "other_income",
@@ -50,22 +51,22 @@ IncomeTable = Literal[
     "private_employment_income",
 ]
 
-OriginalTable = Literal[GeneralTable, ExpenditureTable, IncomeTable]
+_OriginalTable = Literal[_GeneralTable, _ExpenditureTable, _IncomeTable]
 
-StandardTable = Literal[
+_StandardTable = Literal[
     "Original_Expenditures",
     "Expenditures",
     "Imputed_Rent",
     "Incomes",
 ]
 
-Table = Literal[OriginalTable, StandardTable]
+_Table = Literal[_OriginalTable, _StandardTable]
 
 
-general_tables: tuple[GeneralTable] = get_args(GeneralTable)  # type: ignore
-expenditure_tables: tuple[ExpenditureTable] = get_args(ExpenditureTable)  # type: ignore
-original_tables: tuple[OriginalTable] = get_args(OriginalTable)  # type: ignore
-standard_tables: tuple[StandardTable] = get_args(StandardTable)  # type: ignore
+general_tables: tuple[_GeneralTable] = get_args(_GeneralTable)  # type: ignore
+expenditure_tables: tuple[_ExpenditureTable] = get_args(_ExpenditureTable)  # type: ignore
+original_tables: tuple[_OriginalTable] = get_args(_OriginalTable)  # type: ignore
+standard_tables: tuple[_StandardTable] = get_args(_StandardTable)  # type: ignore
 
 
 def open_yaml(

@@ -1,9 +1,7 @@
 import pytest
 
 import hbsir
-
-metadata = hbsir.metadata_reader.metadata
-defaults = hbsir.metadata_reader.defaults
+from hbsir.metadata_reader import defaults, metadata
 
 
 tables_availability = metadata.tables["yearly_table_availability"]

@@ -3,7 +3,7 @@ from typing import Literal, Iterable
 import pandas as pd
 from pydantic import BaseModel, Field
 
-from .metadata_reader import Attribute as _Attribute
+from .metadata_reader import _Attribute
 from . import api, utils
 
 

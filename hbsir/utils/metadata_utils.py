@@ -242,6 +242,8 @@ class MetadataVersionResolver:
 
 
 class MetadataCategoryResolver(MetadataVersionResolver):
+    """Metadata Category Resolver"""
+
     # pylint: disable=unsubscriptable-object
     # pylint: disable=unsupported-assignment-operation
     def categorize_metadata(self) -> dict:

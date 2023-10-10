@@ -2,13 +2,27 @@ from itertools import product
 from typing import Callable
 
 import pandas as pd
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from . import utils
-from .metadata_reader import metadata, defaults, Attribute as _Attribute
+from .metadata_reader import metadata, defaults, _Attribute
 
 
-def read_classification_info(name, year):
+def read_classification_info(name: str, year: int) -> dict:
+    """Read classification metadata for a classification scheme.
+
+    Parameters
+    ----------
+    name: str
+        Name of the classification scheme (e.g. 'original', 'coicop').
+    year: int
+        Year for which to read classification metadata.
+
+    Returns
+    -------
+    dict: Classification metadata dictionary containing information
+        for the given classification scheme and year.
+    """
     versioned_info = metadata.commodities[name]
     category_resolver = utils.MetadataCategoryResolver(versioned_info, year)
     classification_info = category_resolver.categorize_metadata()
@@ -53,13 +67,13 @@ def extract_column(table: pd.DataFrame, column_name: str) -> pd.Series:
 
 
 class CommodityDecoderSettings(BaseModel):
-    name: str = Field(default="original", alias="classification_name")
+    name: str = "original"
     code_column_name: str = "Code"
     year_column_name: str = "Year"
     versioned_info: dict = {}
     defaults: dict = {}
-    labels: tuple[str, ...] = tuple()
-    levels: tuple[int, ...] = tuple()
+    labels: tuple[str, ...] = ()
+    levels: tuple[int, ...] = ()
     drop_value: bool = False
     output_column_names: tuple[str, ...] = ()
     required_columns: tuple[str, ...] | None = None
@@ -98,7 +112,7 @@ class CommodityDecoderSettings(BaseModel):
 
     @property
     def rename_dict(self):
-        return dict(zip(product(self.labels, self.levels), self.output_column_names))  # type: ignore
+        return dict(zip(product(self.labels, self.levels), self.output_column_names))
 
 
 class CommodityDecoder:
@@ -181,11 +195,11 @@ class CommodityDecoder:
 
 
 class IDDecoderSettings(BaseModel):
-    name: _Attribute = Field(alias="attribute_name")
+    name: _Attribute
     id_column_name: str = "ID"
     year_column_name: str = "Year"
     labels: tuple[str, ...] = ("names",)
-    output_column_names: tuple[str] = tuple()
+    output_column_names: tuple[str, ...] = tuple()
 
     def model_post_init(self, __contex=None) -> None:
         self._resolve_output_column_names()

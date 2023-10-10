@@ -12,9 +12,10 @@ import numpy as np
 from . import utils
 
 from .metadata_reader import (
-    OriginalTable as _OriginalTable,
     defaults,
     metadata,
+    _OriginalTable,
+    _Years,
 )
 
 
@@ -195,7 +196,7 @@ def _general_cleaning(column: pd.Series):
 
 def save_cleaned_tables_as_parquet(
     table_names: _OriginalTable | Iterable[_OriginalTable] | None = None,
-    years: int | Iterable[int] | str | None = None,
+    years: _Years = "all",
 ) -> None:
     """
     Clean and process data for a specified table and year range, and save it in

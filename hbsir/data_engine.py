@@ -3,7 +3,7 @@ Main file for ordinary use
 """
 
 import re
-from typing import Iterable, Literal
+from typing import Literal
 from types import ModuleType
 import importlib
 
@@ -11,16 +11,7 @@ import pandas as pd
 import yaml
 
 from . import decoder, utils
-from .metadata_reader import (
-    defaults,
-    metadata,
-    original_tables,
-    LoadTable,
-    Attribute as _Attribute,
-    OriginalTable as _OriginalTable,
-    StandardTable as _StandardTables,
-    Table as _Table,
-)
+from .metadata_reader import defaults, metadata, original_tables, LoadTable, _Years
 from .data_cleaner import open_and_clean_table
 
 
@@ -223,7 +214,7 @@ class TableLoader:
     def __init__(
         self,
         table_name: str,
-        years: int | Iterable[int] | str | None,
+        years: _Years,
         settings: LoadTable,
     ):
         self.table_name = table_name

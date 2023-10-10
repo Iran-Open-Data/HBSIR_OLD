@@ -10,7 +10,8 @@ import boto3
 
 from .metadata_reader import (
     defaults,
-    OriginalTable as _OriginalTable,
+    _OriginalTable,
+    _Years,
 )
 from . import utils
 
@@ -69,7 +70,7 @@ def _get_file_size_online_directory(file_name: str, directory):
 
 def publish_processed_table(
     table_name: _OriginalTable | Iterable[_OriginalTable] | None = None,
-    years: int | Iterable[int] | str | None = None,
+    years: _Years = "last",
     online_directory: str = "parquet_files",
 ) -> None:
     assert isinstance(table_name, str)

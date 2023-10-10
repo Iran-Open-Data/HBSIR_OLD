@@ -5,7 +5,6 @@ from importlib import import_module
 
 import pandas as pd
 
-from .metadata_reader import Attribute as _Attributes
 from . import decoder
 
 
