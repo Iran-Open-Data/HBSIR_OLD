@@ -1,10 +1,39 @@
 """
-The purpose of the archive handler module is to allow downloading and storing
-raw data more easily.
+This module provides utility functions for downloading, unpacking, and extracting
+household budget survey data from archive files. 
+
+Key functions:
+
+- setup() - Downloads, unpacks, and extracts data for specified years
+- download() - Downloads archive files for given years 
+- unpack() - Unpacks archive files into directories
+- extract() - Extracts tables from Access DBs as CSVs
+
+The key functions allow:
+
+- Downloading survey data archive files for specified years from an online directory.
+
+- Unpacking the downloaded archive files (which are in .rar format) into directories.
+  Nested archives are extracted recursively.
+  
+- Connecting to the MS Access database file contained in each archive.
+
+- Extracting all tables from the Access database as CSV files.
+
+This enables access to the raw underlying survey data tables extracted directly 
+from the archive Access database files, before any cleaning or processing is applied. 
+
+The extracted CSV table data can then be loaded and cleaned as needed by the
+data_cleaner module. 
+
+Typical usage often only requires the cleaned processed data from data_engine.  
+However, this module is useful for development and checking details in the original
+raw data tables before cleaning.
 """
 
+
 from contextlib import contextmanager
-from typing import Generator, Iterable
+from typing import Generator
 import shutil
 import platform
 from pathlib import Path
@@ -13,105 +42,115 @@ from tqdm import tqdm
 import pandas as pd
 import pyodbc
 
-from . import metadata_reader, utils
+from .metadata_reader import defaults, metadata, _Years
+from . import utils
 
 
-defaults = metadata_reader.defaults
+def setup(years: _Years = "all", replace: bool = False) -> None:
+    """Download, unpack, and extract survey data for the specified years.
 
+    This function executes the full workflow to download, unpack, and
+    extract the raw survey data tables for the given years.
 
-def setup(
-    years: int | Iterable[int] | str | None = None, replace: bool = False
-) -> None:
-    """
-    Download census data archive files, unpack them, and extract tables from the MS Access files
-    for each year specified in the range of years and save them as CSV.
+    It calls the download(), unpack(), and extract() functions internally.
+
+    The years can be specified as:
+
+    - int: A single year
+    - Iterable[int]: A list or range of years
+    - str: A string range like '1390-1400'
+    - "all": All available years (default)
+    - "last": Just the last year
+
+    Years are parsed and validated by the `parse_years()` helper.
+
+    Existing files are skipped unless `replace=True`.
 
     Parameters
     ----------
-    years : int | Iterable[int] | str | None = None) -> list[int], optional
-        _description_, by default None
+    years : _Years, optional
+        Years to setup data for. Default is "all".
+
     replace : bool, optional
-        If True, existing files will be overwritten. If False, existing files will be skipped.
-        The default is False.
+        Whether to re-download and overwrite existing files.
 
     Returns
     -------
     None
 
-    See Also
+    Examples
     --------
-    download : A function that downloads household census data archive files.
-    unpack : A function that unpacks household census data archive files.
-    extract_tables : A function that extracts tables from a census MS Access file and saves them
-        as CSV files
+    >>> setup(1393) # Setup only 1393 skip if files already exist
+
+    >>> setup("1390-1400") # Setup 1390 to 1400
+
+    >>> setup("last", replace=True) # Setup last year, replace if already exists
 
     Notes
     -----
+    This function is intended for development use to access the raw data.
 
-    .. note::
+    For analysis you likely only need the cleaned dataset.
 
-        For ordinary usage, it is not necessary to download these files. This data is intended
-        for use during development and metadata writing.
-
-    .. warning::
-        Note that setting up files for the entire range of years will occupy approximately 12 GB
-        of storage.
-
-
-    Examples
+    Warnings
     --------
-    To set up all available files:
+    Setting up the full range of years will download and extract
+    approximately 12 GB of data.
 
-    >>> setup()
-
-    To set up files for the year 1393:
-
-    >>> setup(1393)
-
-    To set up files for the years 1370 to 1380, inclusive:
-
-    >>> setup(1370, 1380)
+    See Also
+    --------
+    download : Download archive files.
+    unpack : Unpack archive files.
+    extract : Extract tables from Access DBs.
+    parse_years : Validate and parse year inputs.
     """
     download(years, replace)
     unpack(years, replace)
-    extract_tables(years, replace)
+    extract(years, replace)
 
 
-def download(
-    years: int | Iterable[int] | str | None = None, replace: bool = False
-) -> None:
-    """
-    Downloads household census data archive files.
+def download(years: _Years = "all", replace: bool = False) -> None:
+    """Download archive files for the specified years.
+
+    This downloads the archive files for the given years from the
+    online directory to local storage.
+
+    The input `years` can be specified as:
+
+    - int: A single year
+    - Iterable[int]: A list or range of years
+    - str: A string range like '1390-1400'
+    - "all": Download all available years
+    - "last": Download just the last year
+
+    Years are parsed and validated by the `parse_years()` helper.
 
     Parameters
     ----------
-    years : int | Iterable[int] | str | None = None) -> list[int], optional
-        _description_, by default None
+    years : _Years, optional
+        Years to download archives for. Default is "all".
+
     replace : bool, optional
-        If True, overwrite existing files. If False, skip existing files. Default is False.
+        Whether to re-download existing files.
 
     Returns
     -------
     None
 
+    Raises
+    ------
+    HTTPError
+        If the URL cannot be reached or the file not found.
+
+    Notes
+    -----
+    The archive file is downloaded from the online directory as a RAR
+    file named `{year}.rar` and saved locally under `defaults.archive_files`.
+
     See Also
     --------
-    setup : A function that downloads, unpacks and extracts all tables from household census data
-        archive files and save them as CSV.
-
-    Examples
-    --------
-    To download all available files:
-
-    >>> download()
-
-    To download files for the year 1393:
-
-    >>> download(1393)
-
-    To download files for the years 1370 to 1380, inclusively:
-
-    >>> download(1370, 1380)
+    setup : Download, unpack, and extract data for given years.
+    parse_years : Parse and validate different year representations.
     """
     years = utils.parse_years(years)
     Path(defaults.archive_files).mkdir(exist_ok=True, parents=True)
@@ -120,17 +159,11 @@ def download(
 
 
 def _download_year_file(year: int, replace: bool = True) -> None:
-    """
-    Downloads the household census data archive file for a specified year
-    from the online directory in its original form.
+    """Download the archive file for the given year.
 
-    :param year: The year for which to download the household census file.
-    :type year: int
-    :param replace: Whether to replace the file if it already exists.
-    Defaults to True.
-    :type replace: bool, optional
-    :return: None, as this function does not return anything.
-
+    See Also
+    --------
+    download: Download archive files for the specified years.
     """
     file_name = f"{year}.rar"
     file_url = f"{defaults.online_dir}/original_files/{file_name}"
@@ -140,19 +173,32 @@ def _download_year_file(year: int, replace: bool = True) -> None:
         utils.download(url=file_url, path=local_path, show_progress_bar=True)
 
 
-def unpack(
-    years: int | Iterable[int] | str | None = None, replace: bool = False
-) -> None:
-    """
-    Unpacks census data archive files, extracts tables from the MS Access files and saves them
-    as CSV files for each year specified in the range of years.
+def unpack(years: _Years = "all", replace: bool = False) -> None:
+    """Extract archive files for the specified years.
+
+    This extracts the RAR archive for each given year from
+    defaults.archive_files into a directory under defaults.unpacked_data.
+
+    Nested ZIP/RAR archives found within the extracted files are also
+    recursively unpacked.
+
+    The years can be specified as:
+
+    - int: A single year
+    - Iterable[int]: A list or range of years
+    - str: A string range like '1390-1400'
+    - "all": Extract all available years
+    - "last": Extract just the last year
+
+    Years are parsed and validated by parse_years().
 
     Parameters
     ----------
-    years : int | Iterable[int] | str | None = None) -> list[int], optional
-        _description_, by default None
+    years : _Years, optional
+        Years to extract archives for. Default is "all".
+
     replace : bool, optional
-        If True, overwrite existing files. If False, skip existing files. Default is False.
+        Whether to re-extract if directories already exist.
 
     Returns
     -------
@@ -160,25 +206,8 @@ def unpack(
 
     See Also
     --------
-    setup : A function that downloads, unpacks and extracts all tables from household census data
-        archive files and save them as CSV.
-
-    Notes
-    -----
-    .. note::
-
-        Any nested archive files within the extracted directories will also be extracted
-        recursively.
-
-    Examples
-    --------
-    To unpack all available archives:
-
-    >>> unpack()
-
-    To unpack archives from 1393 to 1400:
-
-    >>> unpack(1393, 1400)
+    setup : Download, unpack, and extract data for given years.
+    parse_years : Parse and validate year inputs.
     """
     years = utils.parse_years(years)
     for year in tqdm(years, desc="Unziping raw data", unit="file"):
@@ -186,8 +215,12 @@ def unpack(
 
 
 def _unpack_yearly_data_archive(year: int, replace: bool = True):
-    """
-    Extracts data archive for the given year.
+    """Extract the RAR archive for the given year.
+
+    See Also
+    --------
+    unpack: Unpack archive files for the specified years.
+    _unpack_archives_recursive : Recursively extracts nested archives.
     """
     file_path = defaults.archive_files.joinpath(f"{year}.rar")
     year_directory = defaults.unpacked_data.joinpath(str(year))
@@ -196,50 +229,66 @@ def _unpack_yearly_data_archive(year: int, replace: bool = True):
             return
         shutil.rmtree(year_directory)
     year_directory.mkdir(parents=True)
-    utils.sz_extract(file_path, year_directory)
+    utils.sevenzip(file_path, year_directory)
     _unpack_archives_recursive(year_directory)
-    _remove_created_directories(year_directory)
-
-
-def _unpack_archives_recursive(directory: str | Path):
-    """
-    Extract all archives with the extensions ".zip" and ".rar" found
-    recursively in the given directory and its subdirectories using
-    7zip.
-
-    :param directory: The directory path to search for archives.
-    :type directory: str
-    :return: None
-
-    """
-    while True:
-        all_files = list(Path(directory).iterdir())
-        archive_files = [file for file in all_files if file.suffix in (".zip", ".rar")]
-        if len(archive_files) == 0:
-            break
-        for file in archive_files:
-            utils.sz_extract(file, directory)
-            Path(file).unlink()
-
-
-def _remove_created_directories(directory: Path):
-    for path in directory.iterdir():
+    for path in year_directory.iterdir():
         if path.is_dir():
             shutil.rmtree(path)
 
 
-def extract_tables(
-    years: int | Iterable[int] | str | None = None, replace: bool = False
-) -> None:
-    """
-    Extracts tables from a census MS Access file and saves them as CSV files.
+def _unpack_archives_recursive(directory: Path):
+    """Recursively extract nested archives under the given directory.
+
+    This searches the given directory for any ZIP/RAR files, and extracts
+    them using 7zip. It calls itself recursively on any nested archives found
+    within the extracted directories.
+
+    Stops recursing once no more archives are found.
 
     Parameters
     ----------
-    years : int | Iterable[int] | str | None = None) -> list[int], optional
-        _description_, by default None
-    replace : bool, optional
-        If True, overwrite existing files. If False, skip existing files. Default is False.
+    directory : Path
+        The directory under which to recursively extract archives.
+
+    Returns
+    -------
+    None
+    """
+    while True:
+        archive_files = [
+            file for file in directory.iterdir() if file.suffix in (".zip", ".rar")
+        ]
+        if len(archive_files) == 0:
+            break
+        for file in archive_files:
+            utils.sevenzip(file, directory)
+            Path(file).unlink()
+
+
+def extract(years: _Years = "all", replace: bool = False) -> None:
+    """Extract tables from Access DBs into CSV files for the given years.
+
+    This connects to the Access database file for each specified year,
+    extracts all the tables, and saves them as CSV files under
+    defaults.extracted_data.
+
+    The years can be specified as:
+
+    - int: A single year
+    - Iterable[int]: A list or range of years
+    - str: A string range like '1390-1400'
+    - "all": Extract all available years
+    - "last": Extract just the last year
+
+    Tables that fail to extract are skipped.
+
+    Parameters
+    ----------
+    years: _Years, optional
+        Years to extract tables for. Default is "all".
+
+    replace: bool, optional
+        Whether to overwrite existing extracted CSV files.
 
     Returns
     -------
@@ -247,18 +296,8 @@ def extract_tables(
 
     See Also
     --------
-    setup : A function that downloads, unpacks and extracts all tables from household census data
-        archive files and save them as CSV.
-
-    Examples
-    --------
-    To extract tables from all available census files:
-
-    >>> extract_tables()
-
-    To extract tables from all available census files from 1393 to 1400:
-
-    >>> extract_tables(years=['1393-1400'])
+    setup : Download, unpack, and extract data for given years.
+    parse_years : Parse and validate year inputs.
     """
     years = utils.parse_years(years)
     for year in years:
@@ -314,7 +353,6 @@ def _extract_table(
     file_path = year_directory.joinpath(f"{file_name}.csv")
     if (file_path.exists()) and (not replace):
         return
-
     try:
         table = _get_access_table(cursor, table_name)
     except (pyodbc.ProgrammingError, pyodbc.OperationalError):
@@ -325,7 +363,7 @@ def _extract_table(
 
 def _change_1380_table_names(year: int, table_name: str):
     if year == 1380:
-        unusual_names = metadata_reader.metadata.other["unusual_names_of_1380"]
+        unusual_names = metadata.other["unusual_names_of_1380"]
         if table_name in unusual_names:
             table_name = unusual_names[table_name]
     return table_name
