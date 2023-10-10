@@ -25,34 +25,39 @@ Sample usage:
 See API documentation for more details.
 """
 
-from typing import Iterable, Literal
+from typing import Iterable, Literal, Any
 
 import pandas as pd
 
 from . import (
-    metadata_reader,
     archive_handler,
     data_cleaner,
     data_engine,
     decoder,
+    utils,
 )
-from .utils import parse_years
+from .metadata_reader import (
+    metadata,
+    LoadTable,
+    _Attribute,
+    _OriginalTable,
+    _Years,
+)
 
-
-_OriginalTable = metadata_reader.OriginalTable
+_Default = Any
 
 
 # pylint: disable=too-many-arguments
 # pylint: disable=unused-argument
 def load_table(
     table_name: str,
-    years: int | Iterable[int] | str | None = None,
-    dataset: Literal["processed", "cleaned", "original"] | None = None,
-    on_missing: Literal["error", "download", "create"] | None = None,
-    redownload: bool | None = None,
-    save_downloaded: bool | None = None,
-    recreate: bool | None = None,
-    save_created: bool | None = None,
+    years: _Years = "last",
+    dataset: Literal["processed", "cleaned", "original"] = _Default,
+    on_missing: Literal["error", "download", "create"] = _Default,
+    redownload: bool = _Default,
+    save_downloaded: bool = _Default,
+    recreate: bool = _Default,
+    save_created: bool = _Default,
 ) -> pd.DataFrame:
     """Load DataFrame for given table name and year range.
 
@@ -78,17 +83,17 @@ def load_table(
         >>> load_table('Expenditures', [1399, 1400])
 
     """
-    metadata_reader.metadata.reload_file("schema")
-    optional_vars = {key: value for key, value in locals().items() if value is not None}
-    settings = metadata_reader.LoadTable(**optional_vars)
+    metadata.reload_file("schema")
+    parameters = {key: value for key, value in locals().items() if value is not _Default}
+    settings = LoadTable(**parameters)
     if settings.dataset == "original":
-        years = parse_years(years)
+        years = utils.parse_years(years)
         table_parts = []
         for year in years:
             table_parts.append(data_cleaner.read_table_csv(table_name, year))
         table = pd.concat(table_parts)
     elif settings.dataset == "cleaned":
-        years = parse_years(years)
+        years = utils.parse_years(years)
         table_parts = []
         for year in years:
             table_parts.append(
@@ -108,11 +113,13 @@ def load_table(
 # pylint: disable=unused-argument
 def create_table_with_schema(
     schema: dict,
-    years: int | Iterable[int] | str | None = None,
-    dataset: Literal["processed", "cleaned", "original"] | None = None,
-    on_missing: Literal["error", "download", "create"] | None = None,
-    save_downloaded: bool | None = None,
-    save_created: bool | None = None,
+    years: _Years = "last",
+    dataset: Literal["processed", "cleaned", "original"] = _Default,
+    on_missing: Literal["error", "download", "create"] = _Default,
+    redownload: bool = _Default,
+    save_downloaded: bool = _Default,
+    recreate: bool = _Default,
+    save_created: bool = _Default,
 ) -> pd.DataFrame:
     """Create and load DataFrame based on input schema.
 
@@ -135,24 +142,35 @@ def create_table_with_schema(
         >>> df = create_table_with_schema(schema)
 
     """
-    metadata_reader.metadata.reload_file("schema")
-    optional_vars = {key: value for key, value in locals().items() if value is not None}
-    settings = metadata_reader.LoadTable(**optional_vars)
+    metadata.reload_file("schema")
+    parameters = {key: value for key, value in locals().items() if value is not _Default}
+    settings = LoadTable(**parameters)
     if years is None and "years" in schema:
         years = schema["years"]
     if "table_list" in schema:
         table_name = "_Input_Table"
-        metadata_reader.metadata.schema[table_name] = schema
+        metadata.schema[table_name] = schema
     elif all("table_list" in table_schema for table_schema in schema.values()):
         table_name = list(schema.keys())[-1]
-        metadata_reader.metadata.schema.update(schema)
+        metadata.schema.update(schema)
     else:
         raise NameError
     return data_engine.TableLoader(table_name, years, settings).load()
 
 
 def add_classification(
-    table: pd.DataFrame, classification_name: str = "original", **kwargs
+    table: pd.DataFrame,
+    name: str = "original",
+    defaults: dict = _Default,
+    labels: tuple[str, ...] = _Default,
+    levels: tuple[int, ...] = _Default,
+    drop_value: bool = _Default,
+    output_column_names: tuple[str, ...] = _Default,
+    required_columns: tuple[str, ...] = _Default,
+    missing_value_replacements: dict[str, str] = _Default,
+    code_column_name: str = _Default,
+    year_column_name: str = _Default,
+    versioned_info: dict = _Default,
 ) -> pd.DataFrame:
     """Add commodity classification codes to DataFrame.
 
@@ -168,9 +186,8 @@ def add_classification(
         pd.DataFrame: Input DataFrame with added classification columns.
 
     """
-    settings = decoder.CommodityDecoderSettings(
-        classification_name=classification_name, **kwargs
-    )
+    parameters = {key: value for key, value in locals().items() if value is not _Default}
+    settings = decoder.CommodityDecoderSettings(**parameters)
     table = decoder.CommodityDecoder(
         table=table, settings=settings
     ).add_classification()
@@ -178,7 +195,12 @@ def add_classification(
 
 
 def add_attribute(
-    table: pd.DataFrame, attribute_name: data_engine._Attribute, **kwargs
+    table: pd.DataFrame,
+    name: _Attribute,
+    labels: tuple[str, ...] = _Default,
+    output_column_names: tuple[str, ...] = _Default,
+    id_column_name: str = _Default,
+    year_column_name: str = _Default,
 ) -> pd.DataFrame:
     """Add household attributes to DataFrame based on ID.
 
@@ -202,7 +224,8 @@ def add_attribute(
         pd.DataFrame: Input DataFrame with added attribute columns.
 
     """
-    settings = decoder.IDDecoderSettings(attribute_name=attribute_name, **kwargs)
+    parameters = {key: value for key, value in locals().items() if value is not _Default}
+    settings = decoder.IDDecoderSettings(**parameters)
     table = decoder.IDDecoder(table=table, settings=settings).add_attribute()
     return table
 
@@ -229,7 +252,7 @@ def add_weight(table: pd.DataFrame, how="left") -> pd.DataFrame:
 
 
 def setup(
-    years: int | Iterable[int] | str | None = None,
+    years: _Years = "last",
     table_names: _OriginalTable | Iterable[_OriginalTable] | None = None,
     replace: bool = False,
 ) -> None:
