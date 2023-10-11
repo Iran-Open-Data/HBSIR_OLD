@@ -32,4 +32,3 @@ class ViewAccessor:
             settings = decoder.CommodityDecoderSettings(name=value)
             return decoder.CommodityDecoder(self._obj, settings).add_classification()
         raise KeyError(f"{value} is not a view of the current table")
-
