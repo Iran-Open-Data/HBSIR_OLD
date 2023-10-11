@@ -637,17 +637,14 @@ Total_Outlay:
   instructions:
 
     - apply_pandas_function: >
-        .groupby(["Year", "ID"], as_index=False)[["Net_Expenditure"]].sum()
-
-    - create_column:
-        name: Expenditure
-        type: numerical
-        expression: "Net_Expenditure"
+        .groupby(["Year", "ID"], as_index=False)
+        [["Gross_Expenditure", "Net_Expenditure"]].sum()
 
     - apply_order:
       - Year
       - ID
-      - Expenditure
+      - Gross_Expenditure
+      - Net_Expenditure
 
   cache_result: true
 
