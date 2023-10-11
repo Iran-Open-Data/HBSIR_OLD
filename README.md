@@ -344,13 +344,13 @@ weights = hbsir.load_table("Weights", 1400)
   </tbody>
 </table>
 
-If method chaining is your preference, this package provides a pandas extension that facilitates this approach. Pay attention to the subsequent code, which is composed using this method:
+
 ```python
 # Calculate the sum of weights
 weights_sum = (
     weights
-    .hbsir.add_attribute(attribute_name="Urban_Rural")
-    .hbsir.add_attribute(attribute_name="Province")
+    .pipe(hbsir.add_attribute, "Urban_Rural")
+    .pipe(hbsir.add_attribute, "Province")
     .query("`Urban_Rural`=='Urban' & Province=='Tehran' & Weight.notnull()")
     .sum()
     .loc["Weight"]
