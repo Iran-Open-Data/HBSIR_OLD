@@ -186,7 +186,7 @@ def add_classification(
 
     Args:
         table: DataFrame containing 'Code' column to classify.
-        classification_name: Name of classification to apply.
+        name: Name of classification to apply.
         **kwargs: Additional arguments passed to internal classifier.
 
     Returns:

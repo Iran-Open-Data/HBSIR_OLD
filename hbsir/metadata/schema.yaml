@@ -751,7 +751,7 @@ Imputed_Rent:
   instructions:
 
     - add_classification:
-        classification_name: Imputed_Rent
+        name: Imputed_Rent
         labels: [is_imputed]
 
     - apply_filter: "Imputed_Rent.notnull() & (Provision_Method.isnull() or Provision_Method == 'Purchase')"
