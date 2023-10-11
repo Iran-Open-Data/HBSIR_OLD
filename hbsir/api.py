@@ -41,6 +41,7 @@ from .metadata_reader import (
     LoadTable,
     _Attribute,
     _OriginalTable,
+    _Table,
     _Years,
 )
 
@@ -56,7 +57,7 @@ def _extract_parameters(local_variables: dict) -> dict:
 # pylint: disable=too-many-arguments
 # pylint: disable=unused-argument
 def load_table(
-    table_name: str,
+    table_name: _Table,
     years: _Years = "last",
     dataset: Literal["processed", "cleaned", "original"] = _Default,
     on_missing: Literal["error", "download", "create"] = _Default,

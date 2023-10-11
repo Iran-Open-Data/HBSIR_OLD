@@ -3,7 +3,7 @@ from typing import Literal, Iterable
 import pandas as pd
 from pydantic import BaseModel, Field
 
-from .metadata_reader import _Attribute
+from .metadata_reader import _Attribute, _Table
 from . import api, utils
 
 
@@ -51,7 +51,7 @@ class Quantiler:
         "Expenditure": "Gross_Expenditure",
     }
 
-    variable_tables = {
+    variable_tables: dict[str, _Table] = {
         "Income": "Total_Income",
         "Gross_Expenditure": "Total_Expenditure",
         "Net_Expenditure": "Total_Expenditure",
