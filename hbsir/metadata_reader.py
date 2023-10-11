@@ -54,10 +54,19 @@ _IncomeTable = Literal[
 _OriginalTable = Literal[_GeneralTable, _ExpenditureTable, _IncomeTable]
 
 _StandardTable = Literal[
+    "Weights",
+    "Number_of_Members",
+    "Equivalence_Scale",
     "Original_Expenditures",
     "Expenditures",
+    "Total_Expenditure",
+    "Original_Outlays",
+    "Outlays",
+    "Total_Outlay",
     "Imputed_Rent",
     "Incomes",
+    "Income_Breakdown",
+    "Total_Income",
 ]
 
 _Table = Literal[_OriginalTable, _StandardTable]
