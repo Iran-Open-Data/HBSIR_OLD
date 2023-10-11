@@ -23,4 +23,6 @@ def load_table(
     name = ".".join([data_source, table_name, frequency])
     name = name if separate_by is None else f"{name}.{separate_by}"
     name = name.lower()
-    return ExternalDataCleaner(name, download_cleaned).load_data(saved_cleaned)
+    table = ExternalDataCleaner(name, download_cleaned).load_data(saved_cleaned)
+    table = table.reset_index()
+    return table
