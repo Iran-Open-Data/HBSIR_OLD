@@ -1,8 +1,6 @@
 """
 DataFrame extention
 """
-from importlib import import_module
-
 import pandas as pd
 
 from . import decoder
