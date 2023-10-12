@@ -38,6 +38,7 @@ from . import (
 )
 from .metadata_reader import (
     metadata,
+    original_tables,
     LoadTable,
     _Attribute,
     _OriginalTable,
@@ -94,12 +95,16 @@ def load_table(
     parameters = _extract_parameters(locals())
     settings = LoadTable(**parameters)
     if settings.dataset == "original":
+        if table_name not in original_tables:
+            raise ValueError
         years = utils.parse_years(years)
         table_parts = []
         for year in years:
-            table_parts.append(data_cleaner.read_table_csv(table_name, year))
+            table_parts.append(data_cleaner.load_raw_data(table_name, year))
         table = pd.concat(table_parts)
     elif settings.dataset == "cleaned":
+        if table_name not in original_tables:
+            raise ValueError
         years = utils.parse_years(years)
         table_parts = []
         for year in years:
@@ -285,4 +290,4 @@ def setup(
         setup([1390,1400], ['food'], True)
     """
     archive_handler.setup(years, replace)
-    data_cleaner.save_cleaned_tables_as_parquet(table_names, years)
+    data_cleaner.save_cleaned_tables(table_names, years)

@@ -3,7 +3,7 @@ Module for cleaning raw data into proper format
 """
 
 from pathlib import Path
-from typing import Hashable, Iterable, get_args
+from typing import Iterable, Literal
 
 from tqdm import tqdm
 import pandas as pd
@@ -14,36 +14,52 @@ from . import utils
 from .metadata_reader import (
     defaults,
     metadata,
+    original_tables,
     _OriginalTable,
     _Years,
 )
 
 
-def read_table_csv(
-    table_name: str, year: int, urban: bool | None = None
+def load_raw_data(
+    table_name: _OriginalTable, year: int, urban: bool | None = None
 ) -> pd.DataFrame:
-    """
-    Reads CSV file(s) containing data for a given table, year, and urban/rural category,
-    and returns the data as a pandas DataFrame.
+    """Reads CSV file(s) and returns DataFrame for table and year.
 
-    :param table_name: The name of the table to be read.
-    :type table_name: str
-    :param year: The year of the data to be read.
-    :type year: int
-    :param urban: A boolean indicating whether to read data for urban areas only (`True`),
-        rural areas only (`False`), or both (`None`, default). If `None`, data for both
-        urban and rural areas will be read.
-    :type urban: bool|None
-    :return: A DataFrame containing the concatenated data from the CSV file(s).
-    :rtype: pd.DataFrame
-    :raises FileNotFoundError: If the CSV file(s) cannot be found at the expected file path(s).
-    :raises ValueError: If the table name or year are invalid, or if the table metadata file is
-        corrupt.
-    :raises pd.errors.EmptyDataError: If the CSV file(s) are empty.
+    Reads the CSV file(s) containing the specified table data for the
+    given year and urban/rural category.
 
-    :example:
+    Concatenates and returns the contents as a pandas DataFrame.
 
-    >>> load_table_data("food", 1393, urban=True)
+    Parameters
+    ----------
+    table_name : str
+        Name of the table to read.
+
+    year : int
+        Year of the data to read.
+
+    urban : bool, optional
+        Whether to read only urban, rural or both data.
+        If None, reads both urban and rural.
+
+    Returns
+    -------
+    DataFrame
+        Concatenated table data from the CSV file(s).
+
+    Raises
+    ------
+    FileNotFoundError
+        If CSV file(s) not found.
+
+    ValueError
+        If invalid table name, year, or corrupt metadata.
+
+    Examples
+    --------
+    >>> df = load_raw_data('food', 1393)
+    >>> df = load_raw_data('population', 1390, urban=True)
+
     """
     urban_stats = [True, False] if urban is None else [urban]
     tables = []
@@ -91,21 +107,32 @@ def _get_table_metadata(
     return table_metadata
 
 
-def open_and_clean_table(table_name: str, year: int) -> pd.DataFrame:
-    """
-    Clean the specified table using metadata and return a cleaned pandas DataFrame.
+def open_and_clean_table(table_name: _OriginalTable, year: int) -> pd.DataFrame:
+    """Cleans table data using metadata transformations.
 
-    :param table_name: The name of the table to be cleaned.
-    :type table_name: str
-    :param year: The year for which the table will be cleaned.
-    :type year: int
-    :return: A cleaned DataFrame with the specified table's data.
-    :rtype: pandas.DataFrame
+    Loads raw table data, applies cleaning ops based on metadata,
+    and concatenates urban and rural tables.
+
+    Useful as a preprocessing step before further analysis.
+    Called by save_processed_tables() to clean each table.
+
+    Parameters
+    ----------
+    table_name : _OriginalTable
+        Name of table to clean.
+
+    year : int
+        Year of data to clean.
+
+    Returns
+    -------
+    DataFrame
+        Cleaned concatenated table data.
 
     """
     cleaned_table_list = []
     for is_urban in [True, False]:
-        table = read_table_csv(table_name, year, is_urban)
+        table = load_raw_data(table_name, year, is_urban)
         table_metadata = _get_table_metadata(table_name, year, is_urban)
         cleaned_table = _apply_metadata_to_table(table, table_metadata)
         cleaned_table_list.append(cleaned_table)
@@ -129,7 +156,9 @@ def _apply_metadata_to_table(table: pd.DataFrame, table_metadata: dict) -> pd.Da
     return cleaned_table
 
 
-def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
+def _get_column_metadata(
+    table_metadata: dict, column_name: str
+) -> dict | Literal["drop", "error"]:
     table_settings = _get_table_settings(table_metadata)
     year = table_metadata["year"]
     columns_metadata = table_metadata["columns"]
@@ -142,8 +171,13 @@ def _get_column_metadata(table_metadata: dict, column_name: Hashable) -> dict:
         )
     if column_name in columns_metadata:
         column_metadata = columns_metadata[column_name]
+        if not (isinstance(column_metadata, dict) or column_metadata == "drop"):
+            print(table_metadata)
+            raise ValueError(f"Metadata for column {column_name} is not valid")
     else:
-        column_metadata = table_settings["missings"]
+        column_metadata: Literal["drop", "error"] = table_settings["missings"]
+        if column_metadata not in ["drop", "error"]:
+            raise ValueError("Missing treatment is not valid")
     return column_metadata
 
 
@@ -194,38 +228,27 @@ def _general_cleaning(column: pd.Series):
     return column
 
 
-def save_cleaned_tables_as_parquet(
+def save_cleaned_tables(
     table_names: _OriginalTable | Iterable[_OriginalTable] | None = None,
     years: _Years = "all",
 ) -> None:
-    """
-    Clean and process data for a specified table and year range, and save it in
-    Parquet format.
+    """Saves cleaned table data to Parquet files.
 
-    :param table_name: Name of the table to be cleaned and processed.
-    :type table_name: str
+    Cleans, processes and saves the specified tables for the given years
+    as Parquet files in the processed_data directory.
 
-    :param years: years of data to clean
+    Parameters
+    ----------
+    table_names : _OriginalTable or Iterable[_OriginalTable], optional
+        Names of tables to process.
+        Default is to process all tables.
 
-    :param to_year: Ending year of the data to be cleaned and processed
-        (inclusive). If not specified, defaults to the last year.
-    :type to_year: int or None
-
-    :return: None
-
-    :raises FileNotFoundError: If the function is unable to find the specified
-        table(s) CSV file(s).
-
-    :raises Exception: If an error occurs during the cleaning and processing of
-        the data.
-
-    .. note:: The cleaned and processed data will be saved in Parquet format to
-        the `processed_data` directory in the project's default settings.
-
-    .. seealso:: `utils.build_year_interval`, `clean_table_with_metadata`
+    years : _Years, optional
+        Years of data to process.
+        Default is "all" years.
 
     """
-    table_names = get_args(_OriginalTable) if table_names is None else table_names
+    table_names = original_tables if table_names is None else table_names
     table_year = utils.construct_table_year_pairs(table_names, years)
     pbar = tqdm(total=len(table_year), desc="Preparing ...", unit="Table")
     for _table_name, year in table_year:

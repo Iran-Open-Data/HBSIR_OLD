@@ -11,15 +11,24 @@ import pandas as pd
 import yaml
 
 from . import decoder, utils
-from .metadata_reader import defaults, metadata, original_tables, LoadTable, _Years
+from .metadata_reader import (
+    defaults,
+    metadata,
+    original_tables,
+    LoadTable,
+    _Years,
+    _OriginalTable,
+)
 from .data_cleaner import open_and_clean_table
 
 
 class TableHandler:
     """A class for loading parquet files"""
 
-    def __init__(self, table_name: str, year: int, settings: LoadTable) -> None:
-        self.table_name = table_name
+    def __init__(
+        self, table_name: _OriginalTable, year: int, settings: LoadTable
+    ) -> None:
+        self.table_name: _OriginalTable = table_name
         self.year = year
         self.file_name = f"{year}_{table_name}.parquet"
         self.local_path = defaults.processed_data.joinpath(self.file_name)
@@ -327,7 +336,9 @@ class TableLoader:
         table = Applier(table, instructions, props).table
         return table
 
-    def _load_original_table(self, table_name: str, year: int) -> pd.DataFrame:
+    def _load_original_table(
+        self, table_name: _OriginalTable, year: int
+    ) -> pd.DataFrame:
         if f"{table_name}_{year}" in self.original_tables_cache:
             return self.original_tables_cache[f"{table_name}_{year}"]
         table = TableHandler(table_name, year, self.settings).read()
