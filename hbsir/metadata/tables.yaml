@@ -48,7 +48,9 @@ yearly_table_availability:
   household_information:      {start: 1387}
   census_month:               [1387, 1390, 1391]
   members_properties:         {start: 1363}
-  house_specifications:       {start: 1363}
+  # house_specifications:       {start: 1363}
+  house_specifications:       {start: 1383}
+
 
   food:                       {start: 1363}
   tobacco:                    {start: 1383}
@@ -737,8 +739,12 @@ house_specifications:
     other_event_name: &other_event_name
       new_name: "Other_event_name"
       type: "string"
-    no_event: &no_event
-      new_name: "No_event"
+    no_event_month: &no_event_month
+      new_name: "No_event_month"
+      type: "boolean"
+      true_condition: 1
+    no_event_year: &no_event_year
+      new_name: "No_event_year"
       type: "boolean"
       true_condition: 1
 
@@ -1070,13 +1076,13 @@ house_specifications:
         1387: *homerepair_year
         1391: *homerepair_month
       DYCOL51:
-        1384: drop
+        1384: *no_event_month
         1385: *foreign_trip_year
         1386: *ziarati_trip_year
         1387: *ziarati_trip_month
         1391: *homerepair_year
       DYCOL52:
-        1384: *no_event
+        1384: *no_event_year
         1385: *surgery_month
         1386: *foreign_trip_month
         1387: *ziarati_trip_year
@@ -1092,7 +1098,7 @@ house_specifications:
         1387: *foreign_trip_year
         1391: *foreign_trip_month
       DYCOL55:
-        1385: *no_event
+        1385: *no_event_year
         1386: *other_event_month
         1387: *surgery_month
         1391: *foreign_trip_year
@@ -1101,11 +1107,11 @@ house_specifications:
         1387: *other_event_month
         1391: *surgery_month
       DYCOL57:
-        1386: *no_event
+        1386: *no_event_year
         1387: *other_event_year
         1391: *surgery_year
       DYCOL58:
-        1387: *no_event
+        1387: *no_event_year
         1391: *other_event_month
       DYCOL59:
         1389: *other_event_name
@@ -1113,7 +1119,7 @@ house_specifications:
       DYCOL60: 
         1391: *other_event_name
       DYCOL61:
-        1391: *no_event
+        1391: *no_event_year
 
 
 
