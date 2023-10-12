@@ -236,34 +236,54 @@ class IDDecoder:
         mapping_table = mapping_table.drop_duplicates().set_index(year_and_id)
         return mapping_table
 
-    def _get_metadata_version(self, year) -> dict:
-        household_metadata = utils.MetadataVersionResolver(
-            metadata.household, year
-        ).get_version()
-        assert isinstance(household_metadata, dict)
-        return household_metadata
-
-    def _create_code_builder(self, household_metadata: dict) -> Callable:
+    def _create_code_builder(
+        self, household_metadata: dict
+    ) -> Callable[[pd.Series], pd.Series]:
         ld_len = household_metadata["ID_Length"]
-        attr_dict = household_metadata[self.settings.name]
-        if ("position" not in attr_dict) or attr_dict["position"] is None:
-            raise ValueError("Code position is not available")
-        start, end = attr_dict["position"]["start"], attr_dict["position"]["end"]
+        attr_dict = household_metadata[self.settings.name]["code"]
 
-        def builder(household_id_column: pd.Series) -> pd.Series:
-            return (
-                household_id_column
-                % pow(10, (ld_len - start))
-                // pow(10, (ld_len - end))
-            )
+        if ("position" in attr_dict) and attr_dict["position"] is not None:
+            start, end = attr_dict["position"]["start"], attr_dict["position"]["end"]
+
+            def builder(household_id_column: pd.Series) -> pd.Series:
+                return (
+                    household_id_column
+                    % pow(10, (ld_len - start))
+                    // pow(10, (ld_len - end))
+                )
+
+        elif "external_file" in attr_dict:
+            file_name = f"{attr_dict['external_file']}.parquet"
+            file_path = defaults.external_data.joinpath(file_name)
+            if not file_path.exists():
+                defaults.external_data.mkdir(parents=True, exist_ok=True)
+                file_address = f"{defaults.online_dir}/external_data/{file_name}"
+                utils.download(file_address, file_path)
+            code_builer_file = pd.read_parquet(file_path)
+            code_series = code_builer_file.loc[household_metadata["year"]].iloc[:, 0]
+            assert isinstance(code_series, pd.Series)
+            mapping_dict = code_series.to_dict()
+
+            def builder(household_id_column: pd.Series) -> pd.Series:
+                codes = household_id_column.map(mapping_dict)
+                assert codes.isna().sum() == 0
+                return codes
+
+        else:
+            raise ValueError("Code position is not available")
 
         return builder
 
-    def _create_code_mapper(self, label, year) -> Callable:
-        if label == "code":
-            return self._create_code_builder
+    def _create_code_mapper(
+        self, label: str, year: int
+    ) -> Callable[[pd.Series], pd.Series]:
+        household_metadata = utils.resolve_metadata(metadata.household, year)
 
-        household_metadata = self._get_metadata_version(year)
+        if label == "code":
+            return self._create_code_builder(household_metadata)
+
+        if not isinstance(household_metadata, dict):
+            raise ValueError
         # pylint: disable=unsubscriptable-object
         mapping = household_metadata[self.settings.name][label]
         code_builder = self._create_code_builder(household_metadata)

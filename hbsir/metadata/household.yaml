@@ -9,9 +9,10 @@ ID_Length:
 
 
 Urban_Rural:
-  position:
-    start: 0
-    end: 1
+  code:
+    position:
+      start: 0
+      end: 1
 
   names:
     1363:
@@ -31,9 +32,10 @@ Urban_Rural:
 
 
 Province:
-  position:
-    start: 1
-    end: 3
+  code:
+    position:
+      start: 1
+      end: 3
 
   names:
     0:  "Markazi"                           # مرکزی
@@ -103,15 +105,20 @@ Province:
 
 
 Region:
-  position:
-    1363: null
-    1377:
-      start: 1
-      end: 5
-    1387: null
-    1392:
-      start: 1
-      end: 5
+  code:
+    position:
+      1363: null
+      1377:
+        start: 1
+        end: 5
+      1387: null
+      1392:
+        start: 1
+        end: 5
+    external_file:
+      1363: null
+      1387: "regions"
+      1392: null
 
   names:
     # 0 0 X X
