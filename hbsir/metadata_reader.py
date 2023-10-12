@@ -175,6 +175,15 @@ class Defaults(BaseModel):
     first_year: int = settings[("first_year",)]
     last_year: int = settings[("last_year",)]
 
+    def model_post_init(self, __contex=None) -> None:
+        self.archive_files.mkdir(parents=True, exist_ok=True)
+        self.unpacked_data.mkdir(parents=True, exist_ok=True)
+        self.extracted_data.mkdir(parents=True, exist_ok=True)
+        self.processed_data.mkdir(parents=True, exist_ok=True)
+        self.external_data.mkdir(parents=True, exist_ok=True)
+        self.maps.mkdir(parents=True, exist_ok=True)
+        self.cached_data.mkdir(parents=True, exist_ok=True)
+
 
 class Metadata:
     """
@@ -214,7 +223,7 @@ class Metadata:
             settings[("local_metadata", file_name)]
         )
         interpreter = self.get_interpreter(file_name)
-        _metadata = open_yaml(package_metadata_path, interpreter=interpreter)
+        _metadata: dict = open_yaml(package_metadata_path, interpreter=interpreter)
         interpreter = self.get_interpreter(file_name, _metadata)
         if local_metadata_path.exists():
             local_metadata = open_yaml(local_metadata_path, interpreter=interpreter)
