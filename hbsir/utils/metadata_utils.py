@@ -13,18 +13,13 @@ MetadataVersionResolver - Resolves and returns metadata versions.
 
 MetadataVersionSettings - Configurable settings for versioning.
 
-Example
--------
-resolver = MetadataVersionResolver(metadata, year=1380)
-version = resolver.get_version()
 """
-
 from typing import Literal, overload
-from dataclasses import dataclass
+
+from pydantic import BaseModel
 
 
-@dataclass
-class MetadataVersionSettings:
+class MetadataResolverSettings(BaseModel):
     """
     Settings for metadata versioning.
 
@@ -54,78 +49,67 @@ class MetadataVersionSettings:
     item_key_name: str = "item_key"
 
 
-default_settings = MetadataVersionSettings()
-
-
 class MetadataVersionResolver:
     """
     Resolves specific metadata versions from versioned metadata.
 
-    Retrieves the appropriate version of metadata based on the provided
-    year and versioning information in the metadata. Supports both
-    keyword-based and simple integer versioning of metadata dictionaries.
+    This class retrieves the appropriate version of metadata based on a provided
+    year and the versioning information contained within the metadata. It supports
+    both keyword-based and simple integer versioning schemes for metadata dictionaries.
 
-    Versioning configuration is specified via a MetadataVersionSettings instance.
+    The versioning configuration is specified via a MetadataVersionSettings instance.
+    The class will recursively traverse the metadata structure to find the right
+    version for the given year according to the settings.
 
     Parameters
     ----------
-    metadata : dict, list, str, int, None
-        Metadata to extract version from. Can contain versioning info.
+    metadata : dict
+        Metadata to extract version from. This can contain embedded versioning information.
 
     year : int, optional
-        Year to retrieve metadata for. If not provided, will try to extract
-        from metadata.
+        Year to retrieve metadata for. If not provided, the class will try to extract
+        the year from the metadata based on the settings.
 
     settings : MetadataVersionSettings, optional
-        Versioning settings. Default settings used if not provided.
+        Versioning configuration settings. If not provided, default settings will be used.
 
-    Attributes
-    ----------
-    metadata : dict, list, str, int, None
-        Original input metadata.
-
-    settings : MetadataVersionSettings
-        Versioning configuration settings.
 
     Methods
     -------
     get_version() : Retrieves resolved metadata version for given year.
-
-    _is_versioned() : Checks if input metadata is versioned.
-
-    _retrieve_dictionary_version() : Gets specific version from dictionary.
-
-    _detect_version_type() : Determines version type of dictionary.
-
-    _find_version_number() : Gets latest version number <= given year.
+    is_versioned() : Check if given metadata element is versioned.
     """
 
     def __init__(
         self,
-        metadata: dict | list | str | int | float | None,
+        metadata: dict,
         year: int | None = None,
-        settings: MetadataVersionSettings = default_settings,
+        settings: MetadataResolverSettings | None = None,
     ):
         self.metadata = metadata
-        self.settings = settings
+        self.settings = MetadataResolverSettings() if settings is None else settings
         if year is not None:
             self.year = year
-        elif (isinstance(metadata, dict)) and (settings.year_keyword in metadata):
-            self.year = metadata[settings.year_keyword]
-        elif self._is_versioned(metadata):
+        elif (isinstance(metadata, dict)) and (self.settings.year_keyword in metadata):
+            self.year = metadata[self.settings.year_keyword]
+        elif self.is_versioned():
             raise NameError("Versioned metadata requires year parameter.")
 
     def get_version(self) -> dict | list | str | int | float | None:
-        """
-        Retrieves metadata version for given year.
+        """Retrieves metadata version for given year.
 
-        Recursively traverses metadata and returns appropriate
-        version based on configured versioning settings and provided year.
+        Recursively traverses metadata structure and returns appropriate
+        version based on configured settings and provided year.
 
         Returns
         -------
         dict | list | str | int | None
             Resolved metadata version for provided year.
+
+        Examples
+        --------
+        >>> resolver = MetadataVersionResolver(metadata, year=1380)
+        >>> version = resolver.get_version()
         """
         return self._retrive_version(self.metadata)
 
@@ -174,15 +158,44 @@ class MetadataVersionResolver:
 
         return element
 
-    def _is_versioned(self, element):
+    def is_versioned(self, element: dict | list | str | int | None = None):
+        """Check if given metadata element is versioned.
+
+        Recursively checks if the given metadata element contains
+        versioning information according to the configuration.
+
+        Parameters
+        ----------
+        element : dict, list, str, int, None, optional
+            Metadata element to check for versioning.
+            If not provided, uses the original metadata.
+
+        Returns
+        -------
+        bool
+            True if the element is versioned, False otherwise.
+
+        Raises
+        ------
+        TypeError
+            If element is an unsupported type.
+
+        Examples
+        --------
+        >>> resolver = MetadataVersionResolver(metadata)
+        >>> resolver.is_versioned()
+        True
+        """
+        if element is None:
+            element = self.metadata
         if isinstance(element, (int, str)):
             return False
         if isinstance(element, list):
-            return not all(not self._is_versioned(value) for value in element)
+            return not all(not self.is_versioned(value) for value in element)
         if isinstance(element, dict):
             if self._detect_version_type(element) != "not_versioned":
                 return True
-            return not all(not self._is_versioned(value) for value in element.values())
+            return not all(not self.is_versioned(value) for value in element.values())
         raise TypeError
 
     def _retrieve_dictionaty_verion(
@@ -242,7 +255,53 @@ class MetadataVersionResolver:
 
 
 class MetadataCategoryResolver(MetadataVersionResolver):
-    """Metadata Category Resolver"""
+    """Metadata Category Resolver
+
+    This class takes metadata and categorizes it into a list of items with categories.
+
+    It inherits from MetadataVersionResolver to first resolve the appropriate
+    version of the metadata based on the provided year.
+
+    Example:
+    -------
+
+    Before:
+
+    ```
+    metadata:
+        key1: val1
+        key2: val2
+
+        items:
+        item1:
+            shared_key_1: shared_val_1
+            shared_key_2: shared_val_2
+
+            categories:
+            1:
+                cat_key_1: cat_val_1
+            2:
+                cat_key_2: cat_val_2
+    ```
+
+    After:
+    ```
+    metadata:
+        key1: val1
+        key2: val2
+
+        items:
+        - shared_key_1: shared_val_1
+            shared_key_2: shared_val_2
+            cat1key: catval1
+            item_key: item1
+
+        - shared_key_1: shared_val_1
+            shared_key_2: shared_val_2
+            cat2key: catval2
+            item_key: item1
+    ```
+    """
 
     # pylint: disable=unsubscriptable-object
     # pylint: disable=unsupported-assignment-operation
@@ -251,39 +310,6 @@ class MetadataCategoryResolver(MetadataVersionResolver):
 
         Parses the input metadata to build a categorized list
         of items under the 'items' key.
-
-        Example:
-
-        Before:
-
-        metadata:
-          key1: val1
-          key2: val2
-
-          items:
-            item1:
-              shared1: foo
-              shared2: bar
-
-              categories:
-                1:
-                  cat1key: catval1
-                2:
-                  cat2key: catval2
-
-        After:
-
-          items:
-            - shared1: foo
-              shared2: bar
-              cat1key: catval1
-              item_key: item1
-
-            - shared1: foo
-              shared2: bar
-              cat2key: catval2
-              item_key: item1
-
 
         Retrieves the latest version of the metadata using get_version().
         Checks that metadata is a dictionary.
