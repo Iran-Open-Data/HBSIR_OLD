@@ -17,8 +17,8 @@ def load_table(
     data_source: _DataSource = "SCI",
     frequency: _Frequency = "Annual",
     separate_by: _SeparateBy | None = None,
-    download_cleaned: bool = False,
-    saved_cleaned: bool = True,
+    download_cleaned: bool = True,
+    saved_cleaned: bool = False,
 ) -> pd.DataFrame:
     name = ".".join([data_source, table_name, frequency])
     name = name if separate_by is None else f"{name}.{separate_by}"

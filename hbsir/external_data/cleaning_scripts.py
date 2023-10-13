@@ -2,18 +2,8 @@ import pandas as pd
 
 
 def create_year_month_index(from_year: int, to_year: int) -> pd.MultiIndex:
-    to_year += 1
-    return pd.MultiIndex.from_frame(
-        pd.concat(
-            [
-                pd.Series(range(from_year, to_year))
-                .repeat(12)
-                .reset_index(drop=True)
-                .rename("Year"),
-                pd.Series(list(range(1, 13)) * (to_year - from_year)).rename("Month"),
-            ],
-            axis="columns",
-        )
+    return pd.MultiIndex.from_product(
+        [range(from_year, to_year + 1), range(1, 12 + 1)], names=["Year", "Month"]
     )
 
 
@@ -42,6 +32,20 @@ def sci_cpi_by1395_rural_maingroups_annual(table: pd.DataFrame) -> pd.DataFrame:
     table = table.loc[[4], 1:].T
     table.columns = ["CPI"]
     table.index = pd.Index(range(1361, 1401), name="Year")
+    return table
+
+
+def sci_cpi_by1395_monthly(table: pd.DataFrame) -> pd.DataFrame:
+    table = table.loc[[3], 1:].T
+    table.columns = ["CPI"]
+    table.index = create_year_month_index(1390, 1401)
+    return table
+
+
+def sci_cpi_by1395_annual(table: pd.DataFrame) -> pd.DataFrame:
+    table = table.loc[[4], 1:].T.astype("float64")
+    table.columns = ["CPI"]
+    table.index = pd.Index(range(1390, 1401), name="Year")
     return table
 
 

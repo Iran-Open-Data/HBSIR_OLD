@@ -14,7 +14,7 @@ class ExternalDataCleaner:
         self.download_cleaned = download_cleaned
         self.metadata = self._get_metadata()
 
-    def load_data(self, save_cleaned: bool = True):
+    def load_data(self, save_cleaned: bool = False):
         external_data = [file.stem for file in defaults.external_data.iterdir()]
         if self.name in external_data:
             table = self.open_cleaned_data()
@@ -74,7 +74,10 @@ class ExternalDataCleaner:
     def clean_raw_file(self, table: pd.DataFrame | None = None) -> pd.DataFrame:
         if table is None:
             table = self.load_raw_file()
-        table = self.cleaning_function(table)
+        try:
+            table = self.cleaning_function(table)
+        except AttributeError:
+            pass
         return table
 
     def collect_and_clean(self) -> pd.DataFrame:

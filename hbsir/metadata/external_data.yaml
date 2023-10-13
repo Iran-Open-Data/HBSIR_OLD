@@ -17,12 +17,16 @@ sci:
 
   cpi_by1395:
     monthly:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9346/2302n220140111.xlsx
+
       urban_rural:
         from:
           - sci.cpi_by1395_urban_singleindex.monthly
           - sci.cpi_by1395_rural_maingroups.monthly
 
     annual:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9811/2302n220111400_V2-14011013.xlsx
+
       urban_rural:
         from:
           - sci.cpi_by1395_urban_singleindex.annual
