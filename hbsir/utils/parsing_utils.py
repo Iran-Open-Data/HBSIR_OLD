@@ -48,7 +48,7 @@ def parse_years(years: _Years) -> list[int]:
         year_list = [_check_year_validity(years)]
     elif isinstance(years, str):
         if years.lower() == "all":
-            year_list = list(range(defaults.first_year, defaults.last_year))
+            year_list = list(range(defaults.first_year, defaults.last_year + 1))
         elif years.lower() == "last":
             year_list = [defaults.last_year]
         else:
