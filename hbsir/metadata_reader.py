@@ -47,8 +47,8 @@ _IncomeTable = Literal[
     "self_employed_income",
     "other_income",
     "subsidy",
-    "public_employment_income",
-    "private_employment_income",
+    # "public_employment_income",
+    # "private_employment_income",
 ]
 
 _OriginalTable = Literal[_GeneralTable, _ExpenditureTable, _IncomeTable]
