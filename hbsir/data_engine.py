@@ -26,14 +26,14 @@ class TableHandler:
     """A class for loading parquet files"""
 
     def __init__(
-        self, table_name: _OriginalTable, year: int, settings: LoadTable
+        self, table_name: _OriginalTable, year: int, settings: LoadTable | None = None
     ) -> None:
         self.table_name: _OriginalTable = table_name
         self.year = year
         self.file_name = f"{year}_{table_name}.parquet"
         self.local_path = defaults.processed_data.joinpath(self.file_name)
         self.file_url = f"{defaults.online_dir}/parquet_files/{self.file_name}"
-        self.settings = settings
+        self.settings = settings if settings is not None else LoadTable()
 
     def read(self) -> pd.DataFrame:
         """Read the parquet file"""
@@ -224,11 +224,11 @@ class TableLoader:
         self,
         table_name: str,
         years: _Years,
-        settings: LoadTable,
+        settings: LoadTable | None = None,
     ):
         self.table_name = table_name
         self.years = utils.parse_years(years)
-        self.settings = settings
+        self.settings = settings if settings is not None else LoadTable()
         self.schema: dict = metadata.schema.copy()
         if table_name in self.schema:
             self.table_schema: dict = self.schema[table_name]
@@ -376,14 +376,16 @@ class WeightAdder:
     def __init__(
         self,
         table: pd.DataFrame,
+        multiply_members: bool = False,
         method: Literal["default", "external", "household_info"] = "default",
         year_column_name: str = "Year",
     ) -> None:
         self.table = table
         self.method = method
         self.year_column_name = year_column_name
+        self.consider_members = multiply_members
 
-    def load_weights(self, year) -> pd.Series:
+    def load_weights(self, year: int) -> pd.Series:
         if self.method == "default":
             if year <= 1395:
                 method = "external"
@@ -398,6 +400,14 @@ class WeightAdder:
             weights = self._load_from_external_data(year)
         else:
             weights = self._load_from_household_info(year)
+        if self.consider_members:
+            members = (
+                TableLoader("Number_of_Members", years=year).load()
+                .set_index("ID").loc[:, "Members"]
+            )
+            weights, members = weights.align(members)
+            weights = weights.mul(members)
+        weights = weights.rename("Weight")
         return weights
 
     @staticmethod
@@ -421,7 +431,7 @@ class WeightAdder:
         assert isinstance(weights, pd.Series)
         return weights
 
-    def add_weights(self, **kwargs) -> pd.DataFrame:
+    def add_weights(self) -> pd.DataFrame:
         years = decoder.extract_column(self.table, self.year_column_name)
         years = years.drop_duplicates()
         weights_list = []
@@ -430,5 +440,5 @@ class WeightAdder:
         weights = pd.concat(
             weights_list, axis="index", keys=years, names=["Year", "ID"]
         )
-        self.table = self.table.join(weights, on=["Year", "ID"], **kwargs)
+        self.table = self.table.join(weights, on=["Year", "ID"])
         return self.table
