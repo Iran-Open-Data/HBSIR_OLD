@@ -99,7 +99,7 @@ class Applier:
         self.table["Table_Name"] = self.properties["table_name"]
 
     def _add_weights(self) -> None:
-        self.table = WeightAdder(self.table).add_weights()
+        self.table = add_weights(self.table)
 
     def _add_classification(self, method_input: dict) -> None:
         settings = decoder.CommodityDecoderSettings(**method_input)
@@ -372,73 +372,109 @@ class TableLoader:
         return table_list
 
 
-class WeightAdder:
-    def __init__(
-        self,
-        table: pd.DataFrame,
-        multiply_members: bool = False,
-        method: Literal["default", "external", "household_info"] = "default",
-        year_column_name: str = "Year",
-    ) -> None:
-        self.table = table
-        self.method = method
-        self.year_column_name = year_column_name
-        self.consider_members = multiply_members
+def load_weights(
+    year: int,
+    adjust_for_household_size: bool = False,
+    method: Literal["default", "external", "household_info"] = "default",
+) -> pd.Series:
+    """Load sample weights for a given year.
 
-    def load_weights(self, year: int) -> pd.Series:
-        if self.method == "default":
-            if year <= 1395:
-                method = "external"
-            else:
-                method = "household_info"
-        elif self.method in ["external", "household_info"]:
-            method = self.method
+    Loads weights from different sources based on the year and specified
+    method. Weights can be multiplied by the number of household members
+    if multiply_members=True.
+
+    Parameters
+    ----------
+    year : int
+        Year to load weights for
+    multiply_members : bool, default False
+        Whether to multiply weights by the number of household members
+    method : {"default", "external", "household_info"}, default "default"
+        Where to load the weights from:
+            "default": Use "external" for years <= 1395, "household_info" for later years
+            "external": Load from external parquet file
+            "household_info": Load from household_information table
+
+    Returns
+    -------
+    weights : pd.Series
+        Sample weights indexed by household ID
+
+    """
+    if method == "default":
+        if year <= 1395:
+            method = "external"
         else:
-            raise ValueError("Method is not valid")
+            method = "household_info"
+    elif method in ["external", "household_info"]:
+        pass
+    else:
+        raise ValueError("Method is not valid")
 
-        if method == "external":
-            weights = self._load_from_external_data(year)
-        else:
-            weights = self._load_from_household_info(year)
-        if self.consider_members:
-            members = (
-                TableLoader("Number_of_Members", years=year).load()
-                .set_index("ID").loc[:, "Members"]
-            )
-            weights, members = weights.align(members)
-            weights = weights.mul(members)
-        weights = weights.rename("Weight")
-        return weights
+    if method == "external":
+        weights = _load_from_external_data(year)
+    else:
+        weights = _load_from_household_info(year)
 
-    @staticmethod
-    def _load_from_household_info(year) -> pd.Series:
-        settings = LoadTable()
-        loader = TableLoader("household_information", year, settings)
-        hh_info = loader.load()
-        weights = hh_info.set_index("ID")["Weight"]
-        return weights
-
-    @staticmethod
-    def _load_from_external_data(year) -> pd.Series:
-        weights_path = defaults.external_data.joinpath("weights.parquet")
-        if not weights_path.exists():
-            defaults.external_data.mkdir(parents=True, exist_ok=True)
-            utils.download(
-                f"{defaults.online_dir}/external_data/weights.parquet", weights_path
-            )
-        weights = pd.read_parquet(weights_path)
-        weights = weights.loc[(year), "Weight"]
-        assert isinstance(weights, pd.Series)
-        return weights
-
-    def add_weights(self) -> pd.DataFrame:
-        years = decoder.extract_column(self.table, self.year_column_name)
-        years = years.drop_duplicates()
-        weights_list = []
-        for year in years:
-            weights_list.append(self.load_weights(year))
-        weights = pd.concat(
-            weights_list, axis="index", keys=years, names=["Year", "ID"]
+    if adjust_for_household_size:
+        members = (
+            TableLoader("Number_of_Members", years=year)
+            .load()
+            .set_index("ID")
+            .loc[:, "Members"]
         )
-        self.table = self.table.join(weights, on=["Year", "ID"])
-        return self.table
+        weights, members = weights.align(members, join="left")
+        weights = weights.mul(members)
+
+    weights = weights.rename("Weight")
+    return weights
+
+
+def _load_from_household_info(year) -> pd.Series:
+    loader = TableLoader("household_information", year)
+    hh_info = loader.load()
+    weights = hh_info.set_index("ID")["Weight"]
+    return weights
+
+
+def _load_from_external_data(year) -> pd.Series:
+    weights_path = defaults.external_data.joinpath("weights.parquet")
+    if not weights_path.exists():
+        url = f"{defaults.online_dir}/external_data/weights.parquet"
+        utils.download(url, weights_path)
+    weights = pd.read_parquet(weights_path)
+    weights = weights.loc[(year), "Weight"]
+    assert isinstance(weights, pd.Series)
+    return weights
+
+
+def add_weights(
+    table: pd.DataFrame,
+    adjust_for_household_size: bool = False,
+    year_column_name: str = "Year",
+) -> pd.DataFrame:
+    """Add sample weights to a table of data.
+
+    Parameters
+    ----------
+    table : pd.DataFrame
+        Input data table, containing a column of year values
+    adjust_for_household_size : bool, default False
+        Whether to adjust weights by household size
+    year_column_name : str, default "Year"
+        Name of column in `table` that contains the year
+
+    Returns
+    -------
+    table : pd.DataFrame
+        Input `table` with 'Weight' column added
+
+    """
+    years = decoder.extract_column(table, year_column_name)
+    years = years.drop_duplicates()
+    weights_list = []
+    for year in years:
+        weights_list.append(load_weights(year, adjust_for_household_size))
+    weights = pd.concat(weights_list, axis="index", keys=years, names=["Year", "ID"])
+    table = table.join(weights, on=["Year", "ID"])
+    return table

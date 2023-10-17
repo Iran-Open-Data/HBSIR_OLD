@@ -242,24 +242,34 @@ def add_attribute(
     return table
 
 
-def add_weight(table: pd.DataFrame, multiply_members: bool = False) -> pd.DataFrame:
-    """Add sampling weights to DataFrame based on household ID and year.
+def add_weight(
+    table: pd.DataFrame, adjust_for_household_size: bool = False
+) -> pd.DataFrame:
+    """Add sample weights to a table of data.
 
-    Takes a DataFrame containing 'ID' and 'Year' columns, joins the
-    appropriate sampling weight for each household based on year, and
-    adds a 'Weight' column.
+    Loads appropriate sample weights for each year in the table and merges
+    them onto the table. Sample weights can optionally be adjusted
+    for household size.
 
     Weights for years prior to 1395 are loaded from external parquet data,
     while weights for 1395 onward come from the household_information table.
 
-    Args:
-        table: DataFrame containing 'ID' and 'Year' columns.
+    Parameters
+    ----------
+    table : pd.DataFrame
+        Input data table, containing a column of year values
+    adjust_for_household_size : bool, default False
+        Whether to adjust weights by household size
+    year_column_name : str, default "Year"
+        Name of column in `table` that contains the year
 
-    Returns:
-        pd.DataFrame: Input DataFrame with added 'Weight' column.
+    Returns
+    -------
+    table : pd.DataFrame
+        Input `table` with 'Weight' column added
 
     """
-    table = data_engine.WeightAdder(table, multiply_members).add_weights()
+    table = data_engine.add_weights(table, adjust_for_household_size)
     return table
 
 
