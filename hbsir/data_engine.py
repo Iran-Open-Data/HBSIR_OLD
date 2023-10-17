@@ -183,7 +183,7 @@ class Applier:
     def _apply_pandas_function(self, method_input: str | None = None) -> None:
         if method_input is None:
             return
-        method_input = "self.table" + method_input
+        method_input = "self.table" + method_input.replace("\n", "")
         table = pd.eval(method_input, target=self.table, engine="python")
         assert isinstance(table, pd.DataFrame)
         self.table = table
