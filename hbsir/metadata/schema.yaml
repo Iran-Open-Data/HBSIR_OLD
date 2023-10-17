@@ -864,6 +864,7 @@ Cash_Incomes:
     - apply_order:
       - Year
       - ID
+      - Member_Number
       - Income_Type
       - Income
 
@@ -881,7 +882,6 @@ Income_Breakdown:
     - apply_order:
       - Year
       - ID
-      - Member_Number
       - Income_Type
       - Income
 
@@ -900,7 +900,46 @@ Total_Income:
     - apply_order:
       - Year
       - ID
-      - Member_Number
       - Income
 
   cache_result: true
+
+
+Members_Income_Breakdown:
+
+  table_list:
+    - Cash_Incomes
+
+  instructions:
+
+    - apply_pandas_function: >
+        .groupby(
+          ["Year", "ID", "Member_Number", "Income_Type"],
+          as_index=False,
+          observed=True
+        )
+        .sum()
+
+    - apply_order:
+      - Year
+      - ID
+      - Member_Number
+      - Income_Type
+      - Income
+
+
+Members_Total_Income:
+
+  table_list:
+    - Members_Income_Breakdown
+
+  instructions:
+
+    - apply_pandas_function: >
+        .groupby(["Year", "ID", "Member_Number"], as_index=False).sum(numeric_only=True)
+
+    - apply_order:
+      - Year
+      - ID
+      - Member_Number
+      - Income

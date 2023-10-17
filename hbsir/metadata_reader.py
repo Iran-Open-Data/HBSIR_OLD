@@ -66,7 +66,9 @@ _StandardTable = Literal[
     "Imputed_Rent",
     "Incomes",
     "Income_Breakdown",
+    "Members_Income_Breakdown",
     "Total_Income",
+    "Members_Total_Income",
 ]
 
 _Table = Literal[_OriginalTable, _StandardTable]
