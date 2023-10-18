@@ -3,17 +3,41 @@
 ANCHORS:
 
   common_expenditure_order: &common_expenditure_order
-    - Year
-    - ID
-    - Table_Name
-    - Code
-    - Provision_Method
-    - Price_System
-    - Amount
-    - Duration
-    - Price
-    - Expenditure
-    - Secondhand_Sale
+    1363:
+      - Year
+      - ID
+      - Table_Name
+      - Code
+      - Provision_Method
+      - Duration: int
+      - Expenditure
+    1369:
+      - Year
+      - ID
+      - Table_Name
+      - Code
+      - Provision_Method
+      - Price_System
+      - Amount
+      - Duration: int
+      - Expenditure
+    1370:
+      - Year
+      - ID
+      - Table_Name
+      - Code
+      - Provision_Method
+      - Price_System
+      - Duration: int
+      - Expenditure
+    1374:
+      - Year
+      - ID
+      - Table_Name
+      - Code
+      - Provision_Method
+      - Duration: int
+      - Expenditure
 
 
 household_information:
@@ -22,24 +46,31 @@ household_information:
 
     - add_year
 
-    - join:
-        1387: null
-        1388: census_month
-        1389: null
-
     - apply_external_function:
         1387: hbsir.schema_functions.standard_tables.create_season
         1396: null
 
+    - 1387: add_weights
+      1396: null
+
     - apply_order:
-      - Year
-      - ID
-      - Season
-      - Month
-      - Weight
-      - Household_Type
-      - Main_Household
-      - Alternative_Household
+        1387:
+          - Year
+          - ID
+          - Season
+          - Month
+          - Weight
+          - Household_Type
+          - Main_Household
+          - Alternative_Household
+        1400:
+          - Year
+          - ID
+          - Season
+          - Weight
+          - Household_Type
+          - Main_Household
+          - Alternative_Household
 
 
 census_month:
@@ -71,6 +102,13 @@ Number_of_Members:
   instructions:
 
     - apply_external_function: hbsir.schema_functions.standard_tables.number_of_members
+
+    - apply_order:
+      - Year
+      - ID
+      - Members
+      - Adults
+      - Childs
 
 
 Equivalence_Scale:
@@ -127,11 +165,58 @@ food:
             expression: "Kilos + 0.001 * Grams"
 
     - create_column:
-        name: Duration
-        type: numerical
-        expression: 30
+        1363: null
+        1369:
+          name: Duration
+          type: numerical
+          expression: 30
 
-    - apply_order: *common_expenditure_order
+    - create_column:
+        1363:
+          name: Price
+          type: numerical
+          expression: "Expenditure / Amount"
+        1369:
+          null
+        1370:
+          name: Price
+          type: numerical
+          expression: "Expenditure / Amount"
+        1372:
+
+    - add_classification:
+        1363: {name: Duration}
+        1369: null
+
+    - apply_filter:
+        1363: null
+        1364: "Code not in [18888, 19993]"
+        1365: "Code not in [18888]"
+        1366: "Code not in [18888, 19993, 91112, 91124, 91142, 91171, 91197]"
+        1367: null
+
+    - apply_order:
+        1363:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Amount
+          - Duration: int
+          - Price
+          - Expenditure
+        1374:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Amount
+          - Duration: int
+          - Price
+          - Expenditure
 
   views:
    - original
@@ -151,7 +236,16 @@ tobacco:
         type: numerical
         expression: 30
 
-    - apply_order: *common_expenditure_order
+    - apply_order:
+      - Year
+      - ID
+      - Table_Name
+      - Code
+      - Provision_Method
+      - Amount
+      - Duration: int
+      - Price
+      - Expenditure
 
   views:
    - original
@@ -190,7 +284,51 @@ home:
         type: numerical
         expression: 30
 
-    - apply_order: *common_expenditure_order
+    - apply_order:
+        1363:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Duration: int
+          - Expenditure
+        1369:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Amount
+          - Duration: int
+          - Expenditure
+        1370:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Duration: int
+          - Expenditure
+        1374:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Duration: int
+          - Expenditure
+        1384:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Duration: int
+          - Expenditure
+          - Security_Deposit
 
   views:
    - original
@@ -361,7 +499,45 @@ durable:
         type: numerical
         expression: 360
 
-    - apply_order: *common_expenditure_order
+    - apply_order:
+        1363:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
+        1369:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
+        1370:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
+        1374:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
 
   views:
    - original
@@ -380,7 +556,54 @@ investment:
         type: numerical
         expression: 360
 
-    - apply_order: *common_expenditure_order
+    - apply_order:
+        1366:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Duration: int
+          - Expenditure
+        1367:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
+        1369:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
+        1370:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
+        1375: null
+        1378:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
+
 
   views:
    - original
@@ -443,17 +666,29 @@ Original_Expenditures:
         expression: "Expenditure - Secondhand_Sale"
 
     - apply_order:
-      - Year
-      - ID
-      - Table_Name
-      - Code
-      - Provision_Method
-      - Price_System
-      - Amount
-      - Duration
-      - Price
-      - Gross_Expenditure
-      - Net_Expenditure
+        1363:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Amount
+          - Duration: int
+          - Price
+          - Gross_Expenditure
+          - Net_Expenditure
+        1374:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Amount
+          - Duration: int
+          - Price
+          - Gross_Expenditure
+          - Net_Expenditure
 
 
 Expenditures:
@@ -473,15 +708,27 @@ Expenditures:
         expression: "Net_Expenditure / Duration * 360"
         
     - apply_order:
-      - Year
-      - ID
-      - Code
-      - Provision_Method
-      - Price_System
-      - Amount
-      - Price
-      - Gross_Expenditure
-      - Net_Expenditure
+        1363:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Amount
+          - Price
+          - Gross_Expenditure
+          - Net_Expenditure
+        1374:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Amount
+          - Price
+          - Gross_Expenditure
+          - Net_Expenditure
 
 
 Total_Expenditure:
@@ -588,17 +835,29 @@ Original_Outlays:
         expression: "Expenditure - Secondhand_Sale"
 
     - apply_order:
-      - Year
-      - ID
-      - Table_Name
-      - Code
-      - Provision_Method
-      - Price_System
-      - Amount
-      - Duration
-      - Price
-      - Gross_Expenditure
-      - Net_Expenditure
+        1363:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Amount
+          - Duration: int
+          - Price
+          - Gross_Expenditure
+          - Net_Expenditure
+        1374:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Amount
+          - Duration: int
+          - Price
+          - Gross_Expenditure
+          - Net_Expenditure
 
 
 Outlays:
@@ -618,15 +877,27 @@ Outlays:
         expression: "Net_Expenditure / Duration * 360"
         
     - apply_order:
-      - Year
-      - ID
-      - Code
-      - Provision_Method
-      - Price_System
-      - Amount
-      - Price
-      - Gross_Expenditure
-      - Net_Expenditure
+        1363:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Price_System
+          - Amount
+          - Price
+          - Gross_Expenditure
+          - Net_Expenditure
+        1374:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Amount
+          - Price
+          - Gross_Expenditure
+          - Net_Expenditure
 
 
 Total_Outlay:
@@ -943,3 +1214,5 @@ Members_Total_Income:
       - ID
       - Member_Number
       - Income
+
+  cache_result: true

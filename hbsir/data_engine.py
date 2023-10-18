@@ -76,6 +76,8 @@ class Applier:
         self.properties = properties if properties is not None else {}
         self.modules: dict[str, ModuleType] = {}
         for instruction in instructions:
+            if instruction is None:
+                continue
             method_name, method_input = self.extract_method_name(instruction)
             if method_input is None:
                 getattr(self, f"_{method_name}")()
@@ -101,21 +103,32 @@ class Applier:
     def _add_weights(self) -> None:
         self.table = add_weights(self.table)
 
-    def _add_classification(self, method_input: dict) -> None:
+    def _add_classification(self, method_input: dict | None = None) -> None:
+        if method_input is None:
+            return
         settings = decoder.CommodityDecoderSettings(**method_input)
         self.table = decoder.CommodityDecoder(self.table, settings).add_classification()
 
-    def _add_attribute(self, method_input: dict) -> None:
+    def _add_attribute(self, method_input: dict | None = None) -> None:
+        if method_input is None:
+            return
         settings = decoder.IDDecoderSettings(**method_input)
         self.table = decoder.IDDecoder(self.table, settings).add_attribute()
 
     def _apply_order(self, method_input: list):
-        new_columns = [
-            column for column in method_input if column in self.table.columns
+        new_order = [
+            column if isinstance(column, str) else list(column.keys())[0]
+            for column in method_input
         ]
-        self.table = self.table[new_columns]
+        types = {
+            list(column.keys())[0]: list(column.values())[0]
+            for column in method_input
+            if isinstance(column, dict)
+        }
 
-    def _create_column(self, method_input=None) -> None:
+        self.table = self.table[list(new_order)].astype(types)
+
+    def _create_column(self, method_input: dict | None = None) -> None:
         if method_input is None:
             return
         column_name = method_input["name"]
@@ -175,7 +188,9 @@ class Applier:
             raise KeyError
         return filt
 
-    def _apply_filter(self, conditions: str | list[str]):
+    def _apply_filter(self, conditions: str | list[str] | None = None) -> None:
+        if conditions is None:
+            return
         conditions = [conditions] if isinstance(conditions, str) else conditions
         for condition in conditions:
             self.table = self.table.query(condition)
