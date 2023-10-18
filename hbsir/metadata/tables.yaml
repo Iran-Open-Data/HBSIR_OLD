@@ -49,7 +49,7 @@ yearly_table_availability:
   census_month:               [1387, 1390, 1391]
   members_properties:         {start: 1363}
   # house_specifications:       {start: 1363}
-  house_specifications:       {start: 1383}
+  house_specifications:       {start: 1369}
 
 
   food:                       {start: 1363}
@@ -1567,7 +1567,7 @@ investment:
       <<: *expenditure_base_columns
       COL3: *expenditure_value
 
-    1366:
+    1367:
       <<: *expenditure_base_columns
       COL3: *expenditure_provision_method
       COL4: *expenditure_value
