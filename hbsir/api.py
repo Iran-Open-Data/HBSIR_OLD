@@ -124,9 +124,8 @@ def load_table(
 
 # pylint: disable=unused-argument
 def create_table_with_schema(
-    schema: dict,
+    schema: str | dict,
     years: _Years = "last",
-    dataset: Literal["processed", "cleaned", "original"] = _Default,
     on_missing: Literal["error", "download", "create"] = _Default,
     redownload: bool = _Default,
     save_downloaded: bool = _Default,
@@ -157,6 +156,9 @@ def create_table_with_schema(
     metadata.reload_file("schema")
     parameters = _extract_parameters(locals())
     settings = LoadTable(**parameters)
+    if isinstance(schema, str):
+        return data_engine.TableLoader(schema, years, settings).load()
+
     if years is None and "years" in schema:
         years = schema["years"]
     if "table_list" in schema:
