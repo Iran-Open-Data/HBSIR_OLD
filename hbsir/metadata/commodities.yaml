@@ -93,26 +93,29 @@ original_1363:
     flour_noodle_and_similar_pasta_products:
       level: 3
       code: {start: 11_100, end: 11_200}
+      duration: 2
 
     #                              ## LEVEL 3 ##                              #
     cereals:
       level: 3
       code: {start: 11_200, end: 11_300}
+      duration: 30
 
     #                              ## LEVEL 3 ##                              #
     bread_and_bakery_products:
       level: 3
       code: {start: 11_300, end: 11_400}
+      duration: 2
 
     #                              ## LEVEL 3 ##                              #
     cake_and_biscuit:
       level: 3
       code: {start: 11_400, end: 11_500}
+      duration: 2
 
     #                            #### LEVEL 2 ####                            #
     meat_and_sea_foods:
       level: 2
-      duration: 2
       farsi_name: "گوشت و غذاهای دریایی"
       code:
         1363: {start: 12_000, end: 13_000}
@@ -122,77 +125,235 @@ original_1363:
     red_meat:
       level: 3
       code: {start: 12_100, end: 12_300}
+      duration: 2
 
     #                              ## LEVEL 3 ##                              #
     poultry:
       level: 3
       code: {start: 12_300, end: 12_400}
+      duration: 2
 
     #                              ## LEVEL 3 ##                              #
     fish_and_other_sea_foods:
       level: 3
       code: {start: 12_400, end: 12_500}
+      duration: 2
+
 
     #                            #### LEVEL 2 ####                            #
     milk_other_dairy_product_and_eggs:
       level: 2
-      duration: 2
-      farsi_name: "شیر و فرآورده‌های آن (به جز کره) و تخم پرندگان"
+      farsi_name: "شیر و فرآورده‌های آن و تخم پرندگان"
       code: {start: 13_000, end: 14_000}
+
+    #                              ## LEVEL 3 ##                              #
+    milk:
+      level: 3
+      farsi_name: "شیر"
+      code: {start: 13_100, end: 13_200}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    other_dairy_products:
+      level: 3
+      farsi_name: "فراورده‌های شیری"
+      code: {start: 13_200, end: 13_400}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    eggs:
+      level: 3
+      farsi_name: "تخم پرندگان"
+      code: {start: 13_400, end: 13_500}
+      duration: 2
 
     #                            #### LEVEL 2 ####                            #
     oils_and_fats:
       level: 2
-      duration: 30
       farsi_name: "روغن‌ها و چربی‌ها"
       code: {start: 14_000, end: 15_000}
+
+    #                              ## LEVEL 3 ##                              #
+    animal_oils_and_fats_excluding_butter:
+      level: 3
+      code: {start: 14_100, end: 14_200}
+      duration: 30
+
+    #                              ## LEVEL 3 ##                              #
+    vegetable_oils:
+      level: 3
+      farsi_name: "روغن نباتی"
+      code: {start: 14_200, end: 14_300}
+      duration: 30
 
     #                            #### LEVEL 2 ####                            #
     fruits_and_vegetables:
       level: 2
-      duration: 2
       farsi_name: "میوه‌ها و سبزیجات"
       code: {start: 15_000, end: 16_000}
+
+    #                              ## LEVEL 3 ##                              #
+    tree_fruits_excluding_citrus:
+      level: 3
+      code: {start: 15_100, end: 15_200}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    citrus:
+      level: 3
+      code: {start: 15_200, end: 15_300}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    cucurbit_fruits:
+      level: 3
+      code: {start: 15_300, end: 15_400}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    leafy_or_stem_vegetables:
+      level: 3
+      code: {start: 15_400, end: 15_500}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    fruit_bearing_vegetables:
+      level: 3
+      code: {start: 15_500, end: 15_600}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    root_vegetables:
+      level: 3
+      code: {start: 15_600, end: 15_700}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    prepared_fruits_vegetables:
+      level: 3
+      code: {start: 15_700, end: 15_800}
+      duration: 2
+
 
     #                            #### LEVEL 2 ####                            #
     nuts_and_pulses:
       level: 2
       farsi_name: "خشکبار، آجیل و حبوبات"
-      categories:
-        1:
-          duration: 30
-          code: {start: 16_300, end: 16_400}
-        2:
-          duration: 2
-          code: {start: 16_100, end: 16_300}
+      code: {start: 16_000, end: 17_000}
+
+    #                              ## LEVEL 3 ##                              #
+    nuts:
+      level: 3
+      farsi_name: "خشکبار"
+      code: {start: 16_100, end: 16_300}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    pulses:
+      level: 3
+      code: {start: 16_300, end: 16_400}
+      duration: 30
+
 
     #                            #### LEVEL 2 ####                            #
     sugar_confectionery_and_desserts_tea_coffee_and_cocoa_drinks:
       level: 2
-      categories:
-        1:
-          duration: 30
-          code:
-            - {start: 17_100, end: 17_200}
-            - {start: 17_400, end: 17_500}
-        2:
-          duration: 2
-          code:
-            - {start: 17_200, end: 17_400}
+      code: {start: 17_000, end: 18_000}
+
+    #                              ## LEVEL 3 ##                              #
+    sugar:
+      level: 3
+      farsi_name: "قند و شکر"
+      code: {start: 17_100, end: 17_200}
+      duration: 30
+
+    #                              ## LEVEL 3 ##                              #
+    confectionery_and_desserts:
+      level: 3
+      code: {start: 17_200, end: 17_400}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    tea_coffee_and_cocoa_drinks:
+      level: 3
+      farsi_name: "چای، قهوه و کاکائو"
+      code: {start: 17_400, end: 17_500}
+      duration: 30
 
     #                            #### LEVEL 2 ####                            #
     spices_condiments_and_other_food_products:
       level: 2
-      duration: 30
       farsi_name: "ادویه‌ها، چاشنی‌ها و سایر ترکیبات خوراکی"
       code: {start: 18_000, end: 19_000}
+
+    #                              ## LEVEL 3 ##                              #
+    spices:
+      level: 3
+      code: {start: 18_100, end: 18_200}
+      versions:
+        1363: 
+          duration: 2
+        1364: 
+          duration: 30
+
+    #                              ## LEVEL 3 ##                              #
+    condiments_and_other_food_products:
+      level: 3
+      code: {start: 18_200, end: 18_300}
+      versions:
+        1363: 
+          duration: 2
+        1364: 
+          duration: 30
+
 
     #                            #### LEVEL 2 ####                            #
     soft_drinks_prepared_foods_and_tobacco:
       level: 2
-      duration: 2
       farsi_name: "نوشابه‌ها، غذاهای آماده و دخانیات"
       code: {start: 19_000, end: 20_000}
+
+    #                              ## LEVEL 3 ##                              #
+    soft_drinks_home:
+      level: 3
+      farsi_name: "نوشابه‌ها (برای مصرف در خانه)"
+      code: {start: 19_100, end: 19_200}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    prepared_foods_home:
+      level: 3
+      farsi_name: "غذا‌های آماده (برای مصرف در خانه)"
+      code: {start: 19_200, end: 19_400}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    soft_drinks_outdoor:
+      level: 3
+      farsi_name: "نوشابه‌ها (برای مصرف خارج خانه)"
+      code: {start: 19_400, end: 19_500}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    prepared_foods_outdoor:
+      level: 3
+      farsi_name: "غذا‌های آماده (برای مصرف خارج خانه)"
+      code: {start: 19_500, end: 19_600}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    tanagholat_outdoor:
+      level: 3
+      farsi_name: "تنقلات (برای مصرف خارج خانه)"
+      code: {start: 19_600, end: 19_700}
+      duration: 2
+
+    #                              ## LEVEL 3 ##                              #
+    tobacco:
+      level: 3
+      farsi_name: "دخانیات"
+      code: {start: 19_700, end: 19_800}
+      duration: 2
 
 
     #                ################ LEVEL 0 ################                #
@@ -1701,6 +1862,15 @@ Food_NonFood:
       NonFood:
         level: 1
         farsi_name: "مخارج غیر خوراکی"
+
+
+Duration:
+  defaults:
+    levels: [3]
+    labels: ["duration"]
+    output_column_names: ["Duration"]
+  items:
+    1363: {{original_1363}}
 
 
 Durability:
