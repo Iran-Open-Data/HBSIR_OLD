@@ -27,6 +27,8 @@ class ViewAccessor:
 
     def __getitem__(self, value: str) -> pd.DataFrame:
         if self._views is not None and value in self._views:
-            settings = decoder.CommodityDecoderSettings(name=value)
-            return decoder.CommodityDecoder(self._obj, settings).add_classification()
+            settings = decoder.DecoderSettings(
+                name=value, classification_type="commodity"
+            )
+            return decoder.Decoder(self._obj, settings).add_classification()
         raise KeyError(f"{value} is not a view of the current table")

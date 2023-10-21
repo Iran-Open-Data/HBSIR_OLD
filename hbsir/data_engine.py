@@ -106,8 +106,8 @@ class Applier:
     def _add_classification(self, method_input: dict | None = None) -> None:
         if method_input is None:
             return
-        settings = decoder.CommodityDecoderSettings(**method_input)
-        self.table = decoder.CommodityDecoder(self.table, settings).add_classification()
+        settings = decoder.DecoderSettings(**method_input)
+        self.table = decoder.Decoder(self.table, settings).add_classification()
 
     def _add_attribute(self, method_input: dict | None = None) -> None:
         if method_input is None:

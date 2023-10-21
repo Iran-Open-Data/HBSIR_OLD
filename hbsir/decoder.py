@@ -23,16 +23,18 @@ classification info from the raw metadata.
 
 """
 from itertools import product
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Literal
 
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from . import utils
-from .metadata_reader import metadata, defaults, _Attribute
+from . import utils, metadata_reader
+from .metadata_reader import metadata, _Attribute
 
 
-def read_classification_info(name: str, year: int) -> dict:
+def read_classification_info(
+    name: str, year: int, classification_type: Literal["commodity", "occupation"]
+) -> dict:
     """Reads classification metadata by name.
 
     Retrieves the versioned classification metadata for the given
@@ -62,14 +64,21 @@ def read_classification_info(name: str, year: int) -> dict:
     utils.resolve_metadata : Resolves metadata versions.
 
     """
-    versioned_metadata = metadata.commodities[name]
+    if classification_type == "commodity":
+        versioned_metadata = metadata.commodities[name]
+    else:
+        versioned_metadata = metadata.occupations[name]
     classification_info = utils.resolve_metadata(
         versioned_metadata, year, categorize=True
     )
     return classification_info
 
 
-def create_classification_table(name: str, years: Iterable[int]) -> pd.DataFrame:
+def create_classification_table(
+    name: str,
+    years: Iterable[int],
+    classification_type: Literal["commodity", "occupation"],
+) -> pd.DataFrame:
     """Creates classification table for given years.
 
     Loops through the provided years, reads the classification metadata,
@@ -96,7 +105,7 @@ def create_classification_table(name: str, years: Iterable[int]) -> pd.DataFrame
     """
     table_list = []
     for year in years:
-        classification_info = read_classification_info(name, year)
+        classification_info = read_classification_info(name, year, classification_type)
         annual_table = _create_annual_classification_table(classification_info)
         annual_table.loc[:, "Year"] = year
         table_list.append(annual_table)
@@ -104,7 +113,7 @@ def create_classification_table(name: str, years: Iterable[int]) -> pd.DataFrame
     return table
 
 
-def _create_annual_classification_table(classification_info) -> pd.DataFrame:
+def _create_annual_classification_table(classification_info: dict) -> pd.DataFrame:
     """Creates annual DataFrame from classification metadata.
 
     Converts the classification info dictionary for a single year
@@ -133,8 +142,8 @@ def _create_annual_classification_table(classification_info) -> pd.DataFrame:
     table = pd.DataFrame(classification_info["items"])
     table["code_range"] = table["code"].apply(
         utils.Argham,  # type: ignore
-        default_start=defaults.first_year,
-        default_end=defaults.last_year + 1,
+        default_start=metadata_reader.defaults.first_year,
+        default_end=metadata_reader.defaults.last_year + 1,
         keywords=["code"],
     )
     table = table.drop(columns=["code"])
@@ -179,7 +188,7 @@ def extract_column(table: pd.DataFrame, column_name: str) -> pd.Series:
     return column
 
 
-class CommodityDecoderSettings(BaseModel):
+class DecoderSettings(BaseModel):
     """Settings for decoding commodity codes.
 
     Attributes
@@ -208,9 +217,10 @@ class CommodityDecoderSettings(BaseModel):
 
     """
 
+    classification_type: Literal["commodity", "occupation"]
     name: str = "original"
-    code_column_name: str = "Code"
-    year_column_name: str = "Year"
+    code_column_name: str = Field(None, validate_default=False)
+    year_column_name: str = metadata_reader.defaults.columns.year
     versioned_info: dict = {}
     defaults: dict = {}
     labels: tuple[str, ...] = ()
@@ -221,7 +231,12 @@ class CommodityDecoderSettings(BaseModel):
     missing_value_replacements: dict[str, str] | None = None
 
     def model_post_init(self, __contex=None) -> None:
-        self.versioned_info = metadata.commodities[self.name]
+        if self.classification_type == "commodity":
+            self.code_column_name = metadata_reader.defaults.columns.commodity_code
+            self.versioned_info = metadata.commodities[self.name]
+        else:
+            self.code_column_name = metadata_reader.defaults.columns.job_code
+            self.versioned_info = metadata.occupations[self.name]
         if "defaults" in self.versioned_info:
             self.defaults = self.versioned_info["defaults"]
         for key, value in self.defaults.items():
@@ -271,7 +286,7 @@ class CommodityDecoderSettings(BaseModel):
         return dict(zip(label_level, self.output_column_names))
 
 
-class CommodityDecoder:
+class Decoder:
     """Decodes commodity codes using classification metadata.
 
     Parameters
@@ -279,7 +294,7 @@ class CommodityDecoder:
     table : DataFrame
         Table with code and year columns to decode.
 
-    settings : CommodityDecoderSettings
+    settings : DecoderSettings
         Decoding configuration settings.
 
     Attributes
@@ -300,11 +315,11 @@ class CommodityDecoder:
 
     See Also
     --------
-    CommodityDecoderSettings : Decoding configuration.
+    DecoderSettings : Decoding configuration.
 
     """
 
-    def __init__(self, table: pd.DataFrame, settings: CommodityDecoderSettings) -> None:
+    def __init__(self, table: pd.DataFrame, settings: DecoderSettings) -> None:
         self.table = table
         self.settings = settings
         self.code_column = extract_column(table, settings.code_column_name)
@@ -312,6 +327,7 @@ class CommodityDecoder:
         self.classification_table = create_classification_table(
             name=self.settings.name,
             years=self.year_column.drop_duplicates().to_list(),
+            classification_type=settings.classification_type,
         )
         self.year_code_pairs = self._create_year_code_pairs()
 
@@ -322,18 +338,24 @@ class CommodityDecoder:
             filt = self.year_column == year
             codes = self.code_column.loc[filt].drop_duplicates()
             yc_pair = codes.to_frame()
-            yc_pair["Year"] = year
+            yc_pair[self.settings.year_column_name] = year
             yc_pair_list.append(yc_pair)
         return pd.concat(yc_pair_list, ignore_index=True)
 
-    @staticmethod
     def _build_year_code_table(
-        year_code_pairs: pd.DataFrame, row: pd.Series
+        self, year_code_pairs: pd.DataFrame, row: pd.Series
     ) -> pd.DataFrame:
-        filt = year_code_pairs["Code"].apply(lambda x: x in row["code_range"])
-        filt = filt & (year_code_pairs["Year"] == row["Year"])
-        matched_codes = year_code_pairs.loc[filt].set_index(["Year", "Code"])
-        columns = row.drop(["code_range", "Year"]).index
+        filt = year_code_pairs[self.settings.code_column_name].apply(
+            lambda x: x in row["code_range"]
+        )
+        filt = filt & (
+            year_code_pairs[self.settings.year_column_name]
+            == row[self.settings.year_column_name]
+        )
+        matched_codes = year_code_pairs.loc[filt].set_index(
+            [self.settings.year_column_name, self.settings.code_column_name]
+        )
+        columns = row.drop(["code_range", self.settings.year_column_name]).index
         code_table = pd.DataFrame(
             data=[row.loc[columns]] * len(matched_codes.index),
             index=matched_codes.index,
@@ -375,12 +397,13 @@ class CommodityDecoder:
         mapping_table.columns = self.settings.rename_dict.values()
         return mapping_table
 
-    @staticmethod
-    def _validate_mapping_table(mapping_table: pd.DataFrame):
+    def _validate_mapping_table(self, mapping_table: pd.DataFrame):
         filt = mapping_table.index.duplicated(keep=False)
         if filt.sum() > 0:
             invalid_case_sample = (
-                mapping_table.loc[filt].sort_values(["Code", "level"]).head(10)
+                mapping_table.loc[filt]
+                .sort_values([self.settings.code_column_name, "level"])
+                .head(10)
             )
             raise ValueError(f"Classification is not valid \n{invalid_case_sample}")
 
@@ -410,7 +433,9 @@ class CommodityDecoder:
 
         """
         mapping = self.create_mapping_table()
-        self.table = self.table.join(mapping, on=["Year", "Code"])
+        self.table = self.table.join(
+            mapping, on=[self.settings.year_column_name, self.settings.code_column_name]
+        )
         self._fill_missing_values()
         return self.table
 
@@ -526,10 +551,14 @@ class IDDecoder:
 
         elif "external_file" in attr_dict:
             file_name = f"{attr_dict['external_file']}.parquet"
-            file_path = defaults.external_data.joinpath(file_name)
+            file_path = metadata_reader.defaults.external_data.joinpath(file_name)
             if not file_path.exists():
-                defaults.external_data.mkdir(parents=True, exist_ok=True)
-                file_address = f"{defaults.online_dir}/external_data/{file_name}"
+                metadata_reader.defaults.external_data.mkdir(
+                    parents=True, exist_ok=True
+                )
+                file_address = (
+                    f"{metadata_reader.defaults.online_dir}/external_data/{file_name}"
+                )
                 utils.download(file_address, file_path)
             code_builer_file = pd.read_parquet(file_path)
             code_series = code_builer_file.loc[household_metadata["year"]].iloc[:, 0]

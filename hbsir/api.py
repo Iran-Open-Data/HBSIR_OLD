@@ -34,6 +34,7 @@ from . import (
     data_cleaner,
     data_engine,
     decoder,
+    metadata_reader,
     utils,
 )
 from .metadata_reader import (
@@ -185,6 +186,7 @@ def add_classification(
     code_column_name: str = _Default,
     year_column_name: str = _Default,
     versioned_info: dict = _Default,
+    classification_type: str = _Default,
 ) -> pd.DataFrame:
     """Add commodity classification codes to DataFrame.
 
@@ -201,10 +203,21 @@ def add_classification(
 
     """
     parameters = _extract_parameters(locals())
-    settings = decoder.CommodityDecoderSettings(**parameters)
-    table = decoder.CommodityDecoder(
-        table=table, settings=settings
-    ).add_classification()
+    if "classification_type" not in parameters:
+        if "code_column_name" in parameters:
+            if table[parameters["code_column_name"]].le(10_000).mean() < 0.9:
+                class_type = "occupation"
+            else:
+                class_type = "commodity"
+        elif metadata_reader.defaults.columns.commodity_code in table.columns:
+            class_type = "commodity"
+        elif metadata_reader.defaults.columns.job_code in table.columns:
+            class_type = "occupation"
+        else:
+            raise ValueError("Missing Code Column")
+        parameters["classification_type"] = class_type
+    settings = decoder.DecoderSettings(**parameters)
+    table = decoder.Decoder(table=table, settings=settings).add_classification()
     return table
 
 
