@@ -151,6 +151,13 @@ def _update_settings(_settings, new_settings):
 settings = collect_settings()
 
 
+class DefaultColumns(BaseModel):
+    year: str = settings[("columns", "year")]
+    household_id: str = settings[("columns", "household_id")]
+    commodity_code: str = settings[("columns", "commodity_code")]
+    job_code: str = settings[("columns", "job_code")]
+
+
 class Defaults(BaseModel):
     # online directory
     online_dir: str = settings[("online_directory",)]
@@ -177,6 +184,8 @@ class Defaults(BaseModel):
     first_year: int = settings[("first_year",)]
     last_year: int = settings[("last_year",)]
 
+    columns: DefaultColumns = DefaultColumns()
+
     def model_post_init(self, __contex=None) -> None:
         self.archive_files.mkdir(parents=True, exist_ok=True)
         self.unpacked_data.mkdir(parents=True, exist_ok=True)
@@ -199,6 +208,7 @@ class Metadata:
         "maps",
         "household",
         "commodities",
+        "occupations",
         "schema",
         "other",
         "external_data",
@@ -208,6 +218,7 @@ class Metadata:
     maps: dict[str, Any]
     household: dict[str, Any]
     commodities: dict[str, Any]
+    occupations: dict[str, Any]
     schema: dict[str, Any]
     other: dict[str, Any]
     external_data: dict[str, Any]
