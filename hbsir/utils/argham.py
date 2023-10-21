@@ -119,7 +119,7 @@ class Argham:
 
         for rng in self.range_set:
             if rng.stop - rng.start == 1:
-                integers.append(rng.start)
+                integers.append(str(rng.start))
             else:
                 ranges.append((rng.start, rng.stop))
         representation_list = []
