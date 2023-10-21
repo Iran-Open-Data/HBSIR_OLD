@@ -12,6 +12,7 @@ package_metadata:
   maps: "metadata/maps.yaml"
   household: "metadata/household.yaml"
   commodities: "metadata/commodities.yaml"
+  occupations: "metadata/occupations.yaml"
   schema: "metadata/schema.yaml"
   other: "metadata/other.yaml"
   external_data: "metadata/external_data.yaml"
@@ -23,6 +24,7 @@ local_metadata:
   maps: "metadata/maps.yaml"
   household: "metadata/household.yaml"
   commodities: "metadata/commodities.yaml"
+  occupations: "metadata/occupations.yaml"
   schema: "metadata/schema.yaml"
   other: "metadata/other.yaml"
   external_data: "metadata/external_data.yaml"
@@ -60,3 +62,10 @@ functions_defaults:
     redownload: false
     save_created: true
     recreate: false
+
+# Column Names
+columns:
+  year: Year
+  household_id: ID
+  commodity_code: Code
+  job_code: Job_Code
