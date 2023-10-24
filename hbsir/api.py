@@ -24,6 +24,9 @@ Sample usage:
     
 See API documentation for more details.
 """
+# pylint: disable=too-many-arguments
+# pylint: disable=unused-argument
+# pylint: disable=too-many-locals
 
 from typing import Iterable, Literal, Any
 
@@ -56,8 +59,6 @@ def _extract_parameters(local_variables: dict) -> dict:
     }
 
 
-# pylint: disable=too-many-arguments
-# pylint: disable=unused-argument
 def load_table(
     table_name: _Table,
     years: _Years = "last",
@@ -123,7 +124,6 @@ def load_table(
     return table
 
 
-# pylint: disable=unused-argument
 def create_table_with_schema(
     schema: str | dict,
     years: _Years = "last",
