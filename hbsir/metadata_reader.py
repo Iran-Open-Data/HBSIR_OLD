@@ -156,6 +156,7 @@ class DefaultColumns(BaseModel):
     household_id: str = settings[("columns", "household_id")]
     commodity_code: str = settings[("columns", "commodity_code")]
     job_code: str = settings[("columns", "job_code")]
+    weight: str = settings[("columns", "weight")]
 
 
 class Defaults(BaseModel):

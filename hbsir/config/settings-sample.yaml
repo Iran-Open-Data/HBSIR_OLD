@@ -69,3 +69,4 @@ columns:
   household_id: ID
   commodity_code: Code
   job_code: Job_Code
+  weight: Weight

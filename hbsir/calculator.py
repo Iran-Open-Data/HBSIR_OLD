@@ -3,7 +3,7 @@ from typing import Literal, Iterable
 import pandas as pd
 from pydantic import BaseModel, Field
 
-from .metadata_reader import _Attribute, _Table
+from .metadata_reader import _Attribute, _Table, defaults
 from . import api, utils
 
 
@@ -24,7 +24,8 @@ class QuantileSettings(BaseModel):
     on_variable: _QuantileBase | None = Field(default=None, alias="on")
     on_column: str | None = None
     weighted: bool = True
-    weight_column: str | None = None
+    adjust_weight_for_household_size: bool = False
+    weight_column: str = defaults.columns.weight
     equivalence_scale: _EquivalenceScale = "Household"
     for_all: bool = True
     annual: bool = True
@@ -139,13 +140,13 @@ class Quantiler:
 
     def _calculate_subgroup_quantile(self, subgroup: pd.DataFrame) -> pd.Series:
         return subgroup.assign(
-            CumWeight=lambda df: df["Weight"].cumsum(),
+            CumWeight=lambda df: df[self.settings.weight_column].cumsum(),
             Quantile=lambda df: df["CumWeight"] / df["CumWeight"].iloc[-1],
         ).loc[:, "Quantile"]
 
     def _add_weights(self, table: pd.DataFrame) -> pd.DataFrame:
         if self.settings.weighted:
-            return api.add_weight(table)
+            return api.add_weight(table, self.settings.adjust_weight_for_household_size)
         return table.assign(Weight=1)
 
     def _add_attributes(self, table: pd.DataFrame) -> pd.DataFrame:
@@ -173,7 +174,8 @@ def calculate_quantile(
     on: _QuantileBase | None = "Gross_Expenditure",
     on_column: str | None = None,
     weighted: bool = True,
-    weight_column: str | None = None,
+    adjust_weight_for_household_size: bool = False,
+    weight_column: str = defaults.columns.weight,
     equivalence_scale: _EquivalenceScale = "Household",
     for_all: bool = True,
     annual: bool = True,
@@ -191,7 +193,8 @@ def calculate_decile(
     on: _QuantileBase | None = "Gross_Expenditure",
     on_column: str | None = None,
     weighted: bool = True,
-    weight_column: str | None = None,
+    adjust_weight_for_household_size: bool = False,
+    weight_column: str = defaults.columns.weight,
     equivalence_scale: _EquivalenceScale = "Household",
     for_all: bool = True,
     annual: bool = True,
@@ -217,7 +220,8 @@ def calculate_percentile(
     on: _QuantileBase | None = "Gross_Expenditure",
     on_column: str | None = None,
     weighted: bool = True,
-    weight_column: str | None = None,
+    adjust_weight_for_household_size: bool = False,
+    weight_column: str = defaults.columns.weight,
     equivalence_scale: _EquivalenceScale = "Household",
     for_all: bool = True,
     annual: bool = True,
