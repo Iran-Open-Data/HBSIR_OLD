@@ -229,6 +229,7 @@ members_properties:
           type: "unsigned"
           replace:
             1364: {"ٌق": null}
+            1365: null
         1369:
           type: "category"
           categories: 
@@ -280,7 +281,7 @@ members_properties:
             9: "Unofficial"
 
     memders_member_weeks: &memders_member_weeks
-      new_name: "Member_Weeks"
+      new_name: "Weeks_in_Household"
       type: "unsigned"
 
     members_nationality: &members_nationality
@@ -304,7 +305,7 @@ members_properties:
       type: "unsigned"
 
     members_employed_weeks: &members_employed_weeks
-      new_name: "Employed_Weeks"
+      new_name: "Weeks_in_Employment"
       type: "unsigned"
 
 
@@ -365,7 +366,7 @@ members_properties:
       DYCOL06: *members_is_literate
       DYCOL07: *members_is_student
       DYCOL08: *members_education_level
-      DYCOL09:  *members_activity_state
+      DYCOL09: *members_activity_state
       DYCOL10: *members_marrital_state
 
 

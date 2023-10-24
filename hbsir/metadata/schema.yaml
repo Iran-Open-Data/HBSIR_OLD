@@ -593,6 +593,15 @@ investment:
           - Duration: int
           - Expenditure
           - Secondhand_Sale
+        1374:
+          - Year
+          - ID
+          - Table_Name
+          - Code
+          - Provision_Method
+          - Duration: int
+          - Expenditure
+          - Secondhand_Sale
         1375: null
         1378:
           - Year

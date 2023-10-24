@@ -1,4 +1,16 @@
 
+
+regions: manual
+weights: manual
+
+
+gini:
+  alias: annual
+
+  annual:
+    alias: sci.gini.annual
+
+
 sci:
   cpi_by1395_urban_singleindex:
     monthly:
@@ -39,5 +51,8 @@ sci:
 
 cbi:
   gini:
+    default:
+      alias: annual
+
     annual:
       manual

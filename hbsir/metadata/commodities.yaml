@@ -1767,6 +1767,11 @@ original_1383:
       code: {start: 34_000, end: 35_000}
 
 
+###############################################################################
+##                        - Original Classification -                        ##
+###############################################################################
+
+
 original:
   defaults:
     levels: [2, 3]
@@ -1774,6 +1779,11 @@ original:
   items:
     1363: {{original_1363}}
     1383: {{original_1383}}
+
+
+###############################################################################
+##                            - Food / Non-Food -                            ##
+###############################################################################
 
 
 Food_NonFood:
@@ -1805,6 +1815,11 @@ Food_NonFood:
         farsi_name: "مخارج غیر خوراکی"
 
 
+###############################################################################
+##                                - Duration -                               ##
+###############################################################################
+
+
 Duration:
   defaults:
     levels: [3]
@@ -1812,6 +1827,11 @@ Duration:
     output_column_names: ["Duration"]
   items:
     1363: {{original_1363}}
+
+
+###############################################################################
+##                               - Durability -                              ##
+###############################################################################
 
 
 Durability:
@@ -1947,6 +1967,11 @@ Durability:
           - {start: 34_000, end: 35_000}
 
 
+###############################################################################
+##                              - Imputed Rent -                             ##
+###############################################################################
+
+
 Imputed_Rent:
   defaults:
     levels: [1]
@@ -1968,6 +1993,11 @@ Imputed_Rent:
           # - 42_215
 
 
+###############################################################################
+##                           - Insurance Benefits -                          ##
+###############################################################################
+
+
 Insurance_Benefits:
   defaults:
     levels: [1]
@@ -1985,12 +2015,15 @@ Insurance_Benefits:
         - 125_313
 
 
+###############################################################################
+##                          - SCI Main Categories -                          ##
+###############################################################################
+
+
 sci_main_categories:
   defaults:
     levels: [1]
-    output_column_names: ["Food_NonFood"]
-    missing_value_replacements: 
-      Food_NonFood: Non_Food_Goods_and_Services
+    output_column_names: ["Main_Category"]
 
   items:
     1383:
@@ -2000,6 +2033,7 @@ sci_main_categories:
         code:
           - {{original_1383.food_and_non_alcoholic_beverages}}
           - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
+          - {{original_1383.food_and_beverage_serving_services}}
 
       Food_and_Beverages:
         level: 1
@@ -2016,6 +2050,251 @@ sci_main_categories:
       Non_Food_Goods_and_Services:
         level: 0
         farsi_name: "مخارج غیر خوراکی و خدمات"
+
+
+###############################################################################
+##                          - SCI Food Categories -                          ##
+###############################################################################
+
+sci_food_categories:
+  items:
+    food:
+      level: 0
+      code:
+        - {{original_1383.food_and_non_alcoholic_beverages}}
+        - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
+        - {{original_1383.food_and_beverage_serving_services}}
+
+    cereals_and_cereal_products:
+      level: 1
+      farsi_name: "آرد، رشته، غلات و فراورده‌های آن"
+      code:
+        - {{original_1383.flour_noodle_and_similar_pasta_products}}
+        - {{original_1383.cereals}}
+        - {{original_1383.bread_and_bakery_products}}
+        - [11_171, 11_172]
+
+    flour_and_noodle:
+      level: 2
+      farsi_name: "آرد و رشته"
+      code: {{original_1383.flour_noodle_and_similar_pasta_products}}
+
+    cereals:
+      level: 2
+      farsi_name: "غلات"
+      code: {{original_1383.cereals}}
+
+    bread:
+      level: 2
+      farsi_name: "انواع نان"
+      code: {{original_1383.bread_and_bakery_products}}
+
+    biscuit:
+      level: 2
+      farsi_name: "بیسکویت و ویفر"
+      code:
+        - 11_171
+        - 11_172
+
+    meat:
+      level: 1
+      farsi_name: "گوشت"
+      code:
+        - {{original_1383.meat}}
+        - {{original_1383.fish_and_other_sea_foods}}
+
+    red_meat:
+      level: 2
+      farsi_name: "گوشت دام"
+      code:
+        - {{original_1383.red_meat}}
+        - {start: 11_241, end: 11_244}
+        - {start: 11_247, end: 11_250}
+
+    poultry:
+      level: 2
+      farsi_name: "گوشت پرندگان"
+      code:
+        - {{original_1383.poultry}}
+        - {start: 11_244, end: 11_247}
+
+    fish_and_other_sea_foods:
+      level: 2
+      farsi_name: "گوشت حیوانات دریایی"
+      code: {{original_1383.fish_and_other_sea_foods}}
+
+    milk_other_dairy_product_and_eggs:
+      level: 1
+      farsi_name: "شیر و فرآورده‌های آن و تخم پرندگان"
+      code:
+        - {{original_1383.milk_other_dairy_product_excluding_butter_and_eggs}}
+        - {{original_1383.butter}}
+
+    milk:
+      level: 2
+      farsi_name: "انواع شیر"
+      code:
+        - {{original_1383.milk}}
+
+    other_dairy_product:
+      level: 2
+      farsi_name: "فراورده‌های شیر"
+      code:
+        - {{original_1383.other_dairy_product_excluding_butter}}
+        - {{original_1383.butter}}
+
+    eggs:
+      level: 2
+      farsi_name: "تخم پرندگان"
+      code:
+        - {{original_1383.eggs}}
+
+    oils_and_fats:
+      level: 1
+      farsi_name: "روغن‌هاو چربی‌ها"
+      code:
+        - {{original_1383.animal_oils_and_fats_excluding_butter}}
+        - {{original_1383.vegetable_oils}}
+
+    animal_oils_and_fats:
+      level: 2
+      farsi_name: "روغن‌هاو چربی‌های حیوانی"
+      code:
+        - {{original_1383.animal_oils_and_fats_excluding_butter}}
+
+    vegetable_oils:
+      level: 2
+      farsi_name: "روغن‌های نباتی"
+      code:
+        - {{original_1383.vegetable_oils}}
+
+    fruits_and_vegetables:
+      level: 1
+      farsi_name: "میوه‌ها و سبزی‌ها"
+      code:
+        - {{original_1383.tree_fruits}}
+        - {{original_1383.cucurbit_fruits}}
+        - {{original_1383.leafy_or_stem_vegetables}}
+        - {{original_1383.fruit_bearing_vegetables}}
+        - {{original_1383.root_vegetables}}
+        - {{original_1383.other_vegetables}}
+        - {{original_1383.prepared_vegetables}}
+
+    fruits:
+      level: 2
+      farsi_name: "میوه‌ها"
+      code:
+        - {{original_1383.tree_fruits}}
+        - {{original_1383.cucurbit_fruits}}
+
+    vegetables:
+      level: 2
+      farsi_name: "سبزیجات"
+      code:
+        - {{original_1383.leafy_or_stem_vegetables}}
+        - {{original_1383.fruit_bearing_vegetables}}
+        - {{original_1383.root_vegetables}}
+        - {{original_1383.other_vegetables}}
+
+    prepared_fruits_and_vegetables:
+      level: 2
+      farsi_name: "میوه و سبزیجات آماده"
+      code:
+        - {{original_1383.prepared_vegetables}}
+
+    nuts_and_pulses:
+      level: 1
+      farsi_name: "خشکبار و حبوب"
+      code:
+        - {{original_1383.nuts}}
+        - {{original_1383.pulses}}
+
+    nuts:
+      level: 2
+      farsi_name: "خشکبار"
+      code:
+        - {{original_1383.nuts}}
+
+    pulses:
+      level: 2
+      farsi_name: "حبوب"
+      code:
+        - {{original_1383.pulses}}
+
+    sugar_confectionery_tea_coffee_and_cocoa_drinks:
+      level: 1
+      farsi_name: "قند و شکر، شیرینی‌ها، چای، قهوه و کاکائو"
+      code:
+        - {{original_1383.sugar_confectionery_and_desserts}}
+        - {{original_1383.tea_coffee_and_cocoa_drinks}}
+        - {start: 11_173, end: 11_180}
+
+    sugar:
+      level: 2
+      farsi_name: "قند و شکر"
+      code: {{original_1383.sugar}}
+
+    confectionery_and_desserts:
+      level: 2
+      farsi_name: "انواع مربا و شیرینی"
+      code:
+        - {{original_1383.confectionery_and_desserts}}
+        - {start: 11_173, end: 11_180}
+
+    tea_coffee_and_cocoa_drinks:
+      level: 2
+      farsi_name: "چای، قهوه و کاکائو"
+      code: {{original_1383.tea_coffee_and_cocoa_drinks}}
+
+    spices_condiments_and_other_food_products:
+      level: 1
+      farsi_name: "ادویه‌ها، چاشنی‌ها و سایر ترکیبات خوراکی"
+      code:
+        - {{original_1383.spices_condiments_and_other_food_products}}
+
+    spices:
+      level: 2
+      farsi_name: "ادویه‌ها"
+      code: {{original_1383.spices}}
+
+    condiments_and_other_food_products:
+      level: 2
+      farsi_name: "چاشنی‌ها و سایر ترکیبات خوراکی"
+      code: {{original_1383.condiments_and_other_food_products}}
+
+    drinks_prepared_foods_tobacco_and_norcotics:
+      level: 1
+      farsi_name: "نوشابه‌ها، غذاهای آمده و دخانی‌ها"
+      code:
+        - {{original_1383.soft_drinks}}
+        - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
+        - {{original_1383.food_and_beverage_serving_services}}
+
+    drinks:
+      level: 2
+      farsi_name: "انواع نوشابه‌ها"
+      code: 
+        - {{original_1383.soft_drinks}}
+        - {start: 111_133, end: 111_136}
+
+    prepared_foods:
+      level: 2
+      farsi_name: "غذاهای آمده و تنقلات"
+      code:
+        - {start: 111_000, end: 111_133}
+        - {start: 111_136, end: 112_000}
+
+    tobacco_and_norcotics:
+      level: 2
+      farsi_name: "دخانی‌ها"
+      code:
+        - {{original_1383.alcoholic_beverages_tobacco_and_norcotics}}
+
+
+###############################################################################
+##                        - SCI Non-Food Categories -                        ##
+###############################################################################
+
 
 
 ###############################################################################
