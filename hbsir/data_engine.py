@@ -10,7 +10,7 @@ import importlib
 import pandas as pd
 import yaml
 
-from . import decoder, utils
+from . import decoder, utils, external_data
 from .metadata_reader import (
     defaults,
     metadata,
@@ -441,7 +441,7 @@ def load_weights(
         weights, members = weights.align(members, join="left")
         weights = weights.mul(members)
 
-    weights = weights.rename("Weight")
+    weights = weights.rename(defaults.columns.weight)
     return weights
 
 
@@ -453,11 +453,7 @@ def _load_from_household_info(year) -> pd.Series:
 
 
 def _load_from_external_data(year) -> pd.Series:
-    weights_path = defaults.external_data.joinpath("weights.parquet")
-    if not weights_path.exists():
-        url = f"{defaults.online_dir}/external_data/weights.parquet"
-        utils.download(url, weights_path)
-    weights = pd.read_parquet(weights_path)
+    weights = external_data.load_table("weights")
     weights = weights.loc[(year), "Weight"]
     assert isinstance(weights, pd.Series)
     return weights

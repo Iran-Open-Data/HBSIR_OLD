@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Literal
 import importlib
 from pathlib import Path
 
@@ -9,24 +9,37 @@ from ..metadata_reader import defaults, metadata
 
 
 class ExternalDataCleaner:
-    def __init__(self, name: str, download_cleaned: bool = False) -> None:
+    def __init__(
+        self, name: str, download_cleaned: bool = False, save_cleaned: bool = False
+    ) -> None:
         self.name = name
         self.download_cleaned = download_cleaned
         self.metadata = self._get_metadata()
+        self.metadata_type = self._extract_type()
+        self.save_cleaned = save_cleaned
 
-    def load_data(self, save_cleaned: bool = False):
+    def load_data(self):
         external_data = [file.stem for file in defaults.external_data.iterdir()]
         if self.name in external_data:
             table = self.open_cleaned_data()
-        elif self.download_cleaned or (self.metadata == "manual"):
+        elif self.metadata_type == "alias":
+            name = self.metadata["alias"]
+            if name.count(".") == 0:
+                name = f"{self.name}.{name}"
+            table = ExternalDataCleaner(
+                name=name,
+                download_cleaned=self.download_cleaned,
+                save_cleaned=self.save_cleaned,
+            ).load_data()
+        elif self.download_cleaned or (self.metadata_type == "manual"):
             table = self.read_from_online_directory()
-        elif "url" in self.metadata:
+        elif self.metadata_type == "url":
             table = self.clean_raw_file()
-        elif "from" in self.metadata:
+        elif self.metadata_type == "from":
             table = self.collect_and_clean()
         else:
             raise ValueError
-        if save_cleaned:
+        if (self.save_cleaned) and (self.metadata_type != "alias"):
             self.save_data(table)
         return table
 
@@ -35,6 +48,12 @@ class ExternalDataCleaner:
         for part in self.name.split("."):
             meta = meta[part]
         return meta
+
+    def _extract_type(self) -> Literal["manual", "url", "from", "alias"]:
+        for metadata_type in ("manual", "url", "from", "alias"):
+            if (metadata_type in self.metadata) or (self.metadata == metadata_type):
+                return metadata_type
+        raise ValueError("Metadata type is missing")
 
     def _find_extension(self) -> str:
         available_extentions = ["xlsx"]

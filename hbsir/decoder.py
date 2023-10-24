@@ -23,13 +23,16 @@ classification info from the raw metadata.
 
 """
 from itertools import product
-from typing import Callable, Iterable, Literal
+from typing import Callable, Iterable, Literal, Any
 
 import pandas as pd
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from . import utils, metadata_reader
+from . import utils, metadata_reader, external_data
 from .metadata_reader import metadata, _Attribute
+
+
+_Default = Any
 
 
 def read_classification_info(
@@ -217,9 +220,9 @@ class DecoderSettings(BaseModel):
 
     """
 
-    classification_type: Literal["commodity", "occupation"]
+    classification_type: Literal["commodity", "occupation"] = "commodity"
     name: str = "original"
-    code_column_name: str = Field(None, validate_default=False)
+    code_column_name: str = _Default
     year_column_name: str = metadata_reader.defaults.columns.year
     versioned_info: dict = {}
     defaults: dict = {}
@@ -232,10 +235,12 @@ class DecoderSettings(BaseModel):
 
     def model_post_init(self, __contex=None) -> None:
         if self.classification_type == "commodity":
-            self.code_column_name = metadata_reader.defaults.columns.commodity_code
+            if self.code_column_name == _Default:
+                self.code_column_name = metadata_reader.defaults.columns.commodity_code
             self.versioned_info = metadata.commodities[self.name]
         else:
-            self.code_column_name = metadata_reader.defaults.columns.job_code
+            if self.code_column_name == _Default:
+                self.code_column_name = metadata_reader.defaults.columns.job_code
             self.versioned_info = metadata.occupations[self.name]
         if "defaults" in self.versioned_info:
             self.defaults = self.versioned_info["defaults"]
@@ -550,17 +555,7 @@ class IDDecoder:
                 )
 
         elif "external_file" in attr_dict:
-            file_name = f"{attr_dict['external_file']}.parquet"
-            file_path = metadata_reader.defaults.external_data.joinpath(file_name)
-            if not file_path.exists():
-                metadata_reader.defaults.external_data.mkdir(
-                    parents=True, exist_ok=True
-                )
-                file_address = (
-                    f"{metadata_reader.defaults.online_dir}/external_data/{file_name}"
-                )
-                utils.download(file_address, file_path)
-            code_builer_file = pd.read_parquet(file_path)
+            code_builer_file = external_data.load_table("regions")
             code_series = code_builer_file.loc[household_metadata["year"]].iloc[:, 0]
             assert isinstance(code_series, pd.Series)
             mapping_dict = code_series.to_dict()

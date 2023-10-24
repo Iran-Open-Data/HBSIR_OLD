@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Any
 
 import pandas as pd
 
@@ -11,18 +11,20 @@ _DataSource = Literal["SCI", "CBI"]
 _Frequency = Literal["Annual", "Monthly"]
 _SeparateBy = Literal["Urban_Rural", "Province"]
 
+_Default = Any
+
 
 def load_table(
     table_name: str,
-    data_source: _DataSource = "SCI",
-    frequency: _Frequency = "Annual",
-    separate_by: _SeparateBy | None = None,
+    data_source: _DataSource = _Default,
+    frequency: _Frequency = _Default,
+    separate_by: _SeparateBy = _Default,
     download_cleaned: bool = True,
     saved_cleaned: bool = False,
 ) -> pd.DataFrame:
-    name = ".".join([data_source, table_name, frequency])
-    name = name if separate_by is None else f"{name}.{separate_by}"
-    name = name.lower()
-    table = ExternalDataCleaner(name, download_cleaned).load_data(saved_cleaned)
+    name_parts = [data_source, table_name, frequency, separate_by]
+    name_parts = [part for part in name_parts if part != _Default]
+    name = ".".join(name_parts)
+    table = ExternalDataCleaner(name, download_cleaned, saved_cleaned).load_data()
     table = table.reset_index()
     return table
