@@ -453,7 +453,7 @@ def _load_from_household_info(year) -> pd.Series:
 
 
 def _load_from_external_data(year) -> pd.Series:
-    weights = external_data.load_table("weights")
+    weights = external_data.load_table("weights", reset_index=False)
     weights = weights.loc[(year), "Weight"]
     assert isinstance(weights, pd.Series)
     return weights

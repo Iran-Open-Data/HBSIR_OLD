@@ -19,12 +19,14 @@ def load_table(
     data_source: _DataSource = _Default,
     frequency: _Frequency = _Default,
     separate_by: _SeparateBy = _Default,
+    reset_index: bool = True,
     download_cleaned: bool = True,
     saved_cleaned: bool = False,
 ) -> pd.DataFrame:
     name_parts = [data_source, table_name, frequency, separate_by]
     name_parts = [part for part in name_parts if part != _Default]
-    name = ".".join(name_parts)
+    name = ".".join(name_parts).lower()
     table = ExternalDataCleaner(name, download_cleaned, saved_cleaned).load_data()
-    table = table.reset_index()
+    if reset_index:
+        table = table.reset_index()
     return table

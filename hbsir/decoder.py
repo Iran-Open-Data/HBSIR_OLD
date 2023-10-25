@@ -555,7 +555,7 @@ class IDDecoder:
                 )
 
         elif "external_file" in attr_dict:
-            code_builer_file = external_data.load_table("regions")
+            code_builer_file = external_data.load_table("regions", reset_index=False)
             code_series = code_builer_file.loc[household_metadata["year"]].iloc[:, 0]
             assert isinstance(code_series, pd.Series)
             mapping_dict = code_series.to_dict()
