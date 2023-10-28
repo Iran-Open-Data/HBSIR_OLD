@@ -3,9 +3,10 @@ Main file for ordinary use
 """
 
 import re
-from typing import Literal
+from typing import Literal, Iterable
 from types import ModuleType
 import importlib
+from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 import yaml
@@ -32,6 +33,8 @@ def extract_dependencies(table_name: str, year: int) -> dict:
             upstream_tables = utils.MetadataVersionResolver(
                 metadata.schema[table]["table_list"], year=year
             ).get_version()
+            if isinstance(upstream_tables, str):
+                upstream_tables = [upstream_tables]
             assert isinstance(upstream_tables, list)
             table_list.extend(upstream_tables)
         else:
@@ -45,46 +48,70 @@ class TableHandler:
     """A class for loading parquet files"""
 
     def __init__(
-        self, table_name: _OriginalTable, year: int, settings: LoadTable | None = None
+        self,
+        table_list: Iterable[_OriginalTable],
+        year: int,
+        settings: LoadTable | None = None,
     ) -> None:
-        self.table_name: _OriginalTable = table_name
+        self.table_list = table_list
         self.year = year
-        self.file_name = f"{year}_{table_name}.parquet"
-        self.local_path = defaults.processed_data.joinpath(self.file_name)
-        self.file_url = f"{defaults.online_dir}/parquet_files/{self.file_name}"
         self.settings = settings if settings is not None else LoadTable()
+        self.tables: dict[str, pd.DataFrame] = self.setup()
 
-    def read(self) -> pd.DataFrame:
+    def __getitem__(self, __name: _OriginalTable) -> pd.DataFrame:
+        return self.tables[__name]
+
+    def get(
+        self, names: _OriginalTable | Iterable[_OriginalTable]
+    ) -> list[pd.DataFrame]:
+        names = [names] if isinstance(names, str) else names
+        return [self[name] for name in names]
+
+    def setup(self) -> dict[str, pd.DataFrame]:
+        with ThreadPoolExecutor(max_workers=6) as executer:
+            tables = zip(
+                self.table_list, executer.map(self.read_table, self.table_list)
+            )
+        return dict(tables)
+
+    def read_table(self, table_name: _OriginalTable) -> pd.DataFrame:
         """Read the parquet file"""
-        self.local_path.parent.mkdir(exist_ok=True, parents=True)
-        if (self.settings.on_missing == "create") or self.settings.recreate:
-            if (not self.local_path.exists()) or self.settings.recreate:
-                table = open_and_clean_table(self.table_name, self.year)
-                if self.settings.save_created:
-                    table.to_parquet(self.local_path)
-            else:
-                table = self.read_local_file()
-        elif self.settings.on_missing == "download" or self.settings.redownload:
-            if (not self.local_path.exists()) or self.settings.redownload:
-                table = self.download()
-                if self.settings.save_downloaded:
-                    table.to_parquet(self.local_path)
-            else:
-                table = self.read_local_file()
-        else:
-            table = self.read_local_file()
+        file_name = f"{self.year}_{table_name}.parquet"
+        local_file = defaults.processed_data.joinpath(file_name)
 
-        table.attrs["table_name"] = self.table_name
+        if self.settings.recreate:
+            table = self.create_table(table_name)
+        elif self.settings.redownload:
+            table = self.download_table(table_name)
+        elif local_file.exists():
+            table = pd.read_parquet(local_file)
+        elif self.settings.on_missing == "create":
+            table = self.create_table(table_name)
+        elif self.settings.on_missing == "download":
+            table = self.download_table(table_name)
+        else:
+            raise FileNotFoundError
+
+        table.attrs["table_name"] = table_name
         table.attrs["year"] = self.year
         return table
 
-    def download(self) -> pd.DataFrame:
-        """Download parquet file to memory"""
-        return pd.read_parquet(self.file_url)
+    def create_table(self, table_name: _OriginalTable) -> pd.DataFrame:
+        file_name = f"{self.year}_{table_name}.parquet"
+        local_path = defaults.processed_data.joinpath(file_name)
+        table = open_and_clean_table(table_name, self.year)
+        if self.settings.save_created:
+            table.to_parquet(local_path)
+        return table
 
-    def read_local_file(self) -> pd.DataFrame:
-        """Load parquet file from local hard drive"""
-        return pd.read_parquet(self.local_path)
+    def download_table(self, table_name: _OriginalTable) -> pd.DataFrame:
+        file_name = f"{self.year}_{table_name}.parquet"
+        local_path = defaults.processed_data.joinpath(file_name)
+        file_url = f"{defaults.online_dir}/parquet_files/{file_name}"
+        table = pd.read_parquet(file_url)
+        if self.settings.save_downloaded:
+            table.to_parquet(local_path)
+        return table
 
 
 class Applier:
@@ -248,8 +275,7 @@ class Applier:
         else:
             raise TypeError
         years = list(self.table["Year"].unique())
-        settings = LoadTable()
-        other_table = TableLoader(table_name, years, settings).load()
+        other_table = load_table(table_name, years)
         self.table = self.table.merge(other_table, on=columns)
 
 
@@ -257,75 +283,80 @@ class TableLoader:
     def __init__(
         self,
         table_name: str,
-        years: _Years,
+        year: int,
         settings: LoadTable | None = None,
     ):
         self.table_name = table_name
-        self.years = utils.parse_years(years)
+        self.year = year
         self.settings = settings if settings is not None else LoadTable()
-        self.schema: dict = metadata.schema.copy()
+        schema = utils.MetadataVersionResolver(metadata.schema, year).get_version()
+
+        if isinstance(schema, dict):
+            self.schema = dict(schema)
+        else:
+            raise ValueError("Invalid Schema")
+
         if table_name in self.schema:
-            self.table_schema: dict = self.schema[table_name]
+            table_schema = self.schema.get(table_name)
+            assert isinstance(table_schema, dict)
+            self.table_schema = table_schema
         else:
             self.table_schema = {}
-        self.original_tables_cache: dict[str, pd.DataFrame] = {}
 
-    def load(self) -> pd.DataFrame:
-        table_list = []
-        for year in self.years:
-            table = self._load_table(self.table_name, year)
-            table_list.append(table)
-        table = pd.concat(table_list)
-        if "views" in self.table_schema:
-            table.view.views = self.table_schema["views"]
-        return table
+        dependencies = extract_dependencies(table_name, year)
+        dependencies = [
+            table for table, props in dependencies.items() if "size" in props
+        ]
+        self.table_handler = TableHandler(dependencies, year)
 
-    def _load_table(self, table_name: str, year: int) -> pd.DataFrame:
+    def load(self, table_name: str | None = None) -> pd.DataFrame:
+        table_name = self.table_name if table_name is None else table_name
+
         if table_name in original_tables:
-            table = self._load_original_table(table_name, year)
+            table = self.table_handler[table_name]
+            if not table.empty and (table_name in self.schema):
+                table = self._apply_schema(table, table_name)
         elif self.schema[table_name].get("cache_result", False):
             try:
-                table = self.read_cached_table(table_name, year)
+                table = self.read_cached_table(table_name)
             except FileNotFoundError:
-                table = self._construct_schema_based_table(table_name, year)
-                self.save_cache(table, table_name, year)
+                table = self._construct_schema_based_table(table_name)
+                self.save_cache(table, table_name)
         else:
-            table = self._construct_schema_based_table(table_name, year)
+            table = self._construct_schema_based_table(table_name)
         return table
 
     def read_cached_table(
         self,
-        table_name: str | None = None,
-        year: int | None = None,
+        table_name: str,
     ) -> pd.DataFrame:
-        if not self.check_table_dependencies(table_name, year):
+        if not self.check_table_dependencies(table_name):
             raise FileNotFoundError
-        file_name = f"{table_name}_{year}.parquet"
+        file_name = f"{table_name}_{self.year}.parquet"
         file_path = defaults.cached_data.joinpath(file_name)
         table = pd.read_parquet(file_path)
         return table
 
-    def check_table_dependencies(self, table_name, year) -> bool:
-        file_name = f"{table_name}_{year}_metadata.yaml"
+    def check_table_dependencies(self, table_name: str) -> bool:
+        file_name = f"{table_name}_{self.year}_metadata.yaml"
         cach_metadata_path = defaults.cached_data.joinpath(file_name)
         with open(cach_metadata_path, encoding="utf-8") as file:
             cach_metadata = yaml.safe_load(file)
         file_dependencies = cach_metadata["dependencies"]
-        current_dependencies = extract_dependencies(table_name, year)
+        current_dependencies = extract_dependencies(table_name, self.year)
         return file_dependencies == current_dependencies
 
     def save_cache(
         self,
         table: pd.DataFrame,
         table_name: str,
-        year: int,
     ) -> None:
         defaults.cached_data.mkdir(parents=True, exist_ok=True)
-        file_name = f"{table_name}_{year}.parquet"
+        file_name = f"{table_name}_{self.year}.parquet"
         file_path = defaults.cached_data.joinpath(file_name)
-        file_name = f"{table_name}_{year}_metadata.yaml"
+        file_name = f"{table_name}_{self.year}_metadata.yaml"
         cach_metadata_path = defaults.cached_data.joinpath(file_name)
-        file_metadata = {"dependencies": extract_dependencies(table_name, year)}
+        file_metadata = {"dependencies": extract_dependencies(table_name, self.year)}
         with open(cach_metadata_path, mode="w", encoding="utf-8") as file:
             yaml.safe_dump(file_metadata, file)
         table.to_parquet(file_path, index=False)
@@ -333,59 +364,55 @@ class TableLoader:
     def _apply_schema(
         self,
         table: pd.DataFrame,
-        table_name: str | None = None,
-        year: int | None = None,
+        table_name: str,
     ):
         if "instructions" not in self.schema[table_name]:
             return table
 
-        if (table_name is None) and ("table_name" in table.attrs):
-            table_name = table.attrs["table_name"]
-
-        if (year is None) and ("year" in table.attrs):
-            year = table.attrs["year"]
-        instructions = utils.MetadataVersionResolver(
-            self.schema[table_name]["instructions"], year
-        ).get_version()
+        instructions = self.schema[table_name]["instructions"]
         assert isinstance(instructions, list)
-        props = {"year": year, "table_name": table_name}
+        props = {"year": self.year, "table_name": table_name}
         table = Applier(table, instructions, props).table
         return table
 
-    def _load_original_table(
-        self, table_name: _OriginalTable, year: int
-    ) -> pd.DataFrame:
-        if f"{table_name}_{year}" in self.original_tables_cache:
-            return self.original_tables_cache[f"{table_name}_{year}"]
-        table = TableHandler(table_name, year, self.settings).read()
-        if not table.empty and (table_name in self.schema):
-            table = self._apply_schema(table, table_name, year)
-        self.original_tables_cache[f"{table_name}_{year}"] = table
-        return table
-
-    def _construct_schema_based_table(self, table_name: str, year: int) -> pd.DataFrame:
+    def _construct_schema_based_table(self, table_name: str) -> pd.DataFrame:
         if table_name not in self.schema:
             raise KeyError(f"Table name {table_name} is not available in schema")
         table_names = self.schema[table_name]["table_list"]
-        table_names = utils.MetadataVersionResolver(table_names, year).get_version()
         assert isinstance(table_names, (str, list))
 
-        table_list = self._collect_schema_tables(table_names, year)
+        table_list = self._collect_schema_tables(table_names)
 
         table = pd.concat(table_list)
-        table = self._apply_schema(table, table_name, year)
+        table = self._apply_schema(table, table_name)
         return table
 
     def _collect_schema_tables(
-        self, table_names: str | list[str], year: int
+        self, table_names: str | list[str]
     ) -> list[pd.DataFrame]:
         table_names = [table_names] if isinstance(table_names, str) else table_names
         table_list = []
         for name in table_names:
-            table = self._load_table(name, year)
+            table = self.load(name)
             if not table.empty:
                 table_list.append(table)
         return table_list
+
+
+def load_table(
+    table_name: str,
+    years: _Years,
+    settings: LoadTable | None = None,
+) -> pd.DataFrame:
+    table_list = []
+    for year in utils.parse_years(years):
+        TableLoader(table_name, year, settings)
+        table = TableLoader(table_name, year, settings).load()
+        table_list.append(table)
+    table = pd.concat(table_list)
+    # if "views" in self.table_schema:
+    #     table.view.views = self.table_schema["views"]
+    return table
 
 
 def load_weights(
@@ -434,8 +461,7 @@ def load_weights(
 
     if adjust_for_household_size:
         members = (
-            TableLoader("Number_of_Members", years=year)
-            .load()
+            load_table("Number_of_Members", years=year)
             .set_index("ID")
             .loc[:, "Members"]
         )

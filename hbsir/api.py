@@ -111,16 +111,15 @@ def load_table(
         table_parts = []
         for year in years:
             table_parts.append(
-                data_engine.TableHandler(table_name, year, settings).read()
+                data_engine.TableHandler([table_name], year, settings)[table_name]
             )
         table = pd.concat(table_parts)
     else:
-        loader = data_engine.TableLoader(
+        table = data_engine.load_table(
             table_name=table_name,
             years=years,
             settings=settings,
         )
-        table = loader.load()
     return table
 
 
@@ -158,7 +157,7 @@ def create_table_with_schema(
     parameters = _extract_parameters(locals())
     settings = LoadTable(**parameters)
     if isinstance(schema, str):
-        return data_engine.TableLoader(schema, years, settings).load()
+        return data_engine.load_table(schema, years, settings)
 
     if years is None and "years" in schema:
         years = schema["years"]
@@ -170,7 +169,7 @@ def create_table_with_schema(
         metadata.schema.update(schema)
     else:
         raise NameError
-    return data_engine.TableLoader(table_name, years, settings).load()
+    return data_engine.load_table(table_name, years, settings)
 
 
 def add_classification(
