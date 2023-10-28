@@ -470,7 +470,7 @@ class IDDecoderSettings(BaseModel):
     name: _Attribute
     id_column_name: str = "ID"
     year_column_name: str = "Year"
-    labels: tuple[str, ...] = ("names",)
+    labels: tuple[str, ...] = ("name",)
     output_column_names: tuple[str, ...] = tuple()
 
     def model_post_init(self, __contex=None) -> None:
