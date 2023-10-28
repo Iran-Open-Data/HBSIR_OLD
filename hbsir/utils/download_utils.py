@@ -11,17 +11,32 @@ from ..metadata_reader import defaults, metadata
 def download(
     url: str, path: str | Path | None = None, show_progress_bar: bool = False
 ) -> Path:
-    """
-    Download a file from a URL to a local path.
+    """Downloads a file from a given URL and saves it to a specified local path.
 
-    :param url: The URL to download the file from.
-    :param path: The local path to save the downloaded file to. If None, a
-        temporary directory is used.
-    :param show_progress_bar: Whether to display a progress bar during the
-        download.
-    :param timeout: The timeout for the download request, in seconds.
-    :returns: The local path of the downloaded file.
+    This function uses the requests library to send a GET request to the provided URL,
+    and then writes the response content to a file at the specified path. If the path
+    is not provided, the file is saved in a temporary directory. The function also
+    provides an option to display a progress bar during the download.
 
+    Parameters
+    ----------
+    url : str
+        The URL of the file to download.
+    path : str, Path, optional
+        The local path where the downloaded file should be saved. If None, the file
+        is saved in a temporary directory. Default is None.
+    show_progress_bar : bool, optional
+        If True, a progress bar is displayed during the download. Default is False.
+
+    Returns
+    -------
+    Path
+        The local path where the downloaded file was saved.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the file cannot be found at the given URL.
     """
     file_name, path = _get_name_and_path(url=url, path=path)
     response = requests.get(url, timeout=1000, stream=True)
