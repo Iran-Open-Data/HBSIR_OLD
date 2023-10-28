@@ -22,6 +22,25 @@ from .metadata_reader import (
 from .data_cleaner import open_and_clean_table
 
 
+def extract_dependencies(table_name: str, year: int) -> dict:
+    table_list = [table_name]
+    dependencies: dict[str, dict] = {}
+    while len(table_list) > 0:
+        table = table_list.pop(0)
+        if "table_list" in metadata.schema[table]:
+            dependencies[table] = metadata.schema[table]
+            upstream_tables = utils.MetadataVersionResolver(
+                metadata.schema[table]["table_list"], year=year
+            ).get_version()
+            assert isinstance(upstream_tables, list)
+            table_list.extend(upstream_tables)
+        else:
+            file_name = f"{year}_{table}.parquet"
+            local_path = defaults.processed_data.joinpath(file_name)
+            dependencies[table] = {"size": local_path.stat().st_size}
+    return dependencies
+
+
 class TableHandler:
     """A class for loading parquet files"""
 
@@ -286,31 +305,13 @@ class TableLoader:
         table = pd.read_parquet(file_path)
         return table
 
-    def extract_dependencies(self, table_name: str, year: int) -> dict:
-        table_list = [table_name]
-        dependencies: dict[str, dict] = {}
-        while len(table_list) > 0:
-            table = table_list.pop(0)
-            if "table_list" in metadata.schema[table]:
-                dependencies[table] = metadata.schema[table]
-                upstream_tables = utils.MetadataVersionResolver(
-                    metadata.schema[table]["table_list"], year=year
-                ).get_version()
-                assert isinstance(upstream_tables, list)
-                table_list.extend(upstream_tables)
-            else:
-                file_name = f"{year}_{table}.parquet"
-                local_path = defaults.processed_data.joinpath(file_name)
-                dependencies[table] = {"size": local_path.stat().st_size}
-        return dependencies
-
     def check_table_dependencies(self, table_name, year) -> bool:
         file_name = f"{table_name}_{year}_metadata.yaml"
         cach_metadata_path = defaults.cached_data.joinpath(file_name)
         with open(cach_metadata_path, encoding="utf-8") as file:
             cach_metadata = yaml.safe_load(file)
         file_dependencies = cach_metadata["dependencies"]
-        current_dependencies = self.extract_dependencies(table_name, year)
+        current_dependencies = extract_dependencies(table_name, year)
         return file_dependencies == current_dependencies
 
     def save_cache(
@@ -324,7 +325,7 @@ class TableLoader:
         file_path = defaults.cached_data.joinpath(file_name)
         file_name = f"{table_name}_{year}_metadata.yaml"
         cach_metadata_path = defaults.cached_data.joinpath(file_name)
-        file_metadata = {"dependencies": self.extract_dependencies(table_name, year)}
+        file_metadata = {"dependencies": extract_dependencies(table_name, year)}
         with open(cach_metadata_path, mode="w", encoding="utf-8") as file:
             yaml.safe_dump(file_metadata, file)
         table.to_parquet(file_path, index=False)
