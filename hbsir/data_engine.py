@@ -40,7 +40,8 @@ def extract_dependencies(table_name: str, year: int) -> dict:
         else:
             file_name = f"{year}_{table}.parquet"
             local_path = defaults.processed_data.joinpath(file_name)
-            dependencies[table] = {"size": local_path.stat().st_size}
+            size = local_path.stat().st_size if local_path.exists() else None
+            dependencies[table] = {"size": size}
     return dependencies
 
 
