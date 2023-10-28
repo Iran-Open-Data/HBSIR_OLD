@@ -308,7 +308,7 @@ class TableLoader:
         dependencies = [
             table for table, props in dependencies.items() if "size" in props
         ]
-        self.table_handler = TableHandler(dependencies, year)
+        self.table_handler = TableHandler(dependencies, year, settings)
 
     def load(self, table_name: str | None = None) -> pd.DataFrame:
         table_name = self.table_name if table_name is None else table_name
@@ -407,7 +407,6 @@ def load_table(
 ) -> pd.DataFrame:
     table_list = []
     for year in utils.parse_years(years):
-        TableLoader(table_name, year, settings)
         table = TableLoader(table_name, year, settings).load()
         table_list.append(table)
     table = pd.concat(table_list)
