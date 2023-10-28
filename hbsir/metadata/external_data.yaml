@@ -10,6 +10,11 @@ gini:
   annual:
     alias: sci.gini.annual
 
+cpi:
+  goto: cpi_1400
+
+cpi_1400:
+  goto: sci.cpi_1400
 
 sci:
   cpi_by1395_urban_singleindex:
@@ -51,8 +56,7 @@ sci:
 
 cbi:
   gini:
-    default:
-      alias: annual
+    alias: annual
 
     annual:
       manual

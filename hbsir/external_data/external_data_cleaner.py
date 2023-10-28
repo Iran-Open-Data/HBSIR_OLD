@@ -45,8 +45,14 @@ class ExternalDataCleaner:
 
     def _get_metadata(self) -> dict:
         meta = metadata.external_data.copy()
-        for part in self.name.split("."):
+        name_parts = self.name.split(".")
+        while len(name_parts) > 0:
+            part = name_parts.pop(0)
             meta = meta[part]
+            if "goto" in meta:
+                self.name = meta["goto"] + ".".join(name_parts)
+                meta = self._get_metadata()
+                break
         return meta
 
     def _extract_type(self) -> Literal["manual", "url", "from", "alias"]:
