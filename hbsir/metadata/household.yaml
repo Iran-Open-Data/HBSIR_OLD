@@ -330,11 +330,32 @@ Region:
 
     # 0 9 X X
     #    + Razavi_Khorasan                  + خراسان رضوی
+    901:
+      1377: "Esfarayen"                     # اسفراین
+      1384: null
+    902:
+      1377: "Bojnurd"                       # بجنورد
+      1384: null
+    903:
+      1377: "Birjand"                       # بیرجند
+      1384: null
     904: "Taybad"                           # تایباد
     905: "Torbat-e-Heydarieh"               # تربت حیدریه
     906: "Torbat-e-Jam"                     # تربت جام
     907: "Dargaz"                           # درگز
     908: "Sabzevar"                         # سبزوار
+    909:
+      1377: "Shirvan"                       # شیروان
+      1384: null
+    910:
+      1377: "Tabas"                         # طبس
+      1381: null
+    911:
+      1377: "Ferdows"                       # فردوس
+      1386: null
+    912:
+      1377: "Qaen"                          # قائنات
+      1384: null
     913: "Quchan"                           # قوچان
     914: "Kashmar"                          # کاشمر
     915: "Gonabad"                          # گناباد
@@ -343,8 +364,17 @@ Region:
     918: "Chenaran"                         # چناران
     919: "Khaf"                             # خواف
     920: "Sarakhs"                          # سرخس
+    921:
+      1377: "Nehbandan"                     # نهبندان
+      1384: null
     922: "Fariman"                          # فریمان
     923: "Bardaskan"                        # بردسکن
+    924:
+      1382: "Jajrom"                        # جاجرم
+      1384: null
+    925:
+      1382: "Maneh-o-Samalqan"              # مانه و سملقان
+      1384: null
     927: "Rashtkhar"                        # رشتخوار
     928: "Kalat"                            # کلات
     929: "Khalilabad"                       # خلیل آباد
@@ -529,6 +559,9 @@ Region:
     2107: "Abarkuh"                         # ابرکوه
     2108: "Ashkezar"                        # اشکذر
     2109: "Khatam"                          # خاتم
+    2110:
+      1382: "Tabas"                         # طبس
+      1392: null
     2111: "Bahabad"                         # بهاباد
 
     # 2 2 X X
@@ -553,12 +586,21 @@ Region:
     2302: "Damavand"                        # دماوند
     2303: "Rey"                             # ری
     2304: "Shemiranat"                      # شمیرانات
+    2305:
+      1377: "Karaj"                         # کرج
+      1392: null
     2306: "Varamin"                         # ورامین
+    2308:
+      1377: "Savojbolagh"                   # ساوجبلاغ
+      1392: null
     2309: "Shahriar"                        # شهریار
     2310: "Islamshahr"                      # اسلام شهر
     2312: "Robat-Karim"                     # رباط کریم
     2313: "Pakdasht"                        # پاکدشت
     2314: "Firuzkuh"                        # فیروزکوه
+    2315:
+      1377: "Nazarabad"                     # نظرآباد
+      1392: null
     2316: "Shahr-e_Qods"                    # قدس
     2317: "Malard"                          # ملارد
     2318: "Pishva"                          # پیشوا
@@ -617,15 +659,29 @@ Region:
     2803: "Jajrom"                          # جاجرم
     2804: "Shirvan"                         # شیروان
     2805: "Faroj"                           # فاروج
-    2806: "Maneh-o-Samalqan"                # مانه وسملقان
+    2806: "Maneh-o-Samalqan"                # مانه و سملقان
     2807: "Germeh"                          # گرمه
     2808: "Razo_Jalgelan"                   # راز و جرگلان
+    2809:
+      1384: "Shirvan"                       # شیروان
+      1387: null
+    2813:
+      1384: "Faroj"                         # فاروج
+      1387: null
+    2824:
+      1384: "Jajrom"                        # جاجرم
+      1387: null
+    2825:
+      1384: "Maneh-o-Samalqan"              # مانه و سملقان
+      1387: null
 
     # 2 9 X X
     #    + South_Khorasan                   + خراسان جنوبی
     2901: "Birjand"                         # بیرجند
     2902: "Darmian"                         # درمیان
-    2903: "Sarbisheh"                       # سربیشه
+    2903:
+      1384: "Birjand"                       # بیرجند
+      1387: "Sarbisheh"                     # سربیشه
     2904: "Qaen"                            # قائنات
     2905: "Nehbandan"                       # نهبندان
     2906: "Sarayan"                         # سرایان
@@ -633,7 +689,16 @@ Region:
     2908: "Boshruyeh"                       # بشرویه
     2909: "Zirkouh"                         # زیرکوه
     2910: "Khusf"                           # خوسف
-    2911: "Tabas"                           # طبس
+    2911:
+      1384: "Sarayan"                         # سرایان
+      1387: null
+      1392: "Tabas"                         # طبس
+    2912:
+      1384: "Qaen"                          # قائنات
+      1387: null
+    2921:
+      1384: "Nehbandan"                     # نهبندان
+      1387: null
 
     # 3 0 X X
     #    + Alborz                           + البرز
@@ -1141,7 +1206,7 @@ Region:
     2803: "جاجرم"
     2804: "شیروان"
     2805: "فاروج"
-    2806: "مانه وسملقان"
+    2806: "مانه و سملقان"
     2807: "گرمه"
     2808: "راز و جرگلان"
 
