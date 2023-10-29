@@ -273,7 +273,7 @@ class Metadata:
         return yaml_text
 
 
-class LoadTable(BaseModel):
+class LoadTableSettings(BaseModel):
     dataset: Literal["processed", "cleaned", "original"] = settings[
         ("functions_defaults", "load_table", "dataset")
     ]

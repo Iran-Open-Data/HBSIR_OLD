@@ -37,7 +37,7 @@ from .metadata_reader import (
     defaults,
     metadata,
     original_tables,
-    LoadTable,
+    LoadTableSettings,
     _Years,
     _OriginalTable,
 )
@@ -114,11 +114,11 @@ class TableHandler:
         self,
         table_list: Iterable[_OriginalTable],
         year: int,
-        settings: LoadTable | None = None,
+        settings: LoadTableSettings | None = None,
     ) -> None:
         self.table_list = table_list
         self.year = year
-        self.settings = settings if settings is not None else LoadTable()
+        self.settings = settings if settings is not None else LoadTableSettings()
         self.tables: dict[str, pd.DataFrame] = self.setup()
 
     def __getitem__(self, table_name: _OriginalTable) -> pd.DataFrame:
@@ -438,11 +438,11 @@ class TableFactory:
         self,
         table_name: str,
         year: int,
-        settings: LoadTable | None = None,
+        settings: LoadTableSettings | None = None,
     ):
         self.table_name = table_name
         self.year = year
-        self.settings = settings if settings is not None else LoadTable()
+        self.settings = settings if settings is not None else LoadTableSettings()
         schema = utils.MetadataVersionResolver(metadata.schema, year).get_version()
 
         if isinstance(schema, dict):
@@ -623,7 +623,7 @@ class TableFactory:
 def create_table(
     table_name: str,
     years: _Years,
-    settings: LoadTable | None = None,
+    settings: LoadTableSettings | None = None,
 ) -> pd.DataFrame:
     """Construct a table by loading it for multiple years.
 

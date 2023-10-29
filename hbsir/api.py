@@ -28,7 +28,7 @@ See API documentation for more details.
 # pylint: disable=unused-argument
 # pylint: disable=too-many-locals
 
-from typing import Iterable, Literal, Any
+from typing import Iterable, Literal
 
 import pandas as pd
 
@@ -40,59 +40,73 @@ from . import (
 from .core.metadata_reader import (
     metadata,
     original_tables,
-    LoadTable,
+    LoadTableSettings,
     _Attribute,
     _OriginalTable,
     _Table,
     _Years,
 )
 
-_Default = Any
-
 
 def _extract_parameters(local_variables: dict) -> dict:
-    return {
-        key: value for key, value in local_variables.items() if value is not _Default
-    }
+    return {key: value for key, value in local_variables.items() if value is not None}
 
 
 def load_table(
     table_name: _Table,
     years: _Years = "last",
-    dataset: Literal["processed", "cleaned", "original"] = _Default,
-    on_missing: Literal["error", "download", "create"] = _Default,
-    redownload: bool = _Default,
-    save_downloaded: bool = _Default,
-    recreate: bool = _Default,
-    save_created: bool = _Default,
+    dataset: Literal["processed", "cleaned", "original"] | None = None,
+    on_missing: Literal["error", "download", "create"] | None = None,
+    redownload: bool | None = None,
+    save_downloaded: bool | None = None,
+    recreate: bool | None = None,
+    save_created: bool | None = None,
 ) -> pd.DataFrame:
-    """Load DataFrame for given table name and year range.
+    """Load a DataFrame for the given table name and year(s).
 
-    Loads data for specified table, handles different data types,
-    and provides options for configuring behavior when data is missing.
+    This function loads data for the specified table from the
+    specified dataset ('processed', 'cleaned', or 'original').
+    It can handle loading data for a single year or multiple years.
 
-    Args:
-        table_name: Name of table to load.
-        years: Year or years to load data for.
-        dataset: What data type to load - 'original', 'cleaned' or 'processed'.
-        on_missing: Action if data is missing - 'error', 'download', or 'create'.
-        save_downloaded: Whether to save downloaded data.
-        save_created: Whether to save newly created data.
+    Parameters
+    ----------
+    table_name : str
+        Name of the table to load.
+    years : _Years, default "last"
+        Year or list of years to load data for.
+    dataset : str, default "processed"
+        Which dataset to load from - 'processed', 'cleaned',
+        or 'original'.
+    on_missing : str, default "download"
+        Action if data is missing - 'error', 'download', or 'create'
+    recreate : bool, default False
+        Whether to recreate the data instead of loading it
+    redownload : bool, default False
+        Whether to re-download the data instead of loading it
+    save_downloaded : bool, default False
+        Whether to save downloaded data
+    save_created : bool, default False
+        Whether to save newly created data
 
-    Returns:
-        pd.DataFrame: Loaded data for the specified table and year range.
+    Returns
+    -------
+    DataFrame
+        Loaded data for the specified table and years.
 
-    Raises:
-        FileNotFoundError: If data is missing and on_missing='error'.
+    Examples
+    --------
+    >>> df = load_table('food')
+    >>> df = load_table('Expenditures', '1399-1401')
 
-    Examples:
-        >>> load_table('food', 1400)
-        >>> load_table('Expenditures', [1399, 1400])
+    Raises
+    ------
+    FileNotFoundError
+        If data is missing and on_missing='error'.
 
     """
     metadata.reload_file("schema")
     parameters = _extract_parameters(locals())
-    settings = LoadTable(**parameters)
+    settings = LoadTableSettings(**parameters)
     if settings.dataset == "original":
         if table_name not in original_tables:
             raise ValueError
@@ -123,11 +137,11 @@ def load_table(
 def create_table_with_schema(
     schema: str | dict,
     years: _Years = "last",
-    on_missing: Literal["error", "download", "create"] = _Default,
-    redownload: bool = _Default,
-    save_downloaded: bool = _Default,
-    recreate: bool = _Default,
-    save_created: bool = _Default,
+    on_missing: Literal["error", "download", "create"] | None = None,
+    redownload: bool | None = None,
+    save_downloaded: bool | None = None,
+    recreate: bool | None = None,
+    save_created: bool | None = None,
 ) -> pd.DataFrame:
     """Create and load DataFrame based on input schema.
 
@@ -152,7 +166,7 @@ def create_table_with_schema(
     """
     metadata.reload_file("schema")
     parameters = _extract_parameters(locals())
-    settings = LoadTable(**parameters)
+    settings = LoadTableSettings(**parameters)
     if isinstance(schema, str):
         return data_engine.create_table(schema, years, settings)
 
@@ -172,17 +186,17 @@ def create_table_with_schema(
 def add_classification(
     table: pd.DataFrame,
     name: str = "original",
-    classification_type: Literal["commodity", "occupation"] = _Default,
-    labels: tuple[str, ...] = _Default,
-    levels: tuple[int, ...] = _Default,
-    drop_value: bool = _Default,
-    output_column_names: tuple[str, ...] = _Default,
-    required_columns: tuple[str, ...] = _Default,
-    missing_value_replacements: dict[str, str] = _Default,
-    code_column_name: str = _Default,
-    year_column_name: str = _Default,
-    versioned_info: dict = _Default,
-    defaults: dict = _Default,
+    classification_type: Literal["commodity", "occupation"] | None = None,
+    labels: tuple[str, ...] | None = None,
+    levels: tuple[int, ...] | None = None,
+    drop_value: bool | None = None,
+    output_column_names: tuple[str, ...] | None = None,
+    required_columns: tuple[str, ...] | None = None,
+    missing_value_replacements: dict[str, str] | None = None,
+    code_column_name: str | None = None,
+    year_column_name: str | None = None,
+    versioned_info: dict | None = None,
+    defaults: dict | None = None,
 ) -> pd.DataFrame:
     """Add commodity classification codes to DataFrame.
 
@@ -220,10 +234,10 @@ def add_classification(
 def add_attribute(
     table: pd.DataFrame,
     name: _Attribute,
-    labels: tuple[str, ...] = _Default,
-    output_column_names: tuple[str, ...] = _Default,
-    id_column_name: str = _Default,
-    year_column_name: str = _Default,
+    labels: tuple[str, ...] | None = None,
+    output_column_names: tuple[str, ...] | None = None,
+    id_column_name: str | None = None,
+    year_column_name: str | None = None,
 ) -> pd.DataFrame:
     """Add household attributes to DataFrame based on ID.
 
