@@ -3,8 +3,10 @@ from typing import Literal, Iterable
 import pandas as pd
 from pydantic import BaseModel, Field
 
-from ..metadata_reader import _Attribute, _Table, defaults
-from .. import api, utils
+from .. import api
+
+from ..core.metadata_reader import _Attribute, _Table, defaults
+from .. import utils
 
 
 _QuantileBase = Literal[

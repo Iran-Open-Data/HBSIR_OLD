@@ -1,7 +1,7 @@
 import pandas as pd
 import geopandas as gpd
 
-from .metadata_reader import metadata, defaults
+from .core.metadata_reader import metadata, defaults
 from . import utils
 
 

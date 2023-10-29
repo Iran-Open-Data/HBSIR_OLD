@@ -3,7 +3,7 @@ DataFrame extention
 """
 import pandas as pd
 
-from . import decoder
+from .core import decoder
 
 
 @pd.api.extensions.register_dataframe_accessor("view")

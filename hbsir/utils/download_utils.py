@@ -5,7 +5,7 @@ from zipfile import ZipFile
 from tqdm import tqdm
 import requests
 
-from ..metadata_reader import defaults, metadata
+from ..core.metadata_reader import defaults, metadata
 
 
 def download(

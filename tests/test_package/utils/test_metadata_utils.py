@@ -1,6 +1,6 @@
 import pytest
 
-from hbsir import metadata_reader
+from hbsir.core import metadata_reader
 from hbsir.utils.metadata_utils import MetadataVersionResolver
 
 inst = metadata_reader.metadata.instruction

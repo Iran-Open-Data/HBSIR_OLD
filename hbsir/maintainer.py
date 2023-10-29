@@ -8,7 +8,7 @@ import requests
 from tqdm import tqdm
 import boto3
 
-from .metadata_reader import (
+from .core.metadata_reader import (
     defaults,
     _OriginalTable,
     _Years,

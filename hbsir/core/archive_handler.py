@@ -43,7 +43,7 @@ import pandas as pd
 import pyodbc
 
 from .metadata_reader import defaults, metadata, _Years
-from . import utils
+from .. import utils
 
 
 def setup(years: _Years = "all", replace: bool = False) -> None:

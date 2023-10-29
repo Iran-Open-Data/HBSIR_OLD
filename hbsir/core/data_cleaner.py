@@ -9,7 +9,7 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 
-from . import utils
+from .. import utils
 
 from .metadata_reader import (
     defaults,

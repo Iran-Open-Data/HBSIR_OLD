@@ -32,15 +32,12 @@ from typing import Iterable, Literal, Any
 
 import pandas as pd
 
+from .core import archive_handler, data_cleaner, data_engine, decoder, metadata_reader
+
 from . import (
-    archive_handler,
-    data_cleaner,
-    data_engine,
-    decoder,
-    metadata_reader,
     utils,
 )
-from .metadata_reader import (
+from .core.metadata_reader import (
     metadata,
     original_tables,
     LoadTable,
@@ -175,7 +172,7 @@ def create_table_with_schema(
 def add_classification(
     table: pd.DataFrame,
     name: str = "original",
-    defaults: dict = _Default,
+    classification_type: Literal["commodity", "occupation"] = _Default,
     labels: tuple[str, ...] = _Default,
     levels: tuple[int, ...] = _Default,
     drop_value: bool = _Default,
@@ -185,7 +182,7 @@ def add_classification(
     code_column_name: str = _Default,
     year_column_name: str = _Default,
     versioned_info: dict = _Default,
-    classification_type: str = _Default,
+    defaults: dict = _Default,
 ) -> pd.DataFrame:
     """Add commodity classification codes to DataFrame.
 

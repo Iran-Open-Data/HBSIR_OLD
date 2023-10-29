@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from .. import utils
-from ..metadata_reader import defaults, metadata
+from ..core.metadata_reader import defaults, metadata
 
 
 class ExternalDataCleaner:

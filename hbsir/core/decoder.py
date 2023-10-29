@@ -28,7 +28,9 @@ from typing import Callable, Iterable, Literal, Any
 import pandas as pd
 from pydantic import BaseModel
 
-from . import utils, metadata_reader, external_data
+from . import metadata_reader
+
+from .. import utils, external_data
 from .metadata_reader import metadata, _Attribute
 
 

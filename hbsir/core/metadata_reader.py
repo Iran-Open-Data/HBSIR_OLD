@@ -11,7 +11,7 @@ from pydantic import BaseModel
 import yaml
 
 
-PACKAGE_DIRECTORY = Path(__file__).parent
+PACKAGE_DIRECTORY = Path(__file__).parents[1]
 ROOT_DIRECTORT = Path().absolute()
 
 

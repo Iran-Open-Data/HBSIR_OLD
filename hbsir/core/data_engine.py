@@ -30,7 +30,9 @@ from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 import yaml
 
-from . import decoder, utils, external_data
+from . import decoder
+
+from .. import utils, external_data
 from .metadata_reader import (
     defaults,
     metadata,
