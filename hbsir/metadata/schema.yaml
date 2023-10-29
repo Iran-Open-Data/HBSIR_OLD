@@ -218,10 +218,6 @@ food:
           - Price
           - Expenditure
 
-  views:
-   - original
-
-
 
 tobacco:
 
@@ -247,10 +243,6 @@ tobacco:
       - Price
       - Expenditure
 
-  views:
-   - original
-
-
 
 cloth:
 
@@ -266,9 +258,6 @@ cloth:
         expression: 30
 
     - apply_order: *common_expenditure_order
-
-  views:
-   - original
 
 
 home:
@@ -330,9 +319,6 @@ home:
           - Expenditure
           - Security_Deposit
 
-  views:
-   - original
-
 
 furniture:
 
@@ -348,9 +334,6 @@ furniture:
         expression: 30
 
     - apply_order: *common_expenditure_order
-
-  views:
-   - original
 
 
 medical:
@@ -368,9 +351,6 @@ medical:
 
     - apply_order: *common_expenditure_order
 
-  views:
-   - original
-
 
 transportation:
 
@@ -386,9 +366,6 @@ transportation:
         expression: 30
 
     - apply_order: *common_expenditure_order
-
-  views:
-   - original
 
 
 communication:
@@ -406,9 +383,6 @@ communication:
 
     - apply_order: *common_expenditure_order
 
-  views:
-   - original
-
 
 entertainment:
 
@@ -424,9 +398,6 @@ entertainment:
         expression: 30
 
     - apply_order: *common_expenditure_order
-
-  views:
-   - original
 
 
 education:
@@ -444,9 +415,6 @@ education:
 
     - apply_order: *common_expenditure_order
 
-  views:
-   - original
-
 
 hotel:
 
@@ -463,9 +431,6 @@ hotel:
 
     - apply_order: *common_expenditure_order
 
-  views:
-   - original
-
 
 other:
 
@@ -481,9 +446,6 @@ other:
         expression: 30
 
     - apply_order: *common_expenditure_order
-
-  views:
-   - original
 
 
 durable:
@@ -538,9 +500,6 @@ durable:
           - Duration: int
           - Expenditure
           - Secondhand_Sale
-
-  views:
-   - original
 
 
 investment:
@@ -612,10 +571,6 @@ investment:
           - Duration: int
           - Expenditure
           - Secondhand_Sale
-
-
-  views:
-   - original
 
 
 Weights:

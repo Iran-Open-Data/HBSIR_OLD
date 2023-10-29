@@ -1,5 +1,24 @@
-"""
-Main file for ordinary use
+"""Main module for loading and transforming HBSIR data.
+
+This module provides the central interfaces for loading raw Iranian 
+household data tables, transforming them, and constructing cleaned
+derivative tables for analysis.
+
+Key functions:
+
+- extract_dependencies - Get dependencies for building a table 
+- TableHandler - Loads multiple dependency tables
+- Pipeline - Applies a sequence of transform steps to a table
+- TableFactory - Loads and builds tables from different sources
+- create_table - Constructs a table by loading multiple years  
+- load_weights - Loads sample weights for a given year
+- add_weights - Adds weights to a table
+
+The module focuses on ETL (Extract, Transform, Load) functions to go 
+from raw provided data tables to cleaned analytic tables.
+
+Relies on metadata schema and configuration for how to process tables.
+
 """
 
 import re
@@ -24,6 +43,29 @@ from .data_cleaner import open_and_clean_table
 
 
 def extract_dependencies(table_name: str, year: int) -> dict:
+    """Extract the dependencies of a table based on the metadata schema.
+
+    For the given table name and year, traverses the schema metadata to find
+    all upstream dependencies that are required to construct the table.
+
+    Recursively extracts dependencies of dependencies until only base tables
+    remain. Base tables have their file size stored instead of further dependencies.
+
+    Parameters
+    ----------
+    table_name : str
+        Name of the target table to extract dependencies for
+
+    year : int
+        Year to extract schema dependencies for
+
+    Returns
+    -------
+    dependencies : dict
+        Dictionary with dependencies in the format:
+        {table_name: {"dependencies": {dep1: {}, dep2: {}}},
+         table_name2: {"size": 1024}}
+    """
     table_list = [table_name]
     dependencies: dict[str, dict] = {}
     while len(table_list) > 0:
@@ -37,16 +79,34 @@ def extract_dependencies(table_name: str, year: int) -> dict:
                 upstream_tables = [upstream_tables]
             assert isinstance(upstream_tables, list)
             table_list.extend(upstream_tables)
-        else:
+        elif table in original_tables:
             file_name = f"{year}_{table}.parquet"
             local_path = defaults.processed_data.joinpath(file_name)
             size = local_path.stat().st_size if local_path.exists() else None
             dependencies[table] = {"size": size}
+        else:
+            raise ValueError
     return dependencies
 
 
 class TableHandler:
-    """A class for loading parquet files"""
+    """Handles loading multiple tables from parquet.
+
+    Loads a set of tables by reading from local parquet files or downloading
+    or generating if missing. Provides access to the tables via indexing.
+
+    Attributes
+    ----------
+    table_list : list of str
+        List of table names to load
+    year : int
+        Year for tables
+    settings : LoadTable
+        Settings for how to load the tables
+    tables : dict of DataFrames
+        Loaded tables keyed by table name
+
+    """
 
     def __init__(
         self,
@@ -59,16 +119,53 @@ class TableHandler:
         self.settings = settings if settings is not None else LoadTable()
         self.tables: dict[str, pd.DataFrame] = self.setup()
 
-    def __getitem__(self, __name: _OriginalTable) -> pd.DataFrame:
-        return self.tables[__name]
+    def __getitem__(self, table_name: _OriginalTable) -> pd.DataFrame:
+        """Get a table by name.
+
+        Parameters
+        ----------
+        table_name : str
+            Name of table to retrieve
+
+        Returns
+        -------
+        table : DataFrame
+            Table loaded for the given name
+
+        """
+        return self.tables[table_name]
 
     def get(
         self, names: _OriginalTable | Iterable[_OriginalTable]
     ) -> list[pd.DataFrame]:
+        """Get multiple tables by name.
+
+        Parameters
+        ----------
+        names : str or list of str
+            Name(s) of tables to retrieve
+
+        Returns
+        -------
+        tables : list of DataFrames
+            Requested tables loaded
+
+        """
         names = [names] if isinstance(names, str) else names
         return [self[name] for name in names]
 
     def setup(self) -> dict[str, pd.DataFrame]:
+        """Set up the handler by loading all tables.
+
+        Loads all of the configured tables in parallel using a
+        ThreadPoolExecutor.
+
+        Returns
+        -------
+        tables : dict of DataFrames
+            Dictionary of the loaded tables by name.
+
+        """
         with ThreadPoolExecutor(max_workers=6) as executer:
             tables = zip(
                 self.table_list, executer.map(self.read_table, self.table_list)
@@ -76,20 +173,32 @@ class TableHandler:
         return dict(tables)
 
     def read_table(self, table_name: _OriginalTable) -> pd.DataFrame:
-        """Read the parquet file"""
+        """Read a single table by name.
+
+        Parameters
+        ----------
+        table_name : str
+            Name of the table to load
+
+        Returns
+        -------
+        table : DataFrame
+            Loaded table data
+
+        """
         file_name = f"{self.year}_{table_name}.parquet"
         local_file = defaults.processed_data.joinpath(file_name)
 
         if self.settings.recreate:
-            table = self.create_table(table_name)
+            table = self._create_table(table_name)
         elif self.settings.redownload:
-            table = self.download_table(table_name)
+            table = self._download_table(table_name)
         elif local_file.exists():
             table = pd.read_parquet(local_file)
         elif self.settings.on_missing == "create":
-            table = self.create_table(table_name)
+            table = self._create_table(table_name)
         elif self.settings.on_missing == "download":
-            table = self.download_table(table_name)
+            table = self._download_table(table_name)
         else:
             raise FileNotFoundError
 
@@ -97,7 +206,7 @@ class TableHandler:
         table.attrs["year"] = self.year
         return table
 
-    def create_table(self, table_name: _OriginalTable) -> pd.DataFrame:
+    def _create_table(self, table_name: _OriginalTable) -> pd.DataFrame:
         file_name = f"{self.year}_{table_name}.parquet"
         local_path = defaults.processed_data.joinpath(file_name)
         table = open_and_clean_table(table_name, self.year)
@@ -105,7 +214,7 @@ class TableHandler:
             table.to_parquet(local_path)
         return table
 
-    def download_table(self, table_name: _OriginalTable) -> pd.DataFrame:
+    def _download_table(self, table_name: _OriginalTable) -> pd.DataFrame:
         file_name = f"{self.year}_{table_name}.parquet"
         local_path = defaults.processed_data.joinpath(file_name)
         file_url = f"{defaults.online_dir}/parquet_files/{file_name}"
@@ -115,23 +224,56 @@ class TableHandler:
         return table
 
 
-class Applier:
+class Pipeline:
+    """Applies a sequence of transformation steps to a DataFrame.
+
+    This class allows chaining together a set of predefined steps
+    for cleaning, transforming, and processing a DataFrame representing
+    a table of data. The steps are configured by passing a list of
+    operations which are applied in sequence.
+
+    Attributes
+    ----------
+    table : DataFrame
+        The input DataFrame that steps are applied to
+    steps : list
+        The sequence of step functions to apply
+    properties : dict
+        Additional properties passed to steps
+
+    """
+
     def __init__(
-        self, table: pd.DataFrame, instructions: list, properties: dict | None = None
+        self, table: pd.DataFrame, steps: list, table_name: str, year: int
     ) -> None:
         self.table = table
-        self.properties = properties if properties is not None else {}
+        self.table_name = table_name
+        self.year = year
+        self.steps = steps
         self.modules: dict[str, ModuleType] = {}
-        for instruction in instructions:
-            if instruction is None:
+
+    def run(self) -> pd.DataFrame:
+        """Run the pipeline on the table.
+
+        Iterates through the step functions in the pipeline
+        and applies them sequentially to transform the table.
+
+        Returns
+        -------
+        table : DataFrame
+            The transformed table after applying all steps.
+        """
+        for step in self.steps:
+            if step is None:
                 continue
-            method_name, method_input = self.extract_method_name(instruction)
+            method_name, method_input = self._extract_method_name(step)
             if method_input is None:
                 getattr(self, f"_{method_name}")()
             else:
                 getattr(self, f"_{method_name}")(method_input)
+        return self.table
 
-    def extract_method_name(self, instruction):
+    def _extract_method_name(self, instruction):
         if isinstance(instruction, str):
             method_name = instruction
             method_input = None
@@ -142,10 +284,10 @@ class Applier:
         return method_name, method_input
 
     def _add_year(self) -> None:
-        self.table["Year"] = self.properties["year"]
+        self.table["Year"] = self.year
 
     def _add_table_name(self) -> None:
-        self.table["Table_Name"] = self.properties["table_name"]
+        self.table["Table_Name"] = self.table_name
 
     def _add_weights(self) -> None:
         self.table = add_weights(self.table)
@@ -276,11 +418,20 @@ class Applier:
         else:
             raise TypeError
         years = list(self.table["Year"].unique())
-        other_table = load_table(table_name, years)
+        other_table = create_table(table_name, years)
         self.table = self.table.merge(other_table, on=columns)
 
 
-class TableLoader:
+class TableFactory:
+    """Builds DataFrames representing tables of data.
+
+    This class handles loading or constructing DataFrames representing
+    different tables of data. It builds tables either from original
+    source parquet files, by querying cached results, or by dynamically
+    constructing the table from other tables based on a schema.
+
+    """
+
     def __init__(
         self,
         table_name: str,
@@ -311,6 +462,23 @@ class TableLoader:
         self.table_handler = TableHandler(dependencies, year, settings)
 
     def load(self, table_name: str | None = None) -> pd.DataFrame:
+        """Load the table.
+
+        Builds the table according to the configured settings.
+        Will attempt to read from cache first before building
+        dynamically from a schema.
+
+        Parameters
+        ----------
+        table_name : str, optional
+            Table to load, will use instance table_name if not specified
+
+        Returns
+        -------
+        table : DataFrame
+            The loaded table data
+
+        """
         table_name = self.table_name if table_name is None else table_name
 
         if table_name in original_tables:
@@ -331,6 +499,29 @@ class TableLoader:
         self,
         table_name: str,
     ) -> pd.DataFrame:
+        """Read a cached table if dependencies are unchanged.
+
+        Checks that the dependencies of the cached table match the
+        current dependencies before reading from the cached parquet file.
+
+        Raises FileNotFoundError if dependencies have changed.
+
+        Parameters
+        ----------
+        table_name : str
+            Name of table to read from cache
+
+        Returns
+        -------
+        table : DataFrame
+            The cached table data
+
+        Raises
+        ------
+        FileNotFoundError
+            If cached dependencies are out of date
+
+        """
         if not self.check_table_dependencies(table_name):
             raise FileNotFoundError
         file_name = f"{table_name}_{self.year}.parquet"
@@ -339,6 +530,22 @@ class TableLoader:
         return table
 
     def check_table_dependencies(self, table_name: str) -> bool:
+        """Check if cached dependencies match current dependencies.
+
+        Compares the dependencies recorded in the cache metadata file
+        to the currently extracted dependencies for the table.
+
+        Parameters
+        ----------
+        table_name : str
+            Table name to check dependencies for
+
+        Returns
+        -------
+        match : bool
+            True if dependencies match, False otherwise
+
+        """
         file_name = f"{table_name}_{self.year}_metadata.yaml"
         cach_metadata_path = defaults.cached_data.joinpath(file_name)
         with open(cach_metadata_path, encoding="utf-8") as file:
@@ -352,6 +559,19 @@ class TableLoader:
         table: pd.DataFrame,
         table_name: str,
     ) -> None:
+        """Save table to cache along with metadata.
+
+        Saves the table to a parquet file and saves metadata about
+        dependencies to a yaml file.
+
+        Parameters
+        ----------
+        table : DataFrame
+            Table data to cache
+        table_name : str
+            Name of table being cached
+
+        """
         defaults.cached_data.mkdir(parents=True, exist_ok=True)
         file_name = f"{table_name}_{self.year}.parquet"
         file_path = defaults.cached_data.joinpath(file_name)
@@ -370,10 +590,11 @@ class TableLoader:
         if "instructions" not in self.schema[table_name]:
             return table
 
-        instructions = self.schema[table_name]["instructions"]
-        assert isinstance(instructions, list)
-        props = {"year": self.year, "table_name": table_name}
-        table = Applier(table, instructions, props).table
+        steps = self.schema[table_name]["instructions"]
+        assert isinstance(steps, list)
+        table = Pipeline(
+            table=table, steps=steps, table_name=table_name, year=self.year
+        ).run()
         return table
 
     def _construct_schema_based_table(self, table_name: str) -> pd.DataFrame:
@@ -392,26 +613,42 @@ class TableLoader:
         self, table_names: str | list[str]
     ) -> list[pd.DataFrame]:
         table_names = [table_names] if isinstance(table_names, str) else table_names
-        table_list = []
-        for name in table_names:
-            table = self.load(name)
-            if not table.empty:
-                table_list.append(table)
+        table_list = [self.load(name) for name in table_names]
+        table_list = [table for table in table_list if not table.empty]
         return table_list
 
 
-def load_table(
+def create_table(
     table_name: str,
     years: _Years,
     settings: LoadTable | None = None,
 ) -> pd.DataFrame:
+    """Construct a table by loading it for multiple years.
+
+    Loads the specified table for each year in the provided
+    range of years. Concatenates the individual tables into
+    one table indexed by year.
+
+    Parameters
+    ----------
+    table_name : str
+        Name of table to load
+    years : int or list of int
+        Years to load table for
+    settings : LoadTable, optional
+        Settings for how to load each table
+
+    Returns
+    -------
+    table : DataFrame
+        Table concatenated across specified years
+
+    """
     table_list = []
     for year in utils.parse_years(years):
-        table = TableLoader(table_name, year, settings).load()
+        table = TableFactory(table_name, year, settings).load()
         table_list.append(table)
     table = pd.concat(table_list)
-    # if "views" in self.table_schema:
-    #     table.view.views = self.table_schema["views"]
     return table
 
 
@@ -434,9 +671,13 @@ def load_weights(
         Whether to multiply weights by the number of household members
     method : {"default", "external", "household_info"}, default "default"
         Where to load the weights from:
-            "default": Use "external" for years <= 1395, "household_info" for later years
-            "external": Load from external parquet file
-            "household_info": Load from household_information table
+
+        "default": Use "external" for years <= 1395, "household_info"
+        for later years
+
+        "external": Load from external parquet file
+
+        "household_info": Load from household_information table
 
     Returns
     -------
@@ -461,7 +702,7 @@ def load_weights(
 
     if adjust_for_household_size:
         members = (
-            load_table("Number_of_Members", years=year)
+            create_table("Number_of_Members", years=year)
             .set_index("ID")
             .loc[:, "Members"]
         )
@@ -473,7 +714,7 @@ def load_weights(
 
 
 def _load_from_household_info(year) -> pd.Series:
-    loader = TableLoader("household_information", year)
+    loader = TableFactory("household_information", year)
     hh_info = loader.load()
     weights = hh_info.set_index("ID")["Weight"]
     return weights
