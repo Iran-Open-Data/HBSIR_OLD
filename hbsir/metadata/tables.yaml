@@ -1335,10 +1335,6 @@ EXPENDITURE_ITEMS:
 
 food:
 
-  defualts:
-    duration: 30
-
-
   file_code:
     1363: "P3S01"
   
@@ -1504,10 +1500,6 @@ other:
 
 durable:
 
-  defualts:
-    duration: 360
-
-
   file_code:
     1363: "P3S09"
     1383: "P3S13"
@@ -1552,9 +1544,6 @@ durable:
       DYCOL06: *expenditure_secondhand_sale
 
 investment:
-
-  defualts:
-    duration: 360
     
   file_code:
     1363: null
