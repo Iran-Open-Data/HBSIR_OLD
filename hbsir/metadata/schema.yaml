@@ -176,13 +176,12 @@ food:
           name: Price
           type: numerical
           expression: "Expenditure / Amount"
-        1369:
-          null
+        1369: null
         1370:
           name: Price
           type: numerical
           expression: "Expenditure / Amount"
-        1372:
+        1372: null
 
     - add_classification:
         1363: {name: Duration}
