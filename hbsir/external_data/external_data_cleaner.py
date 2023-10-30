@@ -102,13 +102,13 @@ class ExternalDataCleaner:
         try:
             table = self.cleaning_function(table)
         except AttributeError:
-            pass
+            print(f"Cleaning function {self.name.replace('.', '_')} do not exist")
         return table
 
     def collect_and_clean(self) -> pd.DataFrame:
-        table_list = [
-            ExternalDataCleaner(table).load_data() for table in self.metadata["from"]
-        ]
+        data_list = self.metadata["from"]
+        data_list = data_list if isinstance(data_list, list) else [data_list]
+        table_list = [ExternalDataCleaner(table).load_data() for table in data_list]
         table = self.cleaning_function(table_list)
         return table
 

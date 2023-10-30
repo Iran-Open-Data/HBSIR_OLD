@@ -5,10 +5,7 @@ weights: manual
 
 
 gini:
-  alias: annual
-
-  annual:
-    alias: sci.gini.annual
+  goto: sci.gini
 
 cpi:
   goto: cpi_1400
@@ -17,7 +14,7 @@ cpi_1400:
   goto: sci.cpi_1400
 
 sci:
-  cpi_by1395_urban_singleindex:
+  cpi_1395_urban_singleindex:
     monthly:
       url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/13026/2302u220940111.xlsx
 
@@ -25,29 +22,56 @@ sci:
       url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/13025/2302u220311400_V2-14010505.xlsx
 
 
-  cpi_by1395_rural_maingroups:
+  cpi_1395_rural_maingroups:
     monthly:
       url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9813/2302r220140111.xlsx
 
     annual:
       url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9862/2302r220111400_V2-14011013.xlsx
 
-  cpi_by1395:
+  cpi_1395:
     monthly:
       url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9346/2302n220140111.xlsx
 
       urban_rural:
         from:
-          - sci.cpi_by1395_urban_singleindex.monthly
-          - sci.cpi_by1395_rural_maingroups.monthly
+          - sci.cpi_1395_urban_singleindex.monthly
+          - sci.cpi_1395_rural_maingroups.monthly
 
     annual:
       url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/9811/2302n220111400_V2-14011013.xlsx
 
       urban_rural:
         from:
-          - sci.cpi_by1395_urban_singleindex.annual
-          - sci.cpi_by1395_rural_maingroups.annual
+          - sci.cpi_1395_urban_singleindex.annual
+          - sci.cpi_1395_rural_maingroups.annual
+
+  cpi_1400_urban_singleindex:
+    alias: annual
+
+    monthly:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/27231/2302u220940206.xlsx
+
+    annual:
+      from: sci.cpi_1400_urban_singleindex.monthly
+
+  cpi_1400_rural_maingroups:
+    alias: annual
+
+    monthly:
+      url: https://www.amar.org.ir/Portals/0/PropertyAgent/461/Files/27217/2302r220140206.xlsx
+
+    annual:
+      from: sci.cpi_1400_rural_maingroups.monthly
+
+  cpi_1400:
+    alias: annual
+
+    annual:
+      urban_rural:
+        from:
+          - sci.cpi_1400_urban_singleindex.annual
+          - sci.cpi_1400_rural_maingroups.annual
 
   gini:
     annual:

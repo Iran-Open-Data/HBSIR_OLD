@@ -16,15 +16,15 @@ _Default = Any
 
 def load_table(
     table_name: str,
-    data_source: _DataSource = _Default,
-    frequency: _Frequency = _Default,
-    separate_by: _SeparateBy = _Default,
+    data_source: _DataSource | None = None,
+    frequency: _Frequency | None = None,
+    separate_by: _SeparateBy | None = None,
     reset_index: bool = True,
     download_cleaned: bool = True,
-    saved_cleaned: bool = False,
+    saved_cleaned: bool = True,
 ) -> pd.DataFrame:
     name_parts = [data_source, table_name, frequency, separate_by]
-    name_parts = [part for part in name_parts if part != _Default]
+    name_parts = [part for part in name_parts if part is not None]
     name = ".".join(name_parts).lower()
     table = ExternalDataCleaner(name, download_cleaned, saved_cleaned).load_data()
     if reset_index:
