@@ -73,6 +73,9 @@ yearly_table_availability:
   subsidy:                    {start: 1390}
   public_employment_income:   {start: 1363, end: 1369}
   private_employment_income:  {start: 1363, end: 1369}
+  agricultural_self_employed_income: {start: 1363, end: 1369}
+  non_agricultural_self_employed_income: {start: 1363, end: 1369}
+  old_other_income: {start: 1363, end: 1369}
 
 
 default_table_settings:
