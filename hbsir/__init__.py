@@ -38,6 +38,8 @@ from .api import (
     add_classification,
     add_attribute,
     add_weight,
+    add_cpi,
+    adjust_by_cpi,
     setup,
 )
 
@@ -47,6 +49,8 @@ __all__ = [
     "add_attribute",
     "add_classification",
     "add_weight",
+    "add_cpi",
+    "adjust_by_cpi",
     "calculator",
     "create_table_with_schema",
     "external_data",

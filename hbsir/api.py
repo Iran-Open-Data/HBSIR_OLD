@@ -1,28 +1,32 @@
-"""Main API for Household Budget Survey of Iran (HBSIR) data.
+"""HBSIR - Iran Household Budget Survey Data API.
 
-This module exposes the main functions for loading, processing, and  
-analyzing the household survey data.
+This module provides an API for loading, processing, and analyzing
+Iran's Household Budget Survey (HBSIR) data.
 
-The key functions are:
+The key functions provided are:
 
-- load_table: Load data for a given table name and year range
-- add_classification: Add COICOP commodity classification codes  
-- add_attribute: Add household attributes like urban/rural
-- add_weight: Add sampling weights
+- load_table: Load HBSIR data for a given table name and year range.
 
-The load_table function handles fetching data from different sources
-like original CSVs or preprocessed Parquet files. It provides options 
-for configuring behavior when data is missing.
+- add_classification: Add commodity/occupation classification codes. 
+
+- add_attribute: Add household attributes like urban/rural status.
+
+- add_weight: Add sampling weights.  
+
+- add_cpi: Join CPI index data.
+
+- adjust_by_cpi: Adjust monetary values for inflation using CPI.
 
 Sample usage:
 
     import hbsir
     
-    df = hbsir.load_table('food', [1399, 1400])
-    df = hbsir.add_classification(df, 'original')
-    df = hbsir.add_attribute(df, 'Urban_Rural')
-    
-See API documentation for more details.
+    df = hbsir.load_table('Expenditures', years=[1399, 1400])
+    df = hbsir.add_classification(df, 'Durability')
+    df = hbsir.adjust_by_cpi(df)
+
+See the API docstrings for more details.
+
 """
 # pylint: disable=too-many-arguments
 # pylint: disable=unused-argument
@@ -34,9 +38,8 @@ import pandas as pd
 
 from .core import archive_handler, data_cleaner, data_engine, decoder, metadata_reader
 
-from . import (
-    utils,
-)
+from . import external_data, utils
+
 from .core.metadata_reader import (
     metadata,
     original_tables,
@@ -295,6 +298,109 @@ def add_weight(
 
     """
     table = data_engine.add_weights(table, adjust_for_household_size)
+    return table
+
+
+def add_cpi(
+    table: pd.DataFrame,
+    data_source: Literal["SCI"] = "SCI",
+    base_year: Literal[1400] = 1400,
+    frequency: Literal["Annual"] = "Annual",
+    separate_by: Literal["Urban_Rural"] = "Urban_Rural",
+) -> pd.DataFrame:
+    """Add CPI values to a DataFrame.
+
+    Parameters
+    ----------
+    table : pd.DataFrame
+        Input DataFrame to add CPI values to.
+    data_source : str, default "SCI"
+        Source of CPI data, either "SCI" or "CBS".
+    base_year : int, default 1400
+        Base year for CPI.
+    frequency : str, default "Annual"
+        Frequency of CPI data, either "Annual" or "Monthly".
+    separate_by : str, default "Urban_Rural"
+        Column to separate CPI by, either "Urban_Rural" or None.
+
+    Returns
+    -------
+    DataFrame
+        Input `table` with 'CPI' column added.
+
+    """
+    cpi = external_data.load_table(
+        f"CPI_{base_year}",
+        data_source=data_source,
+        frequency=frequency,
+        separate_by=separate_by,
+        reset_index=False,
+    )
+
+    if separate_by == "Urban_Rural":
+        urban_rural_available = True
+        if "Urban_Rural" not in table.columns:
+            table = add_attribute(table, "Urban_Rural")
+            urban_rural_available = False
+
+        table = table.join(cpi, on=["Urban_Rural", "Year"])
+
+        if not urban_rural_available:
+            table = table.drop(columns="Urban_Rural")
+    else:
+        table = table.join(cpi, on=["Year"])
+
+    return table
+
+
+def adjust_by_cpi(
+    table: pd.DataFrame, columns: list[str] | None = None, **kwargs
+) -> pd.DataFrame:
+    """Adjust columns in a DataFrame by the CPI.
+
+    Divides the specified columns of the DataFrame by the CPI column.
+    If no columns specified, divides common monetary value columns
+    like 'Expenditure', 'Income' etc.
+
+    Parameters
+    ----------
+    table : DataFrame
+        DataFrame containing a "CPI" column.
+    columns : List[str], optional
+        List of columns names to divide by CPI.
+    **kwargs
+        Additional keyword arguments passed to add_cpi.
+
+    Returns
+    -------
+    DataFrame
+        Input `table` with `columns` divided by 'CPI'.
+
+    """
+    default_columns = [
+        "Expenditure",
+        "Net_Expenditure",
+        "Gross_Expenditure",
+        "Price",
+        "Income",
+        "Net_Income",
+        "Gross_Income",
+    ]
+    if columns is None:
+        columns = [column for column in default_columns if column in table.columns]
+
+    cpi_available = True
+    if "CPI" not in table.columns:
+        table = add_cpi(table, **kwargs)
+        cpi_available = False
+    table.loc[:, columns] = (
+        table.loc[:, columns]
+        .divide(table["CPI"], axis="index")
+        .multiply(100, axis="index")
+    )
+    if not cpi_available:
+        table = table.drop(columns="CPI")
+
     return table
 
 
