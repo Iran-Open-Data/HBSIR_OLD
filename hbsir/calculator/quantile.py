@@ -4,7 +4,6 @@ import pandas as pd
 from pydantic import BaseModel, Field
 
 from .. import api
-
 from ..core.metadata_reader import _Attribute, _Table, defaults
 from .. import utils
 
@@ -165,6 +164,8 @@ class Quantiler:
         new_values = self.value_table["Values"].div(equivalence_scale)
         self.value_table.loc[:, "Values"] = new_values
         quantile = self.calculate_simple_quantile()
+        if self.table is not None:
+            _, quantile = self.value_table.align(quantile, join="left", axis="index")
         return quantile
 
 
@@ -173,25 +174,8 @@ class Quantiler:
 def calculate_quantile(
     *,
     table: pd.DataFrame | pd.Series | None = None,
-    on: _QuantileBase | None = "Gross_Expenditure",
-    on_column: str | None = None,
-    weighted: bool = True,
-    adjust_weight_for_household_size: bool = False,
-    weight_column: str = defaults.columns.weight,
-    equivalence_scale: _EquivalenceScale = "Household",
-    for_all: bool = True,
-    annual: bool = True,
-    groupby: _Attribute | Iterable[_Attribute] | None = None,
-    years: int | Iterable[int] | str | None = None,
-):
-    settings_vars = {key: value for key, value in locals().items() if key != "table"}
-    settings = QuantileSettings(**settings_vars)
-    return Quantiler(table=table, settings=settings).calculate_quantile()
-
-
-def calculate_decile(
-    *,
-    table: pd.DataFrame | pd.Series | None = None,
+    quantile_column_name: str = "Quantile",
+    bins: int = -1,
     on: _QuantileBase | None = "Gross_Expenditure",
     on_column: str | None = None,
     weighted: bool = True,
@@ -206,19 +190,23 @@ def calculate_decile(
     settings_vars = {key: value for key, value in locals().items() if key != "table"}
     settings = QuantileSettings(**settings_vars)
     quantile = Quantiler(table=table, settings=settings).calculate_quantile()
-    return (
-        quantile.multiply(10)
-        .floordiv(1)
-        .add(1)
-        .clip(1, 10)
-        .astype(int)
-        .rename("Decile")
-    )
+    quantile = quantile.rename(quantile_column_name)
+    if bins > 0:
+        quantile = (
+            quantile.multiply(bins)
+            .floordiv(1)
+            .add(1)
+            .clip(1, bins)
+            .astype(int)
+            .rename(quantile_column_name)
+        )
+    return quantile
 
 
-def calculate_percentile(
+def add_quantile(
+    table: pd.DataFrame,
+    quantile_column_name: str = "Quantile",
     *,
-    table: pd.DataFrame | pd.Series | None = None,
     on: _QuantileBase | None = "Gross_Expenditure",
     on_column: str | None = None,
     weighted: bool = True,
@@ -229,15 +217,54 @@ def calculate_percentile(
     annual: bool = True,
     groupby: _Attribute | Iterable[_Attribute] | None = None,
     years: int | Iterable[int] | str | None = None,
-):
-    settings_vars = {key: value for key, value in locals().items() if key != "table"}
-    settings = QuantileSettings(**settings_vars)
-    quantile = Quantiler(table=table, settings=settings).calculate_quantile()
-    return (
-        quantile.multiply(100)
-        .floordiv(1)
-        .add(1)
-        .clip(1, 100)
-        .astype(int)
-        .rename("Percentile")
-    )
+) -> pd.DataFrame:
+    quantile = calculate_quantile(**locals())
+    quantile.index = table.index
+    table[quantile_column_name] = quantile
+    return table
+
+
+def add_decile(
+    table: pd.DataFrame,
+    quantile_column_name: str = "Decile",
+    *,
+    on: _QuantileBase | None = "Gross_Expenditure",
+    on_column: str | None = None,
+    weighted: bool = True,
+    adjust_weight_for_household_size: bool = False,
+    weight_column: str = defaults.columns.weight,
+    equivalence_scale: _EquivalenceScale = "Household",
+    for_all: bool = True,
+    annual: bool = True,
+    groupby: _Attribute | Iterable[_Attribute] | None = None,
+    years: int | Iterable[int] | str | None = None,
+) -> pd.DataFrame:
+    setting_vars = locals()
+    setting_vars.update({"bins": 10})
+    quantile = calculate_quantile(**setting_vars)
+    quantile.index = table.index
+    table[quantile_column_name] = quantile
+    return table
+
+
+def add_percentile(
+    table: pd.DataFrame,
+    quantile_column_name: str = "Percentile",
+    *,
+    on: _QuantileBase | None = "Gross_Expenditure",
+    on_column: str | None = None,
+    weighted: bool = True,
+    adjust_weight_for_household_size: bool = False,
+    weight_column: str = defaults.columns.weight,
+    equivalence_scale: _EquivalenceScale = "Household",
+    for_all: bool = True,
+    annual: bool = True,
+    groupby: _Attribute | Iterable[_Attribute] | None = None,
+    years: int | Iterable[int] | str | None = None,
+) -> pd.DataFrame:
+    setting_vars = locals()
+    setting_vars.update({"bins": 100})
+    quantile = calculate_quantile(**setting_vars)
+    quantile.index = table.index
+    table[quantile_column_name] = quantile
+    return table

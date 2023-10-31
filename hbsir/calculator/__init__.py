@@ -1,5 +1,7 @@
 from .quantile import (
     calculate_quantile,
-    calculate_percentile,
-    calculate_decile,
+    add_quantile,
+    add_percentile,
+    add_decile,
 )
+from .miscellaneous import weighted_average
