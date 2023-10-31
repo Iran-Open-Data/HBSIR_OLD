@@ -66,9 +66,23 @@ def load_table(
 ) -> pd.DataFrame:
     """Load a DataFrame for the given table name and year(s).
 
-    This function loads data for the specified table from the
-    specified dataset ('processed', 'cleaned', or 'original').
-    It can handle loading data for a single year or multiple years.
+    This function loads original and standard tables.
+    Original tables are survey tables and available in three types:
+    original, cleaned and processed.
+
+    - The 'original' dataset contains the raw data, identical to the
+    survey data, without any modifications.
+    - The 'cleaned' dataset contains the raw data with added column
+    labels, data types, and removal of irrelevant values, but no
+    changes to actual data values.
+    - The 'processed' dataset applies operations like adding columns,
+    calculating durations, and standardizing tables across years.
+
+    Standard tables are defined in this package to facilitate
+    working with the data and are only available in processed form.
+
+    For more information about available tables check the
+    [tables wiki page](https://github.com/Iran-Open-Data/HBSIR/wiki/Tables).
 
     Parameters
     ----------
@@ -77,17 +91,16 @@ def load_table(
     years : _Years, default "last"
         Year or list of years to load data for.
     dataset : str, default "processed"
-        Which dataset to load from - 'processed', 'cleaned',
-        or 'original'.
+        Which dataset to load from - 'processed', 'cleaned', or 'original'.
     on_missing : str, default "download"
         Action if data is missing - 'error', 'download', or 'create'
     recreate : bool, default False
         Whether to recreate the data instead of loading it
     redownload : bool, default False
         Whether to re-download the data instead of loading it
-    save_downloaded : bool, default False
+    save_downloaded : bool, default True
         Whether to save downloaded data
-    save_created : bool, default False
+    save_created : bool, default True
         Whether to save newly created data
 
     Returns
@@ -98,7 +111,10 @@ def load_table(
     Examples
     --------
     >>> df = load_table('food')
+    # Loads processed 'food' table from original survey tables for
+    # latest available year
     >>> df = load_table('Expenditures', '1399-1401')
+    # Loads standard 'Expenditures' table for years 1399 - 1401
 
     Raises
     ------
@@ -147,23 +163,39 @@ def create_table_with_schema(
 ) -> pd.DataFrame:
     """Create and load DataFrame based on input schema.
 
-    Generates a DataFrame by loading or creating data that conforms to
-    the provided schema. Provides options to configure behavior.
+    This function can be used in two ways:
 
-    Args:
-        schema: Dictionary defining schema for output DataFrame.
-        dataset: What data type to load or create - 'original',
-            'cleaned' or 'processed'.
-        on_missing: Action if data is missing - 'error', 'download', or 'create'.
-        save_downloaded: Whether to save downloaded data.
-        save_created: Whether to save newly created data.
+    1) If a schema dictionary is passed, it will generate a DataFrame
+    by loading or creating data that matches the schema.
 
-    Returns:
-        pd.DataFrame: Loaded or created DataFrame matching schema.
+    2) If a string table name is passed, it will load the table with
+    that name from the external schema.
 
-    Examples:
-        >>> schema = {'table_list': ['food', 'tobacco'], years='1398-1400'}
-        >>> df = create_table_with_schema(schema)
+    Parameters
+    ----------
+    schema : dict or str
+        Dictionary defining schema or string table name.
+    years : str, optional
+        Year(s) to load.
+    on_missing : {'error', 'download', 'create'}, optional
+        Action if data is missing.
+    save_downloaded : bool, optional
+        Whether to save downloaded data.
+    save_created : bool, optional
+       Whether to save newly created data.
+
+    Returns
+    -------
+    DataFrame
+        Loaded or created DataFrame.
+
+    Examples
+    --------
+    >>> schema = {'table_list': ['food', 'tobacco'], 'years':'1398-1400'}
+    >>> df = create_table_with_schema(schema)
+
+    >>> table_name = 'User_Defined_Table'
+    >>> df = create_table_with_schema(table_name)
 
     """
     metadata.reload_file("schema")
@@ -200,18 +232,42 @@ def add_classification(
     versioned_info: dict | None = None,
     defaults: dict | None = None,
 ) -> pd.DataFrame:
-    """Add commodity classification codes to DataFrame.
+    """Add classification to table.
 
-    Takes a DataFrame with a 'Code' column and classifies the codes
-    based on the specified classification system.
 
-    Args:
-        table: DataFrame containing 'Code' column to classify.
-        name: Name of classification to apply.
-        **kwargs: Additional arguments passed to internal classifier.
+    Parameters
+    ----------
+    table : DataFrame
+        DataFrame containing 'Code' column to classify.
+    name : str, optional
+        Name of classification to apply.
+    classification_type : {'commodity', 'occupation'}, optional
+        Type of classification system. Inferred if not specified.
+    labels : tuple of str, optional
+        Names of classification levels.
+    levels : tuple of int, optional
+        Number of digits for each classification level.
+    drop_value : bool, optional
+        Whether to drop unclassified values.
+    output_column_names : tuple of str, optional
+        Names of output classification columns.
+    required_columns : tuple of str, optional
+        Required columns in table.
+    missing_value_replacements : dict, optional
+        Replacements for missing values in columns.
+    code_column_name : str, optional
+        Name of code column.
+    year_column_name : str, optional
+        Name of year column.
+    versioned_info : dict, optional
+        Versioning information for classifier.
+    defaults : dict, optional
+        Default column names.
 
-    Returns:
-        pd.DataFrame: Input DataFrame with added classification columns.
+    Returns
+    -------
+    DataFrame
+        Input DataFrame with added classification columns.
 
     """
     parameters = _extract_parameters(locals())
@@ -241,26 +297,36 @@ def add_attribute(
     id_column_name: str | None = None,
     year_column_name: str | None = None,
 ) -> pd.DataFrame:
-    """Add household attributes to DataFrame based on ID.
+    """Add household attributes to table based on ID.
 
-    Takes a DataFrame containing a 'ID' column, and adds columns for the
+    Takes a DataFrame containing a household ID, and adds columns for the
     specified household attribute such as urban/rural, province, or region.
-
-    The attribute is joined based on matching the 'ID' column.
 
     Supported attribute names are:
 
-    - 'Urban_Rural': Urban or rural classification
-    - 'Province': Province name
-    - 'Region': Region name
+        - 'Urban_Rural': Urban or rural classification
+        - 'Province': Province name
+        - 'Region': Region name
 
-    Args:
-        table: DataFrame containing 'ID' column.
-        attribute_name: Name of attribute to add.
-        **kwargs: Additional arguments passed to internal adder.
+    Parameters
+    ----------
+    table : DataFrame
+        DataFrame containing 'ID' column.
+    name : str
+        Name of attribute to add.
+    labels : tuple of str, optional
+        Names of attribute labels.
+    output_column_names : tuple of str, optional
+        Names of output columns.
+    id_column_name : str, optional
+        Name of ID column.
+    year_column_name : str, optional
+        Name of year column.
 
-    Returns:
-        pd.DataFrame: Input DataFrame with added attribute columns.
+    Returns
+    -------
+    DataFrame
+        Input DataFrame with added attribute columns.
 
     """
     parameters = _extract_parameters(locals())
