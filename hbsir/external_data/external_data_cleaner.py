@@ -3,44 +3,90 @@ import importlib
 from pathlib import Path
 
 import pandas as pd
+from pydantic import BaseModel
 
 from .. import utils
+from ..core import metadata_reader
 from ..core.metadata_reader import defaults, metadata
 
 
+class LoadTableSettings(BaseModel):
+    dataset: Literal["processed", "original"] = metadata_reader.settings[
+        ("functions_defaults", "external_load_table", "dataset")
+    ]
+    on_missing: Literal["error", "download", "create"] = metadata_reader.settings[
+        ("functions_defaults", "external_load_table", "on_missing")
+    ]
+    save_downloaded: bool = metadata_reader.settings[
+        ("functions_defaults", "external_load_table", "save_downloaded")
+    ]
+    redownload: bool = metadata_reader.settings[
+        ("functions_defaults", "external_load_table", "redownload")
+    ]
+    save_created: bool = metadata_reader.settings[
+        ("functions_defaults", "external_load_table", "save_created")
+    ]
+    recreate: bool = metadata_reader.settings[
+        ("functions_defaults", "external_load_table", "recreate")
+    ]
+
+
 class ExternalDataCleaner:
-    def __init__(
-        self, name: str, download_cleaned: bool = False, save_cleaned: bool = False
-    ) -> None:
+    def __init__(self, name: str, settings: LoadTableSettings | None = None) -> None:
         self.name = name
-        self.download_cleaned = download_cleaned
+        self.settings = LoadTableSettings() if settings is None else settings
         self.metadata = self._get_metadata()
         self.metadata_type = self._extract_type()
-        self.save_cleaned = save_cleaned
 
-    def load_data(self):
-        external_data = [file.stem for file in defaults.external_data.iterdir()]
-        if self.name in external_data:
-            table = self.open_cleaned_data()
-        elif self.metadata_type == "alias":
+    def read_table(self) -> pd.DataFrame:
+        """Read a single table by name.
+
+        Parameters
+        ----------
+        table_name : str
+            Name of the table to load
+
+        Returns
+        -------
+        table : DataFrame
+            Loaded table data
+
+        """
+        local_file = defaults.external_data.joinpath(f"{self.name}.parquet")
+
+        if self.metadata_type == "alias":
             name = self.metadata["alias"]
             if name.count(".") == 0:
                 name = f"{self.name}.{name}"
-            table = ExternalDataCleaner(
-                name=name,
-                download_cleaned=self.download_cleaned,
-                save_cleaned=self.save_cleaned,
-            ).load_data()
-        elif self.download_cleaned or (self.metadata_type == "manual"):
-            table = self.read_from_online_directory()
-        elif self.metadata_type == "url":
-            table = self.clean_raw_file()
-        elif self.metadata_type == "from":
-            table = self.collect_and_clean()
+            table = ExternalDataCleaner(name=name, settings=self.settings).read_table()
+        elif self.settings.dataset == "original":
+            table = self._load_raw_file()
+        elif self.settings.recreate:
+            table = self._create_table()
+        elif self.settings.redownload:
+            table = self._download_table()
+        elif local_file.exists():
+            table = pd.read_parquet(local_file)
+        elif self.settings.on_missing == "create":
+            table = self._create_table()
+        elif self.settings.on_missing == "download":
+            table = self._download_table()
         else:
-            raise ValueError
-        if (self.save_cleaned) and (self.metadata_type != "alias"):
-            self.save_data(table)
+            raise FileNotFoundError
+
+        return table
+
+    def _create_table(self) -> pd.DataFrame:
+        if self.metadata_type == "manual":
+            table = self._download_table()
+        elif self.metadata_type == "url":
+            table = self._clean_raw_file()
+        elif self.metadata_type == "from":
+            table = self._collect_and_clean()
+        else:
+            raise ValueError(f"{self.metadata_type} is not a valid type")
+        if self.settings.save_created:
+            self.save_table(table)
         return table
 
     def _get_metadata(self) -> dict:
@@ -50,7 +96,8 @@ class ExternalDataCleaner:
             part = name_parts.pop(0)
             meta = meta[part]
             if "goto" in meta:
-                self.name = meta["goto"] + ".".join(name_parts)
+                new_address: str = meta["goto"]
+                self.name = ".".join(new_address.split(".") + name_parts)
                 meta = self._get_metadata()
                 break
         return meta
@@ -59,7 +106,7 @@ class ExternalDataCleaner:
         for metadata_type in ("manual", "url", "from", "alias"):
             if (metadata_type in self.metadata) or (self.metadata == metadata_type):
                 return metadata_type
-        raise ValueError("Metadata type is missing")
+        raise ValueError(f"Metadata type is missing for {self.name}")
 
     def _find_extension(self) -> str:
         available_extentions = ["xlsx"]
@@ -72,7 +119,7 @@ class ExternalDataCleaner:
         assert extension in available_extentions
         return extension
 
-    def open_cleaned_data(self) -> pd.DataFrame:
+    def _open_cleaned_data(self) -> pd.DataFrame:
         return pd.read_parquet(defaults.external_data.joinpath(f"{self.name}.parquet"))
 
     @property
@@ -82,33 +129,36 @@ class ExternalDataCleaner:
         extension = self._find_extension()
         return raw_folder_path.joinpath(f"{self.name}.{extension}")
 
-    def download_raw_file(self) -> None:
+    def _download_raw_file(self) -> None:
         url = self.metadata["url"]
         utils.download(url, self.raw_file_path)
 
-    def load_raw_file(self) -> pd.DataFrame:
+    def _load_raw_file(self) -> pd.DataFrame:
         assert self.raw_file_path is not None
-        if not self.raw_file_path.exists():
-            self.download_raw_file()
+        if (not self.raw_file_path.exists()) or self.settings.redownload:
+            self._download_raw_file()
         if self.raw_file_path.suffix in [".xlsx"]:
             table = pd.read_excel(self.raw_file_path, header=None)
         else:
             raise ValueError("Format not supported yet")
         return table
 
-    def clean_raw_file(self, table: pd.DataFrame | None = None) -> pd.DataFrame:
+    def _clean_raw_file(self, table: pd.DataFrame | None = None) -> pd.DataFrame:
         if table is None:
-            table = self.load_raw_file()
+            table = self._load_raw_file()
         try:
             table = self.cleaning_function(table)
         except AttributeError:
             print(f"Cleaning function {self.name.replace('.', '_')} do not exist")
         return table
 
-    def collect_and_clean(self) -> pd.DataFrame:
+    def _collect_and_clean(self) -> pd.DataFrame:
         data_list = self.metadata["from"]
         data_list = data_list if isinstance(data_list, list) else [data_list]
-        table_list = [ExternalDataCleaner(table).load_data() for table in data_list]
+        table_list = [
+            ExternalDataCleaner(table, self.settings).read_table()
+            for table in data_list
+        ]
         table = self.cleaning_function(table_list)
         return table
 
@@ -121,9 +171,12 @@ class ExternalDataCleaner:
         )
         return getattr(cleaning_module, self.name.replace(".", "_"))
 
-    def save_data(self, table: pd.DataFrame) -> None:
+    def save_table(self, table: pd.DataFrame) -> None:
         table.to_parquet(defaults.external_data.joinpath(f"{self.name}.parquet"))
 
-    def read_from_online_directory(self) -> pd.DataFrame:
+    def _download_table(self) -> pd.DataFrame:
         url = f"{defaults.online_dir}/external_data/{self.name}.parquet"
-        return pd.read_parquet(url)
+        table = pd.read_parquet(url)
+        if self.settings.save_downloaded:
+            self.save_table(table)
+        return table

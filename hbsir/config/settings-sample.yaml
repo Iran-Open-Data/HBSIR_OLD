@@ -63,6 +63,16 @@ functions_defaults:
     save_created: true
     recreate: false
 
+  # Load External Table
+  external_load_table:
+    dataset: processed
+    on_missing: download
+    save_downloaded: true
+    redownload: false
+    save_created: true
+    recreate: false
+
+
 # Column Names
 columns:
   year: Year

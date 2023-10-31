@@ -66,6 +66,9 @@ sci:
 
   cpi_1400:
     alias: annual
+  
+    urban_rural:
+      alias: sci.cpi_1400.annual.urban_rural
 
     annual:
       urban_rural:
