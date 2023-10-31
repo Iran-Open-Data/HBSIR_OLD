@@ -23,7 +23,7 @@ classification info from the raw metadata.
 
 """
 from itertools import product
-from typing import Callable, Iterable, Literal, Any
+from typing import Callable, Iterable, Literal
 
 import pandas as pd
 from pydantic import BaseModel
@@ -32,9 +32,6 @@ from . import metadata_reader
 
 from .. import utils, external_data
 from .metadata_reader import metadata, _Attribute
-
-
-_Default = Any
 
 
 def read_classification_info(
@@ -224,7 +221,7 @@ class DecoderSettings(BaseModel):
 
     classification_type: Literal["commodity", "occupation"] = "commodity"
     name: str = "original"
-    code_column_name: str = _Default
+    code_column_name: str = "_Default"
     year_column_name: str = metadata_reader.defaults.columns.year
     versioned_info: dict = {}
     defaults: dict = {}
@@ -232,16 +229,16 @@ class DecoderSettings(BaseModel):
     levels: tuple[int, ...] = ()
     drop_value: bool = False
     output_column_names: tuple[str, ...] = ()
-    required_columns: tuple[str, ...] | None = None
-    missing_value_replacements: dict[str, str] | None = None
+    required_columns: tuple[str, ...] = ()
+    missing_value_replacements: dict[str, str] = {}
 
     def model_post_init(self, __contex=None) -> None:
         if self.classification_type == "commodity":
-            if self.code_column_name == _Default:
+            if self.code_column_name == "_Default":
                 self.code_column_name = metadata_reader.defaults.columns.commodity_code
             self.versioned_info = metadata.commodities[self.name]
         else:
-            if self.code_column_name == _Default:
+            if self.code_column_name == "_Default":
                 self.code_column_name = metadata_reader.defaults.columns.job_code
             self.versioned_info = metadata.occupations[self.name]
         if "defaults" in self.versioned_info:
