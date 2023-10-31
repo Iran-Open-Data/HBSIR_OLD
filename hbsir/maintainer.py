@@ -18,7 +18,7 @@ from . import utils
 
 def update_online_files() -> None:
     for directories in [
-        (defaults.processed_data, "parquet_files"),
+        # (defaults.processed_data, "parquet_files"),
         (defaults.external_data, "external_data"),
     ]:
         update_online_directory(*directories)

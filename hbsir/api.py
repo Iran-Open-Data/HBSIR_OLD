@@ -43,7 +43,6 @@ from . import external_data, utils
 from .core.metadata_reader import (
     metadata,
     original_tables,
-    LoadTableSettings,
     _Attribute,
     _OriginalTable,
     _Table,
@@ -109,7 +108,7 @@ def load_table(
     """
     metadata.reload_file("schema")
     parameters = _extract_parameters(locals())
-    settings = LoadTableSettings(**parameters)
+    settings = data_engine.LoadTableSettings(**parameters)
     if settings.dataset == "original":
         if table_name not in original_tables:
             raise ValueError
@@ -169,7 +168,7 @@ def create_table_with_schema(
     """
     metadata.reload_file("schema")
     parameters = _extract_parameters(locals())
-    settings = LoadTableSettings(**parameters)
+    settings = data_engine.LoadTableSettings(**parameters)
     if isinstance(schema, str):
         return data_engine.create_table(schema, years, settings)
 

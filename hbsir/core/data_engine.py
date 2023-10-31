@@ -28,16 +28,16 @@ import importlib
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
+from pydantic import BaseModel
 import yaml
 
-from . import decoder
+from . import decoder, metadata_reader
 
 from .. import utils, external_data
 from .metadata_reader import (
     defaults,
     metadata,
     original_tables,
-    LoadTableSettings,
     _Years,
     _OriginalTable,
 )
@@ -89,6 +89,27 @@ def extract_dependencies(table_name: str, year: int) -> dict:
         else:
             raise ValueError
     return dependencies
+
+
+class LoadTableSettings(BaseModel):
+    dataset: Literal["processed", "cleaned", "original"] = metadata_reader.settings[
+        ("functions_defaults", "load_table", "dataset")
+    ]
+    on_missing: Literal["error", "download", "create"] = metadata_reader.settings[
+        ("functions_defaults", "load_table", "on_missing")
+    ]
+    save_downloaded: bool = metadata_reader.settings[
+        ("functions_defaults", "load_table", "save_downloaded")
+    ]
+    redownload: bool = metadata_reader.settings[
+        ("functions_defaults", "load_table", "redownload")
+    ]
+    save_created: bool = metadata_reader.settings[
+        ("functions_defaults", "load_table", "save_created")
+    ]
+    recreate: bool = metadata_reader.settings[
+        ("functions_defaults", "load_table", "recreate")
+    ]
 
 
 class TableHandler:

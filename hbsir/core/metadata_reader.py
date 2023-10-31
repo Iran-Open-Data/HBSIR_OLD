@@ -273,20 +273,5 @@ class Metadata:
         return yaml_text
 
 
-class LoadTableSettings(BaseModel):
-    dataset: Literal["processed", "cleaned", "original"] = settings[
-        ("functions_defaults", "load_table", "dataset")
-    ]
-    on_missing: Literal["error", "download", "create"] = settings[
-        ("functions_defaults", "load_table", "on_missing")
-    ]
-    save_downloaded: bool = settings[
-        ("functions_defaults", "load_table", "save_downloaded")
-    ]
-    redownload: bool = settings[("functions_defaults", "load_table", "recreate")]
-    save_created: bool = settings[("functions_defaults", "load_table", "save_created")]
-    recreate: bool = settings[("functions_defaults", "load_table", "recreate")]
-
-
 metadata = Metadata()
 defaults = Defaults()
