@@ -21,7 +21,6 @@ pandas = ">=1.5"
 pyodbc = ">=4.0"
 requests = ">=2.28"
 tqdm = ">=4.65"
-fastparquet = ">=2023"
 pydantic = ">=2.1"
 pyarrow = ">=11"
 
