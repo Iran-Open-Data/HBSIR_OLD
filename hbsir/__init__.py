@@ -37,6 +37,7 @@ from .api import (
     create_table_with_schema,
     add_classification,
     add_attribute,
+    select,
     add_weight,
     add_cpi,
     adjust_by_cpi,
@@ -46,16 +47,17 @@ from .api import (
 __version__ = "0.2.5"
 
 __all__ = [
+    "load_table",
+    "create_table_with_schema",
     "add_attribute",
+    "select",
     "add_classification",
     "add_weight",
     "add_cpi",
     "adjust_by_cpi",
+    "setup",
     "calculator",
-    "create_table_with_schema",
     "external_data",
     "hbsframe",
-    "load_table",
-    "setup",
     "utils",
 ]

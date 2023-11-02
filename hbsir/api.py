@@ -335,6 +335,60 @@ def add_attribute(
     return table
 
 
+def select(
+    table: pd.DataFrame,
+    *,
+    urban_rural: Literal["Urban", "Rural"] | None = None,
+    province: metadata_reader._Province | None = None,
+    region: str | None = None,
+) -> pd.DataFrame:
+    """Selects subset of table based on criteria.
+    
+    Filters the input table based on provided selection criteria.
+    Decodes and adds attributes if needed to perform filtering.
+    Removes decoded columns before returning output table.
+
+    Parameters
+    ----------
+    table : pd.DataFrame
+        Input DataFrame to filter.
+
+    urban_rural : Literal["Urban", "Rural"], optional
+        Keep only Urban or Rural households.
+
+    province : Province, optional  
+        Keep only given province.
+
+    region : str, optional
+        Keep only given region.
+
+    Returns
+    -------
+    pd.DataFrame
+        Subset of input table meeting criteria.
+
+    """
+    if urban_rural is not None:
+        table = (
+            table.pipe(add_attribute, "Urban_Rural")
+            .query(f"Urban_Rural == '{urban_rural}'")
+            .drop(columns="Urban_Rural")
+        )
+    if region is not None:
+        table = (
+            table.pipe(add_attribute, "Region")
+            .query(f"Region == '{region}'")
+            .drop(columns="Region")
+        )
+    elif province is not None:
+        table = (
+            table.pipe(add_attribute, "Province")
+            .query(f"Province == '{province}'")
+            .drop(columns="Province")
+        )
+    return table
+
+
 def add_weight(
     table: pd.DataFrame, adjust_for_household_size: bool = False
 ) -> pd.DataFrame:
