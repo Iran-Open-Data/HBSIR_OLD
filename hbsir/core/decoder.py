@@ -23,15 +23,43 @@ classification info from the raw metadata.
 
 """
 from itertools import product
-from typing import Callable, Iterable, Literal
+from typing import Callable, Iterable, Literal, Annotated, Any
 
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import BaseModel, BeforeValidator
 
 from . import metadata_reader
 
 from .. import utils, external_data
-from .metadata_reader import metadata, _Attribute
+from .metadata_reader import defaults, metadata, _Attribute
+
+
+def maybe_to_tuple(_input: Any) -> tuple:
+    """Converts input to a tuple if needed.
+
+    Parameters
+    ----------
+    _input : Any
+        Input to convert.
+
+    Returns
+    -------
+    tuple
+        Input converted to a tuple.
+
+    Notes
+    -----
+    If _input is already a tuple, returns it unchanged.
+    If _input is a single value, returns it in a 1-tuple.
+    If _input is an iterable, converts it to a tuple.
+    """
+    if isinstance(_input, tuple):
+        return _input
+    if isinstance(_input, str):
+        return (_input,)
+    if isinstance(_input, Iterable):
+        return tuple(_input)
+    return (_input,)
 
 
 def read_classification_info(
@@ -190,6 +218,11 @@ def extract_column(table: pd.DataFrame, column_name: str) -> pd.Series:
     return column
 
 
+_Fields = Annotated[tuple[str, ...], BeforeValidator(maybe_to_tuple)]
+_Levels = Annotated[tuple[int, ...], BeforeValidator(maybe_to_tuple)]
+_OutputColumnNames = Annotated[tuple[str, ...], BeforeValidator(maybe_to_tuple)]
+
+
 class DecoderSettings(BaseModel):
     """Settings for decoding commodity codes.
 
@@ -225,11 +258,10 @@ class DecoderSettings(BaseModel):
     year_column_name: str = metadata_reader.defaults.columns.year
     versioned_info: dict = {}
     defaults: dict = {}
-    labels: tuple[str, ...] = ()
-    levels: tuple[int, ...] = ()
+    labels: _Fields = ()
+    levels: _Levels = ()
     drop_value: bool = False
-    output_column_names: tuple[str, ...] = ()
-    required_columns: tuple[str, ...] = ()
+    output_column_names: _OutputColumnNames = ()
     missing_value_replacements: dict[str, str] = {}
 
     def model_post_init(self, __contex=None) -> None:
@@ -467,22 +499,22 @@ class IDDecoderSettings(BaseModel):
     """
 
     name: _Attribute
-    id_column_name: str = "ID"
-    year_column_name: str = "Year"
-    labels: tuple[str, ...] = ("name",)
-    output_column_names: tuple[str, ...] = tuple()
+    fields: _Fields = ("name",)
+    column_names: _OutputColumnNames = ()
+
+    id_col: str = defaults.columns.household_id
+    year_col: str = defaults.columns.year
 
     def model_post_init(self, __contex=None) -> None:
-        self._resolve_output_column_names()
-        super().model_post_init(None)
+        self._resolve_column_names()
 
-    def _resolve_output_column_names(self) -> None:
-        if len(self.output_column_names) != len(self.labels):
-            if len(self.labels) == 1:
+    def _resolve_column_names(self) -> None:
+        if len(self.column_names) != len(self.fields):
+            if len(self.fields) == 1:
                 names = [self.name]
             else:
-                names = [f"{self.name}_{label}" for label in self.labels]
-            self.output_column_names = tuple(names)
+                names = [f"{self.name}_{label}" for label in self.fields]
+            self.column_names = tuple(names)
 
 
 class IDDecoder:
@@ -512,8 +544,8 @@ class IDDecoder:
     ) -> None:
         self.table = table
         self.settings = settings
-        self.id_column = extract_column(table, settings.id_column_name)
-        self.year_column = extract_column(table, settings.year_column_name)
+        self.id_series = extract_column(table, settings.id_col)
+        self.year_series = extract_column(table, settings.year_col)
 
     def construct_mapping_table(self) -> pd.DataFrame:
         """Constructs metadata mapping table for household IDs.
@@ -527,12 +559,12 @@ class IDDecoder:
             Mapping table with year, ID and decoded columns.
 
         """
-        mapped_columns = [self.year_column, self.id_column]
-        for label in self.settings.labels:
+        mapped_columns = [self.year_series, self.id_series]
+        for label in self.settings.fields:
             mapped_column = self._map_id_to_label(label)
             mapped_columns.append(mapped_column)
-        year_and_id = [self.settings.year_column_name, self.settings.id_column_name]
-        columns = year_and_id + list(self.settings.output_column_names)
+        year_and_id = [self.settings.year_col, self.settings.id_col]
+        columns = year_and_id + list(self.settings.column_names)
         mapping_table = pd.concat(mapped_columns, axis="columns", keys=columns)
         mapping_table = mapping_table.drop_duplicates().set_index(year_and_id)
         return mapping_table
@@ -591,12 +623,12 @@ class IDDecoder:
         return mapper
 
     def _map_id_to_label(self, label: str):
-        years = self.year_column.drop_duplicates()
+        years = self.year_series.drop_duplicates()
         attribute_column = pd.Series(index=self.table.index, dtype="object")
         for year in years:
-            filt = self.year_column == year
+            filt = self.year_series == year
             attribute_column.loc[filt] = self._create_code_mapper(label, year)(
-                self.id_column.loc[filt]
+                self.id_series.loc[filt]
             )
         return attribute_column
 
@@ -613,6 +645,6 @@ class IDDecoder:
 
         """
         mapping_table = self.construct_mapping_table()
-        year_and_id = [self.settings.year_column_name, self.settings.id_column_name]
+        year_and_id = [self.settings.year_col, self.settings.id_col]
         self.table = self.table.join(mapping_table, year_and_id)
         return self.table

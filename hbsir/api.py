@@ -58,13 +58,14 @@ def load_table(
     table_name: _Table,
     years: _Years = "last",
     dataset: Literal["processed", "cleaned", "original"] | None = None,
+    *,
     on_missing: Literal["error", "download", "create"] | None = None,
     redownload: bool | None = None,
     save_downloaded: bool | None = None,
     recreate: bool | None = None,
     save_created: bool | None = None,
 ) -> pd.DataFrame:
-    """Load a DataFrame for the given table name and year(s).
+    """Load a table for the given table name and year(s).
 
     This function loads original and standard tables.
     Original tables are survey tables and available in three types:
@@ -110,10 +111,11 @@ def load_table(
 
     Examples
     --------
-    >>> df = load_table('food')
+    >>> import hbsir
+    >>> df = hbsir.load_table('food')
     # Loads processed 'food' table from original survey tables for
-    # latest available year
-    >>> df = load_table('Expenditures', '1399-1401')
+        latest available year
+    >>> df = hbsir.load_table('Expenditures', '1399-1401')
     # Loads standard 'Expenditures' table for years 1399 - 1401
 
     Raises
@@ -155,13 +157,14 @@ def load_table(
 def create_table_with_schema(
     schema: str | dict,
     years: _Years = "last",
+    *,
     on_missing: Literal["error", "download", "create"] | None = None,
     redownload: bool | None = None,
     save_downloaded: bool | None = None,
     recreate: bool | None = None,
     save_created: bool | None = None,
 ) -> pd.DataFrame:
-    """Create and load DataFrame based on input schema.
+    """Create and load table based on input schema.
 
     This function can be used in two ways:
 
@@ -221,16 +224,14 @@ def add_classification(
     table: pd.DataFrame,
     name: str = "original",
     classification_type: Literal["commodity", "occupation"] | None = None,
-    labels: tuple[str, ...] | None = None,
-    levels: tuple[int, ...] | None = None,
+    *,
+    labels: Iterable[str] | None = None,
+    levels: Iterable[int] | int | None = None,
     drop_value: bool | None = None,
-    output_column_names: tuple[str, ...] | None = None,
-    required_columns: tuple[str, ...] | None = None,
+    output_column_names: Iterable[str] | str | None = None,
     missing_value_replacements: dict[str, str] | None = None,
     code_column_name: str | None = None,
     year_column_name: str | None = None,
-    versioned_info: dict | None = None,
-    defaults: dict | None = None,
 ) -> pd.DataFrame:
     """Add classification to table.
 
@@ -251,8 +252,6 @@ def add_classification(
         Whether to drop unclassified values.
     output_column_names : tuple of str, optional
         Names of output classification columns.
-    required_columns : tuple of str, optional
-        Required columns in table.
     missing_value_replacements : dict, optional
         Replacements for missing values in columns.
     code_column_name : str, optional
@@ -261,8 +260,6 @@ def add_classification(
         Name of year column.
     versioned_info : dict, optional
         Versioning information for classifier.
-    defaults : dict, optional
-        Default column names.
 
     Returns
     -------
@@ -292,8 +289,9 @@ def add_classification(
 def add_attribute(
     table: pd.DataFrame,
     name: _Attribute,
-    labels: tuple[str, ...] | None = None,
-    output_column_names: tuple[str, ...] | None = None,
+    *,
+    labels: Iterable[str] | str | None = None,
+    output_column_names: Iterable[str] | str | None = None,
     id_column_name: str | None = None,
     year_column_name: str | None = None,
 ) -> pd.DataFrame:
@@ -343,7 +341,7 @@ def select(
     region: str | None = None,
 ) -> pd.DataFrame:
     """Selects subset of table based on criteria.
-    
+
     Filters the input table based on provided selection criteria.
     Decodes and adds attributes if needed to perform filtering.
     Removes decoded columns before returning output table.
@@ -356,7 +354,7 @@ def select(
     urban_rural : Literal["Urban", "Rural"], optional
         Keep only Urban or Rural households.
 
-    province : Province, optional  
+    province : Province, optional
         Keep only given province.
 
     region : str, optional
@@ -392,7 +390,7 @@ def select(
 def add_weight(
     table: pd.DataFrame, adjust_for_household_size: bool = False
 ) -> pd.DataFrame:
-    """Add sample weights to a table of data.
+    """Add sampling weights to the table.
 
     Loads appropriate sample weights for each year in the table and merges
     them onto the table. Sample weights can optionally be adjusted
@@ -422,12 +420,13 @@ def add_weight(
 
 def add_cpi(
     table: pd.DataFrame,
+    *,
     data_source: Literal["SCI"] = "SCI",
     base_year: Literal[1400] = 1400,
     frequency: Literal["Annual"] = "Annual",
     separate_by: Literal["Urban_Rural"] = "Urban_Rural",
 ) -> pd.DataFrame:
-    """Add CPI values to a DataFrame.
+    """Add CPI values to the table
 
     Parameters
     ----------
@@ -475,7 +474,7 @@ def add_cpi(
 def adjust_by_cpi(
     table: pd.DataFrame, columns: list[str] | None = None, **kwargs
 ) -> pd.DataFrame:
-    """Adjust columns in a DataFrame by the CPI.
+    """Adjust columns in the table by the CPI
 
     Divides the specified columns of the DataFrame by the CPI column.
     If no columns specified, divides common monetary value columns

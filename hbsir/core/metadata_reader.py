@@ -80,6 +80,41 @@ original_tables: tuple[_OriginalTable] = get_args(_OriginalTable)  # type: ignor
 standard_tables: tuple[_StandardTable] = get_args(_StandardTable)  # type: ignore
 
 
+_Province = Literal[
+    "Markazi",
+    "Gilan",
+    "Mazandaran",
+    "East_Azerbaijan",
+    "West_Azerbaijan",
+    "Kermanshah",
+    "Khuzestan",
+    "Fars",
+    "Kerman",
+    "Razavi_Khorasan",
+    "Isfahan",
+    "Sistan_and_Baluchestan",
+    "Kurdistan",
+    "Hamadan",
+    "Chaharmahal_and_Bakhtiari",
+    "Lorestan",
+    "Ilam",
+    "Kohgiluyeh_and_Boyer-Ahmad",
+    "Bushehr",
+    "Zanjan",
+    "Semnan",
+    "Yazd",
+    "Hormozgan",
+    "Tehran",
+    "Ardabil",
+    "Qom",
+    "Qazvin",
+    "Golestan",
+    "North_Khorasan",
+    "South_Khorasan",
+    "Alborz",
+]
+
+
 def open_yaml(
     path: Path | str,
     location: Literal["package", "root"] = "package",
