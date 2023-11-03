@@ -22,6 +22,7 @@ Relies on metadata schema and configuration for how to process tables.
 """
 
 import re
+from pathlib import Path
 from typing import Literal, Iterable
 from types import ModuleType
 import importlib
@@ -209,15 +210,13 @@ class TableHandler:
             Loaded table data
 
         """
-        file_name = f"{self.year}_{table_name}.parquet"
-        local_file = defaults.processed_data.joinpath(file_name)
 
         if self.settings.recreate:
             table = self._create_table(table_name)
         elif self.settings.redownload:
             table = self._download_table(table_name)
-        elif local_file.exists():
-            table = pd.read_parquet(local_file)
+        elif self.get_local_path(table_name).exists():
+            table = self._load_table(table_name)
         elif self.settings.on_missing == "create":
             table = self._create_table(table_name)
         elif self.settings.on_missing == "download":
@@ -229,22 +228,27 @@ class TableHandler:
         table.attrs["year"] = self.year
         return table
 
-    def _create_table(self, table_name: _OriginalTable) -> pd.DataFrame:
+    def get_local_path(self, table_name) -> Path:
         file_name = f"{self.year}_{table_name}.parquet"
         local_path = defaults.processed_data.joinpath(file_name)
+        return local_path
+
+    def _create_table(self, table_name: _OriginalTable) -> pd.DataFrame:
         table = open_and_clean_table(table_name, self.year)
         if self.settings.save_created:
-            table.to_parquet(local_path)
+            table.to_parquet(self.get_local_path(table_name))
         return table
 
     def _download_table(self, table_name: _OriginalTable) -> pd.DataFrame:
-        file_name = f"{self.year}_{table_name}.parquet"
-        local_path = defaults.processed_data.joinpath(file_name)
-        file_url = f"{defaults.online_dir}/parquet_files/{file_name}"
-        table = pd.read_parquet(file_url)
+        table = pd.read_parquet(
+            f"{defaults.online_dir}/parquet_files/{self.year}_{table_name}.parquet"
+        )
         if self.settings.save_downloaded:
-            table.to_parquet(local_path)
+            table.to_parquet(self.get_local_path(table_name))
         return table
+
+    def _load_table(self, table_name: _OriginalTable) -> pd.DataFrame:
+        return pd.read_parquet(self.get_local_path(table_name))
 
 
 class Pipeline:
