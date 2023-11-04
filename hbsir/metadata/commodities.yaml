@@ -1597,7 +1597,7 @@ sci_coicop_1383: &sci_coicop_1383
     cleaning_repair_and_hire_of_footwear:
       level: 3
       farsi_name: "تعمیر و ملزومات کفش"
-      code: {start: 32_100, end: 32_200}
+      code: {start: 32_200, end: 32_300}
 
 
     ################################# LEVEL 1 #################################
@@ -1800,7 +1800,7 @@ original: *sci_coicop
 Food_NonFood:
   defaults:
     levels: [1]
-    output_column_names: ["Food_NonFood"]
+    column_names: ["Food_NonFood"]
     missing_value_replacements: {Food_NonFood: NonFood}
 
   items:
@@ -1834,7 +1834,7 @@ Food_NonFood:
 Duration:
   defaults:
     levels: [4]
-    labels: ["duration"]
+    fields: ["duration"]
     output_column_names: ["Duration"]
   items:
     1363: {{original_1363}}
@@ -1848,7 +1848,7 @@ Duration:
 Durability:
   defaults:
     levels: [1]
-    output_column_names: ["Durability"]
+    column_names: ["Durability"]
   items:
     1383:
       NonDurable:
@@ -1986,7 +1986,7 @@ Durability:
 Imputed_Rent:
   defaults:
     levels: [1]
-    output_column_names: ["Imputed_Rent"]
+    column_names: ["Imputed_Rent"]
 
   items:
     Imputed_Rent:
@@ -2012,7 +2012,7 @@ Imputed_Rent:
 Insurance_Benefits:
   defaults:
     levels: [1]
-    output_column_names: ["Insurance_Benefits"]
+    column_names: ["Insurance_Benefits"]
 
   items:
     Insurance_Benefits:
@@ -2034,7 +2034,7 @@ Insurance_Benefits:
 sci_main_categories:
   defaults:
     levels: [1]
-    output_column_names: ["Main_Category"]
+    column_names: ["Main_Category"]
 
   items:
     1383:
