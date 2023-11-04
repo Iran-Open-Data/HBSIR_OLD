@@ -220,7 +220,7 @@ def extract_column(table: pd.DataFrame, column_name: str) -> pd.Series:
 
 _Fields = Annotated[tuple[str, ...], BeforeValidator(maybe_to_tuple)]
 _Levels = Annotated[tuple[int, ...], BeforeValidator(maybe_to_tuple)]
-_OutputColumnNames = Annotated[tuple[str, ...], BeforeValidator(maybe_to_tuple)]
+_ColumnNames = Annotated[tuple[str, ...], BeforeValidator(maybe_to_tuple)]
 
 
 class DecoderSettings(BaseModel):
@@ -254,24 +254,24 @@ class DecoderSettings(BaseModel):
 
     classification_type: Literal["commodity", "occupation"] = "commodity"
     name: str = "original"
-    code_column_name: str = "_Default"
-    year_column_name: str = metadata_reader.defaults.columns.year
+    code_col: str = "_Default"
+    year_col: str = metadata_reader.defaults.columns.year
     versioned_info: dict = {}
     defaults: dict = {}
-    labels: _Fields = ()
+    fields: _Fields = ()
     levels: _Levels = ()
     drop_value: bool = False
-    output_column_names: _OutputColumnNames = ()
+    column_names: _ColumnNames = ()
     missing_value_replacements: dict[str, str] = {}
 
     def model_post_init(self, __contex=None) -> None:
         if self.classification_type == "commodity":
-            if self.code_column_name == "_Default":
-                self.code_column_name = metadata_reader.defaults.columns.commodity_code
+            if self.code_col == "_Default":
+                self.code_col = metadata_reader.defaults.columns.commodity_code
             self.versioned_info = metadata.commodities[self.name]
         else:
-            if self.code_column_name == "_Default":
-                self.code_column_name = metadata_reader.defaults.columns.job_code
+            if self.code_col == "_Default":
+                self.code_col = metadata_reader.defaults.columns.job_code
             self.versioned_info = metadata.occupations[self.name]
         if "defaults" in self.versioned_info:
             self.defaults = self.versioned_info["defaults"]
@@ -280,27 +280,27 @@ class DecoderSettings(BaseModel):
                 value = tuple(value)
             if (getattr(self, key) is None) or (len(getattr(self, key)) == 0):
                 setattr(self, key, value)
-        if len(self.labels) == 0:
-            self.labels = ("item_key",)
+        if len(self.fields) == 0:
+            self.fields = ("item_key",)
         if len(self.levels) == 0:
             self.levels = (1,)
         self._resolve_column_names()
         super().model_post_init(None)
 
     def _resolve_column_names(self) -> None:
-        if len(self.output_column_names) == 0:
+        if len(self.column_names) == 0:
             names = [
-                f"{label}_{level}" for label, level in product(self.labels, self.levels)
+                f"{label}_{level}" for label, level in product(self.fields, self.levels)
             ]
-            self.output_column_names = tuple(names)
-        elif len(self.output_column_names) == len(self.labels) * len(self.levels):
+            self.column_names = tuple(names)
+        elif len(self.column_names) == len(self.fields) * len(self.levels):
             pass
-        elif len(self.output_column_names) == len(self.labels):
+        elif len(self.column_names) == len(self.fields):
             names = [
                 f"{label}_{level}"
-                for label, level in product(self.output_column_names, self.levels)
+                for label, level in product(self.column_names, self.levels)
             ]
-            self.output_column_names = tuple(names)
+            self.column_names = tuple(names)
 
     @property
     def rename_dict(self):
@@ -318,8 +318,8 @@ class DecoderSettings(BaseModel):
             Mapping of label-level tuples to output column names.
 
         """
-        label_level = product(self.labels, self.levels)
-        return dict(zip(label_level, self.output_column_names))
+        label_level = product(self.fields, self.levels)
+        return dict(zip(label_level, self.column_names))
 
 
 class Decoder:
@@ -358,8 +358,8 @@ class Decoder:
     def __init__(self, table: pd.DataFrame, settings: DecoderSettings) -> None:
         self.table = table
         self.settings = settings
-        self.code_column = extract_column(table, settings.code_column_name)
-        self.year_column = extract_column(table, settings.year_column_name)
+        self.code_column = extract_column(table, settings.code_col)
+        self.year_column = extract_column(table, settings.year_col)
         self.classification_table = create_classification_table(
             name=self.settings.name,
             years=self.year_column.drop_duplicates().to_list(),
@@ -374,24 +374,23 @@ class Decoder:
             filt = self.year_column == year
             codes = self.code_column.loc[filt].drop_duplicates()
             yc_pair = codes.to_frame()
-            yc_pair[self.settings.year_column_name] = year
+            yc_pair[self.settings.year_col] = year
             yc_pair_list.append(yc_pair)
         return pd.concat(yc_pair_list, ignore_index=True)
 
     def _build_year_code_table(
         self, year_code_pairs: pd.DataFrame, row: pd.Series
     ) -> pd.DataFrame:
-        filt = year_code_pairs[self.settings.code_column_name].apply(
+        filt = year_code_pairs[self.settings.code_col].apply(
             lambda x: x in row["code_range"]
         )
         filt = filt & (
-            year_code_pairs[self.settings.year_column_name]
-            == row[self.settings.year_column_name]
+            year_code_pairs[self.settings.year_col] == row[self.settings.year_col]
         )
         matched_codes = year_code_pairs.loc[filt].set_index(
-            [self.settings.year_column_name, self.settings.code_column_name]
+            [self.settings.year_col, self.settings.code_col]
         )
-        columns = row.drop(["code_range", self.settings.year_column_name]).index
+        columns = row.drop(["code_range", self.settings.year_col]).index
         code_table = pd.DataFrame(
             data=[row.loc[columns]] * len(matched_codes.index),
             index=matched_codes.index,
@@ -438,7 +437,7 @@ class Decoder:
         if filt.sum() > 0:
             invalid_case_sample = (
                 mapping_table.loc[filt]
-                .sort_values([self.settings.code_column_name, "level"])
+                .sort_values([self.settings.code_col, "level"])
                 .head(10)
             )
             raise ValueError(f"Classification is not valid \n{invalid_case_sample}")
@@ -470,7 +469,7 @@ class Decoder:
         """
         mapping = self.create_mapping_table()
         self.table = self.table.join(
-            mapping, on=[self.settings.year_column_name, self.settings.code_column_name]
+            mapping, on=[self.settings.year_col, self.settings.code_col]
         )
         self._fill_missing_values()
         return self.table
@@ -484,23 +483,23 @@ class IDDecoderSettings(BaseModel):
     name : Attribute
         Name of household attribute to decode.
 
-    id_column_name : str
+    id_col : str
         Column name for household IDs.
 
-    year_column_name : str
+    year_col : str
         Column name for year.
 
-    labels : tuple[str]
+    fields : tuple[str]
         Labels to extract as output columns.
 
-    output_column_names : tuple[str]
+    column_names : tuple[str]
         Names of columns to add to output table.
 
     """
 
     name: _Attribute
     fields: _Fields = ("name",)
-    column_names: _OutputColumnNames = ()
+    column_names: _ColumnNames = ()
 
     id_col: str = defaults.columns.household_id
     year_col: str = defaults.columns.year

@@ -225,13 +225,13 @@ def add_classification(
     name: str = "original",
     classification_type: Literal["commodity", "occupation"] | None = None,
     *,
-    labels: Iterable[str] | None = None,
+    fields: Iterable[str] | None = None,
     levels: Iterable[int] | int | None = None,
+    column_names: Iterable[str] | str | None = None,
     drop_value: bool | None = None,
-    output_column_names: Iterable[str] | str | None = None,
     missing_value_replacements: dict[str, str] | None = None,
-    code_column_name: str | None = None,
-    year_column_name: str | None = None,
+    code_col: str | None = None,
+    year_col: str | None = None,
 ) -> pd.DataFrame:
     """Add classification to table.
 
@@ -290,10 +290,10 @@ def add_attribute(
     table: pd.DataFrame,
     name: _Attribute,
     *,
-    labels: Iterable[str] | str | None = None,
-    output_column_names: Iterable[str] | str | None = None,
-    id_column_name: str | None = None,
-    year_column_name: str | None = None,
+    fields: Iterable[str] | str | None = None,
+    column_names: Iterable[str] | str | None = None,
+    id_col: str | None = None,
+    year_col: str | None = None,
 ) -> pd.DataFrame:
     """Add household attributes to table based on ID.
 
