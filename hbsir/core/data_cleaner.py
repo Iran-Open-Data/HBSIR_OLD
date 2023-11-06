@@ -74,9 +74,7 @@ def _build_file_path(table_name: str, year: int, is_urban: bool) -> Path:
     urban_rural = "U" if is_urban else "R"
     year_string = year % 100 if year < 1400 else year
     table_metadata = _get_table_metadata(table_name, year, is_urban)
-    file_code = utils.MetadataVersionResolver(
-        table_metadata["file_code"], year
-    ).get_version()
+    file_code = utils.resolve_metadata(table_metadata["file_code"], year)
     if file_code is None:
         raise ValueError(f"Table {table_name} is not available for year {year}")
     file_name = f"{urban_rural}{year_string}{file_code}.csv"
@@ -90,7 +88,7 @@ def _get_table_metadata(
     table_name: str, year: int, is_urban: bool | None = None
 ) -> dict:
     table_metadata = metadata.tables[table_name]
-    table_metadata = utils.MetadataVersionResolver(table_metadata, year).get_version()
+    table_metadata = utils.resolve_metadata(table_metadata, year)
     assert isinstance(table_metadata, dict)
 
     if is_urban is True:
@@ -230,7 +228,7 @@ def _general_cleaning(column: pd.Series):
 
 
 def save_cleaned_tables(
-    table_names: _OriginalTable | Iterable[_OriginalTable] | None = None,
+    table_names: _OriginalTable | Iterable[_OriginalTable] | Literal["all"] = "all",
     years: _Years = "all",
 ) -> None:
     """Saves cleaned table data to Parquet files.
@@ -249,7 +247,7 @@ def save_cleaned_tables(
         Default is "all" years.
 
     """
-    table_names = original_tables if table_names is None else table_names
+    table_names = original_tables if table_names == "all" else table_names
     table_year = utils.construct_table_year_pairs(table_names, years)
     pbar = tqdm(total=len(table_year), desc="Preparing ...", unit="Table")
     for _table_name, year in table_year:

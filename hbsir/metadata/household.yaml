@@ -177,7 +177,7 @@ Province_63:
     30: "تهران"
 
 
-Region:
+County:
   code:
     position:
       1363: null
@@ -190,7 +190,7 @@ Region:
         end: 5
     external_file:
       1363: null
-      1387: "regions"
+      1387: "counties"
       1392: null
 
   name:

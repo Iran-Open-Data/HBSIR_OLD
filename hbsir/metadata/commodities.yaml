@@ -388,7 +388,9 @@ sci_coicop_1383: &sci_coicop_1383
     cereals_and_cereal_products:
       level: 3
       farsi_name: "غلات و فرآورده‌های آن"
-      code: {start: 11_100, end: 11_200}
+      code:
+        1363: {start: 11_000, end: 12_000}
+        1383: {start: 11_100, end: 11_200}
 
     #                            #### LEVEL 4 ####                            #
     cereals:
@@ -1834,8 +1836,8 @@ Food_NonFood:
 Duration:
   defaults:
     levels: [4]
-    fields: ["duration"]
-    output_column_names: ["Duration"]
+    aspects: ["duration"]
+    column_names: ["Duration"]
   items:
     1363: {{original_1363}}
 
@@ -1985,7 +1987,7 @@ Durability:
 
 Imputed_Rent:
   defaults:
-    levels: [1]
+    levels: [2]
     column_names: ["Imputed_Rent"]
 
   items:
@@ -2002,6 +2004,24 @@ Imputed_Rent:
           - 42_211
           - 42_212
           # - 42_215
+
+    Ownership:
+      level: 2
+      code:
+        1363:
+          - 31_117
+          - 31_128
+        1383:
+          - 42_111
+          - 42_211
+
+    Mortgage:
+      level: 2
+      code:
+        1363:
+          - 31_172
+        1383:
+          - 42_212
 
 
 ###############################################################################

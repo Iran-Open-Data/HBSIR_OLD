@@ -29,7 +29,7 @@ local_metadata:
   other: "metadata/other.yaml"
   external_data: "metadata/external_data.yaml"
 
-# Local Directorie
+# Local Directory
 local_directory: Data
 in_root: False
 
@@ -80,3 +80,20 @@ columns:
   commodity_code: Code
   job_code: Job_Code
   weight: Weight
+
+nominal_columns:
+  - Expenditure
+  - Net_Expenditure
+  - Gross_Expenditure
+  - Price
+  - Income
+  - Net_Income
+  - Gross_Income
+
+groupby_columns:
+  - Year
+  - Urban_Rural
+  - Province
+  - County
+  - Decile
+  - Percentile

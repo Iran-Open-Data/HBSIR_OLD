@@ -93,7 +93,7 @@ def extract_dependencies(table_name: str, year: int) -> dict:
 
 
 class LoadTableSettings(BaseModel):
-    dataset: Literal["processed", "cleaned", "original"] = metadata_reader.settings[
+    form: Literal["processed", "cleaned", "raw"] = metadata_reader.settings[
         ("functions_defaults", "load_table", "dataset")
     ]
     on_missing: Literal["error", "download", "create"] = metadata_reader.settings[

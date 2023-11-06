@@ -2,7 +2,7 @@
 from typing import Any
 
 from .seven_zip_utils import extract as sevenzip
-from .download_utils import download, download_map
+from .download_utils import download, download_map, download_processed_data
 from .parsing_utils import parse_years, construct_table_year_pairs
 from .metadata_utils import (
     MetadataVersionResolver,
@@ -16,6 +16,7 @@ __all__ = [
     "sevenzip",
     "download",
     "download_map",
+    "download_processed_data",
     "parse_years",
     "construct_table_year_pairs",
     "Argham",

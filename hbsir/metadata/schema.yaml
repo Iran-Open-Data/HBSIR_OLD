@@ -431,7 +431,7 @@ hotel:
     - apply_order: *common_expenditure_order
 
 
-other:
+miscellaneous:
 
   instructions:
 
@@ -599,7 +599,7 @@ Original_Expenditures:
       - medical
       - transportation
       - entertainment
-      - other
+      - miscellaneous
       - durable
 
     1383:
@@ -614,7 +614,7 @@ Original_Expenditures:
       - entertainment
       - education
       - hotel
-      - other
+      - miscellaneous
       - durable
 
   instructions:
@@ -732,7 +732,7 @@ Original_Outlays:
       - medical
       - transportation
       - entertainment
-      - other
+      - miscellaneous
       - durable
 
     1366:
@@ -743,7 +743,7 @@ Original_Outlays:
       - medical
       - transportation
       - entertainment
-      - other
+      - miscellaneous
       - durable
       - investment
     
@@ -755,7 +755,7 @@ Original_Outlays:
       - medical
       - transportation
       - entertainment
-      - other
+      - miscellaneous
       - durable
 
     1378:
@@ -766,7 +766,7 @@ Original_Outlays:
       - medical
       - transportation
       - entertainment
-      - other
+      - miscellaneous
       - durable
       - investment
 
@@ -782,7 +782,7 @@ Original_Outlays:
       - entertainment
       - education
       - hotel
-      - other
+      - miscellaneous
       - durable
       - investment
 
@@ -986,20 +986,20 @@ Imputed_Rent:
 
     - add_classification:
         name: Imputed_Rent
-        labels: [is_imputed]
 
     - apply_filter: "Imputed_Rent.notnull() & (Provision_Method.isnull() or Provision_Method == 'Purchase')"
 
     - create_column:
         name: Income
         type: numerical
-        expression: "Expenditure * Imputed_Rent * 12"
+        expression: "Expenditure * 12"
 
     - create_column:
         name: Income_Type
         type: categorical
         categories:
-          NonCash_ImputedRent: null
+          NonCash_ImputedRent_Ownership: {Imputed_Rent: Ownership}
+          NonCash_ImputedRent_Mortgage: {Imputed_Rent: Mortgage}
 
     - apply_order:
       - Year

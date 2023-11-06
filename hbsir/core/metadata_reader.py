@@ -15,7 +15,7 @@ PACKAGE_DIRECTORY = Path(__file__).parents[1]
 ROOT_DIRECTORT = Path().absolute()
 
 
-_Attribute = Literal["Urban_Rural", "Province", "Region"]
+_Attribute = Literal["Urban_Rural", "Province", "County"]
 _Years = int | Iterable[int] | str | Literal["all", "last"]
 
 _GeneralTable = Literal[
@@ -37,7 +37,7 @@ _ExpenditureTable = Literal[
     "entertainment",
     "education",
     "hotel",
-    "other",
+    "miscellaneous",
     "durable",
     "investment",
 ]
@@ -47,8 +47,11 @@ _IncomeTable = Literal[
     "self_employed_income",
     "other_income",
     "subsidy",
-    # "public_employment_income",
-    # "private_employment_income",
+    "public_employment_income",
+    "private_employment_income",
+    "agricultural_self_employed_income",
+    "non_agricultural_self_employed_income",
+    "old_other_income",
 ]
 
 _OriginalTable = Literal[_GeneralTable, _ExpenditureTable, _IncomeTable]
@@ -113,6 +116,9 @@ _Province = Literal[
     "South_Khorasan",
     "Alborz",
 ]
+
+
+_Groupby = Literal["Urban_Rural", "Province", "County", "Decile", "Percentile"]
 
 
 def open_yaml(
@@ -192,6 +198,9 @@ class DefaultColumns(BaseModel):
     commodity_code: str = settings[("columns", "commodity_code")]
     job_code: str = settings[("columns", "job_code")]
     weight: str = settings[("columns", "weight")]
+
+    nominals: list = settings[("nominal_columns",)]
+    groupby: list[_Groupby] = settings[("groupby_columns",)]
 
 
 class Defaults(BaseModel):

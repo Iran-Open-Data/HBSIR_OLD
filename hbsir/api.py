@@ -32,7 +32,7 @@ See the API docstrings for more details.
 # pylint: disable=unused-argument
 # pylint: disable=too-many-locals
 
-from typing import Iterable, Literal
+from typing import Iterable, Literal, overload
 
 import pandas as pd
 
@@ -45,6 +45,8 @@ from .core.metadata_reader import (
     original_tables,
     _Attribute,
     _OriginalTable,
+    _StandardTable,
+    _Province,
     _Table,
     _Years,
 )
@@ -54,10 +56,40 @@ def _extract_parameters(local_variables: dict) -> dict:
     return {key: value for key, value in local_variables.items() if value is not None}
 
 
+@overload
+def load_table(
+    table_name: _OriginalTable,
+    years: _Years = "last",
+    form: Literal["processed", "cleaned", "raw"] | None = None,
+    *,
+    on_missing: Literal["error", "download", "create"] | None = None,
+    redownload: bool | None = None,
+    save_downloaded: bool | None = None,
+    recreate: bool | None = None,
+    save_created: bool | None = None,
+) -> pd.DataFrame:
+    ...
+
+
+@overload
+def load_table(
+    table_name: _StandardTable,
+    years: _Years = "last",
+    form: Literal["processed"] | None = None,
+    *,
+    on_missing: Literal["error", "download", "create"] | None = None,
+    redownload: bool | None = None,
+    save_downloaded: bool | None = None,
+    recreate: bool | None = None,
+    save_created: bool | None = None,
+) -> pd.DataFrame:
+    ...
+
+
 def load_table(
     table_name: _Table,
     years: _Years = "last",
-    dataset: Literal["processed", "cleaned", "original"] | None = None,
+    form: Literal["processed", "cleaned", "raw"] | None = None,
     *,
     on_missing: Literal["error", "download", "create"] | None = None,
     redownload: bool | None = None,
@@ -71,7 +103,7 @@ def load_table(
     Original tables are survey tables and available in three types:
     original, cleaned and processed.
 
-    - The 'original' dataset contains the raw data, identical to the
+    - The 'raw' dataset contains the raw data, identical to the
     survey data, without any modifications.
     - The 'cleaned' dataset contains the raw data with added column
     labels, data types, and removal of irrelevant values, but no
@@ -127,7 +159,7 @@ def load_table(
     metadata.reload_file("schema")
     parameters = _extract_parameters(locals())
     settings = data_engine.LoadTableSettings(**parameters)
-    if settings.dataset == "original":
+    if settings.form == "raw":
         if table_name not in original_tables:
             raise ValueError
         years = utils.parse_years(years)
@@ -135,7 +167,7 @@ def load_table(
         for year in years:
             table_parts.append(data_cleaner.load_raw_data(table_name, year))
         table = pd.concat(table_parts)
-    elif settings.dataset == "cleaned":
+    elif settings.form == "cleaned":
         if table_name not in original_tables:
             raise ValueError
         years = utils.parse_years(years)
@@ -223,9 +255,9 @@ def create_table_with_schema(
 def add_classification(
     table: pd.DataFrame,
     name: str = "original",
-    classification_type: Literal["commodity", "occupation"] | None = None,
+    code_type: Literal["commodity", "industry", "occupation"] | None = None,
     *,
-    fields: Iterable[str] | None = None,
+    aspects: Iterable[str] | None = None,
     levels: Iterable[int] | int | None = None,
     column_names: Iterable[str] | str | None = None,
     drop_value: bool | None = None,
@@ -290,7 +322,7 @@ def add_attribute(
     table: pd.DataFrame,
     name: _Attribute,
     *,
-    fields: Iterable[str] | str | None = None,
+    aspects: Iterable[str] | str | None = None,
     column_names: Iterable[str] | str | None = None,
     id_col: str | None = None,
     year_col: str | None = None,
@@ -337,8 +369,8 @@ def select(
     table: pd.DataFrame,
     *,
     urban_rural: Literal["Urban", "Rural"] | None = None,
-    province: metadata_reader._Province | None = None,
-    region: str | None = None,
+    province: Iterable[_Province] | _Province | None = None,
+    region: Iterable[str] | str | None = None,
 ) -> pd.DataFrame:
     """Selects subset of table based on criteria.
 
@@ -373,15 +405,19 @@ def select(
             .drop(columns="Urban_Rural")
         )
     if region is not None:
+        if isinstance(region, str):
+            region = [region]
         table = (
             table.pipe(add_attribute, "Region")
-            .query(f"Region == '{region}'")
+            .query(f"Region in {region}")
             .drop(columns="Region")
         )
     elif province is not None:
+        if isinstance(province, str):
+            province = [province]
         table = (
             table.pipe(add_attribute, "Province")
-            .query(f"Province == '{province}'")
+            .query(f"Province in [{province}]")
             .drop(columns="Province")
         )
     return table
@@ -495,15 +531,7 @@ def adjust_by_cpi(
         Input `table` with `columns` divided by 'CPI'.
 
     """
-    default_columns = [
-        "Expenditure",
-        "Net_Expenditure",
-        "Gross_Expenditure",
-        "Price",
-        "Income",
-        "Net_Income",
-        "Gross_Income",
-    ]
+    default_columns = metadata_reader.defaults.columns.nominals
     if columns is None:
         columns = [column for column in default_columns if column in table.columns]
 
@@ -524,7 +552,8 @@ def adjust_by_cpi(
 
 def setup(
     years: _Years = "last",
-    table_names: _OriginalTable | Iterable[_OriginalTable] | None = None,
+    method: Literal["create", "download"] = "create",
+    table_names: _OriginalTable | Iterable[_OriginalTable] | Literal["all"] = "all",
     replace: bool = False,
 ) -> None:
     """Set up data by downloading and extracting archive files.
@@ -548,5 +577,8 @@ def setup(
         setup(1399)
         setup([1390,1400], ['food'], True)
     """
-    archive_handler.setup(years, replace)
-    data_cleaner.save_cleaned_tables(table_names, years)
+    if method == "create":
+        archive_handler.setup(years, replace)
+        data_cleaner.save_cleaned_tables(table_names, years)
+    else:
+        utils.download_processed_data(table_names, years)

@@ -1,6 +1,12 @@
-from typing import Iterable
+from typing import Iterable, Literal
 
-from ..core.metadata_reader import defaults, metadata, _Years, _OriginalTable
+from ..core.metadata_reader import (
+    defaults,
+    metadata,
+    _Years,
+    _OriginalTable,
+    original_tables,
+)
 from .argham import Argham
 
 
@@ -96,7 +102,8 @@ def _parse_year_str(year: str) -> list[int]:
 
 
 def construct_table_year_pairs(
-    table_names: _OriginalTable | Iterable[_OriginalTable], years: _Years
+    table_names: _OriginalTable | Iterable[_OriginalTable] | Literal["all"],
+    years: _Years,
 ) -> list[tuple[_OriginalTable, int]]:
     """Constructs list of (table, year) tuples from inputs.
 
@@ -118,6 +125,7 @@ def construct_table_year_pairs(
 
     """
     years = parse_years(years)
+    table_names = original_tables if table_names == "all" else table_names
     table_names = [table_names] if isinstance(table_names, str) else table_names
     table_year = []
     for table_name in table_names:

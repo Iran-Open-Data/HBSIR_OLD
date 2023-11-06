@@ -218,7 +218,7 @@ def extract_column(table: pd.DataFrame, column_name: str) -> pd.Series:
     return column
 
 
-_Fields = Annotated[tuple[str, ...], BeforeValidator(maybe_to_tuple)]
+_Aspects = Annotated[tuple[str, ...], BeforeValidator(maybe_to_tuple)]
 _Levels = Annotated[tuple[int, ...], BeforeValidator(maybe_to_tuple)]
 _ColumnNames = Annotated[tuple[str, ...], BeforeValidator(maybe_to_tuple)]
 
@@ -258,7 +258,7 @@ class DecoderSettings(BaseModel):
     year_col: str = metadata_reader.defaults.columns.year
     versioned_info: dict = {}
     defaults: dict = {}
-    fields: _Fields = ()
+    aspects: _Aspects = ()
     levels: _Levels = ()
     drop_value: bool = False
     column_names: _ColumnNames = ()
@@ -280,8 +280,8 @@ class DecoderSettings(BaseModel):
                 value = tuple(value)
             if (getattr(self, key) is None) or (len(getattr(self, key)) == 0):
                 setattr(self, key, value)
-        if len(self.fields) == 0:
-            self.fields = ("item_key",)
+        if len(self.aspects) == 0:
+            self.aspects = ("item_key",)
         if len(self.levels) == 0:
             self.levels = (1,)
         self._resolve_column_names()
@@ -290,12 +290,13 @@ class DecoderSettings(BaseModel):
     def _resolve_column_names(self) -> None:
         if len(self.column_names) == 0:
             names = [
-                f"{label}_{level}" for label, level in product(self.fields, self.levels)
+                f"{label}_{level}"
+                for label, level in product(self.aspects, self.levels)
             ]
             self.column_names = tuple(names)
-        elif len(self.column_names) == len(self.fields) * len(self.levels):
+        elif len(self.column_names) == len(self.aspects) * len(self.levels):
             pass
-        elif len(self.column_names) == len(self.fields):
+        elif len(self.column_names) == len(self.aspects):
             names = [
                 f"{label}_{level}"
                 for label, level in product(self.column_names, self.levels)
@@ -318,7 +319,7 @@ class DecoderSettings(BaseModel):
             Mapping of label-level tuples to output column names.
 
         """
-        label_level = product(self.fields, self.levels)
+        label_level = product(self.aspects, self.levels)
         return dict(zip(label_level, self.column_names))
 
 
@@ -498,7 +499,7 @@ class IDDecoderSettings(BaseModel):
     """
 
     name: _Attribute
-    fields: _Fields = ("name",)
+    fields: _Aspects = ("name",)
     column_names: _ColumnNames = ()
 
     id_col: str = defaults.columns.household_id
@@ -585,7 +586,8 @@ class IDDecoder:
                 )
 
         elif "external_file" in attr_dict:
-            code_builer_file = external_data.load_table("regions", reset_index=False)
+            file_name = attr_dict["external_file"]
+            code_builer_file = external_data.load_table(file_name, reset_index=False)
             code_series = code_builer_file.loc[household_metadata["year"]].iloc[:, 0]
             assert isinstance(code_series, pd.Series)
             mapping_dict = code_series.to_dict()

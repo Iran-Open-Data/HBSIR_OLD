@@ -23,7 +23,7 @@
 #                   - entertainment                                           #
 #                   - education                                               #
 #                   - hotel                                                   #
-#                   - other                                                   #
+#                   - miscellaneous                                           #
 #                   - durable                                                 #
 #                   - investment                                              #
 #                                                                             #
@@ -63,7 +63,7 @@ yearly_table_availability:
   entertainment:              {start: 1363}
   education:                  {start: 1383}
   hotel:                      {start: 1383}
-  other:                      {start: 1363}
+  miscellaneous:              {start: 1363}
   durable:                    {start: 1363}
   investment:                 [{start: 1366, end: 1375}, {start: 1378}]
 
@@ -71,6 +71,7 @@ yearly_table_availability:
   self_employed_income:       {start: 1369}
   other_income:               {start: 1369}
   subsidy:                    {start: 1390}
+
   public_employment_income:   {start: 1363, end: 1369}
   private_employment_income:  {start: 1363, end: 1369}
   agricultural_self_employed_income: {start: 1363, end: 1369}
@@ -1491,7 +1492,7 @@ hotel:
     <<: *expenditure_common_structure
 
 
-other:
+miscellaneous:
 
   file_code:
     1363: "P3S08"
@@ -1605,7 +1606,7 @@ INCOME_ITEMS:
     new_name: "Job_Code"
     type: "unsigned"
     replace:
-      1369: {
+      1363: {
         "X01": null, "X02": null, "X03": null, "X04": null,
         "x01": null, "x02": null, "x03": null, "x04": null,
       }
@@ -1965,7 +1966,7 @@ subsidy:
 # # # # # # # # # # - - - Old income tables - - - # # # # # # # # # #
 
 
-public_employment_income: &public_employment_income
+public_employment_income:
   
   1363:
     urban:
@@ -1991,11 +1992,32 @@ public_employment_income: &public_employment_income
         COL09: *income_yearly_net
   1369: null
 
+
 private_employment_income:
-  <<: *public_employment_income
-  file_code:
-    1363: P4S2
-    1369: null
+  
+  1363:
+    urban:
+      file_code: P4S2
+      columns:
+        <<: *income_base_columns
+        COL01: *income_member_number
+        COL02: *income_job_code
+        COL03: *income_currently_in_this_job
+        COL05: *income_yearly_gross
+        COL07: *income_yearly_continuous
+        COL09: *income_yearly_temporary
+        COL11: *income_yearly_net
+    rural:
+      file_code: P4S2
+      columns:
+        <<: *income_base_columns
+        COL01: *income_member_number
+        COL02: *income_job_code
+        COL03: *income_currently_in_this_job
+        COL05: *income_yearly_continuous
+        COL07: *income_yearly_temporary
+        COL09: *income_yearly_net
+  1369: null
 
 
 agricultural_self_employed_income:
@@ -2003,11 +2025,36 @@ agricultural_self_employed_income:
     1363: P4S3
     1369: null
 
+  columns:
+    <<: *income_base_columns
+    COL01: *income_member_number
+    COL02: *income_job_code
+    COL03: *income_currently_in_this_job
+    COL04: *income_wages
+    COL05: *income_cost_of_sales
+    COL06: *income_other_operating_costs
+    COL07: *income_besiness_tax
+    COL08: *income_sales
+    COL09: *income_profit
+
 
 non_agricultural_self_employed_income:
   file_code:
     1363: P4S4
     1369: null
+
+  columns:
+    <<: *income_base_columns
+    COL01: *income_member_number
+    COL02: *income_job_code
+    COL03: *income_currently_in_this_job
+    COL04: *income_wages
+    COL05: *income_cost_of_sales
+    COL06: *income_other_operating_costs
+    COL07: *income_other_costs
+    COL08: *income_besiness_tax
+    COL09: *income_sales
+    COL10: *income_profit
 
 
 old_other_income:
@@ -2015,3 +2062,11 @@ old_other_income:
     1363: P4S5
     1369: null
 
+  columns:
+    <<: *income_base_columns
+    COL01:
+      new_name: Code
+      type: "unsigned"
+    COL04:
+      new_name: Income
+      type: float

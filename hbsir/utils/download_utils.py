@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+from typing import Iterable, Literal
 from pathlib import Path
 import platform
 from zipfile import ZipFile
@@ -5,7 +7,8 @@ from zipfile import ZipFile
 from tqdm import tqdm
 import requests
 
-from ..core.metadata_reader import defaults, metadata
+from .parsing_utils import construct_table_year_pairs
+from ..core.metadata_reader import defaults, metadata, _Years, _OriginalTable
 
 
 def download(
@@ -82,6 +85,19 @@ def _get_name_and_path(url: str, path: str | Path | None) -> tuple[str, Path]:
     else:
         raise TypeError
     return file_name, path
+
+
+def download_processed_data(
+    table_names: _OriginalTable | Iterable[_OriginalTable] | Literal["all"] = "all",
+    years: _Years = "last",
+) -> None:
+    table_year_pairs = construct_table_year_pairs(table_names, years)
+    for table_name, year in table_year_pairs:
+        url = f"{defaults.online_dir}/parquet_files/{year}_{table_name}.parquet"
+        file_name = f"{year}_{table_name}.parquet"
+        local_path = defaults.processed_data.joinpath(file_name)
+        with ThreadPoolExecutor(max_workers=6) as excecutor:
+            excecutor.submit(download, url, local_path)
 
 
 def download_7zip():
