@@ -499,7 +499,7 @@ class IDDecoderSettings(BaseModel):
     """
 
     name: _Attribute
-    fields: _Aspects = ("name",)
+    aspects: _Aspects = ("name",)
     column_names: _ColumnNames = ()
 
     id_col: str = defaults.columns.household_id
@@ -509,11 +509,11 @@ class IDDecoderSettings(BaseModel):
         self._resolve_column_names()
 
     def _resolve_column_names(self) -> None:
-        if len(self.column_names) != len(self.fields):
-            if len(self.fields) == 1:
+        if len(self.column_names) != len(self.aspects):
+            if len(self.aspects) == 1:
                 names = [self.name]
             else:
-                names = [f"{self.name}_{label}" for label in self.fields]
+                names = [f"{self.name}_{label}" for label in self.aspects]
             self.column_names = tuple(names)
 
 
@@ -560,7 +560,7 @@ class IDDecoder:
 
         """
         mapped_columns = [self.year_series, self.id_series]
-        for label in self.settings.fields:
+        for label in self.settings.aspects:
             mapped_column = self._map_id_to_label(label)
             mapped_columns.append(mapped_column)
         year_and_id = [self.settings.year_col, self.settings.id_col]
