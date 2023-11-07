@@ -41,7 +41,10 @@ from .api import (
     add_weight,
     add_cpi,
     adjust_by_cpi,
+    adjust_by_equivalence_scale,
     setup,
+    setup_config,
+    setup_metadata,
 )
 
 __version__ = "0.2.5"
@@ -55,7 +58,10 @@ __all__ = [
     "add_weight",
     "add_cpi",
     "adjust_by_cpi",
+    "adjust_by_equivalence_scale",
     "setup",
+    "setup_config",
+    "setup_metadata",
     "calculator",
     "external_data",
     "hbsframe",

@@ -550,35 +550,142 @@ def adjust_by_cpi(
     return table
 
 
+def adjust_by_equivalence_scale(
+    table: pd.DataFrame,
+    columns: list[str],
+    equivalence_scale: _EquivalenceScale = "Per_Capita",
+) -> pd.DataFrame:
+    """Adjust columns by household equivalence scale.
+
+    Divides specified columns by household equivalence scale
+    to account for household size and composition.
+
+    Supported scales are:
+        - Household: No adjustment (household total)
+        - Per_Capita: Divide by household size
+        - OECD: OECD equivalence scale
+        - OECD_Modified: Modified OECD scale
+        - Square_Root: Square root of household size
+
+    Loads equivalence scales from Equivalence_Scale table.
+
+    Parameters
+    ----------
+    table : DataFrame
+        Input DataFrame with household ID.
+    columns : List[str]
+        Columns to adjust.
+    equivalence_scale : _EquivalenceScale, default "Per_Capita"
+        Equivalence scale to use.
+
+    Returns
+    -------
+    DataFrame
+        Table with adjusted columns.
+
+    """
+    years = table[defaults.columns.year].unique().tolist()
+
+    equivalence_table = load_table("Equivalence_Scale", years=years).set_index(
+        [defaults.columns.year, defaults.columns.household_id]
+    )
+
+    table = table.join(
+        equivalence_table[equivalence_scale], on=["Year", "ID"], how="left"
+    )
+    table[columns] = table[columns].div(table[equivalence_scale], axis="index")
+    table = table.drop(columns=equivalence_scale)
+
+    return table
+
+
 def setup(
     years: _Years = "last",
     method: Literal["create", "download"] = "create",
     table_names: _OriginalTable | Iterable[_OriginalTable] | Literal["all"] = "all",
     replace: bool = False,
 ) -> None:
-    """Set up data by downloading and extracting archive files.
+    """Download, extract, and process HBSIR data.
 
-    This function handles downloading the archived data files,
-    extracting the CSV tables from the MS Access databases, and
-    saving them locally.
+    Handles downloading and extracting the HBSIR data files,
+    saving them locally, and processing tables.
 
-    It calls archive_handler.setup() to download and extract the
-    archive files for the specified years.
+    This sets up the raw data for further analysis. It:
 
-    It also calls data_cleaner.save_cleaned_tables_as_parquet()
-    to clean the specified tables and save them to Parquet format.
+    - Downloads and extracts archive files using archive_handler.
+    - Cleans tables and saves as Parquet using data_cleaner.
 
-    Args:
-        years (int|list|str|None): Year(s) to download and extract.
-        table_names (list|None): Tables to clean and convert to Parquet.
-        replace (bool): Whether to overwrite existing files.
+    Parameters
+    ----------
+    years : str/list/int, default "last"
+        Year(s) to download and process.
+    method : str, default "create"
+        "create" to process raw tables or
+        "download" to download processed tables.
+    table_names : str/list, default "all"
+        Tables to process. "all" for all tables.
+    replace : bool, default False
+        Whether to overwrite existing files.
 
-    Examples:
-        setup(1399)
-        setup([1390,1400], ['food'], True)
+    Examples
+    --------
+    setup(1399)
+        Process data for 1399.
+
+    setup([1390,1400], table_names=['food'])
+        Process food table for 1390 and 1400.
+
+    setup('1380-1390', method='download')
+        Download processed tables for 1380-1390.
+
     """
     if method == "create":
         archive_handler.setup(years, replace)
         data_cleaner.save_cleaned_tables(table_names, years)
     else:
         utils.download_processed_data(table_names, years)
+
+
+def setup_config(replace=False) -> None:
+    """Copy default config file to data directory.
+
+    Copies the default config file 'settings-sample.yaml' from
+    the package directory to 'settings.yaml' in the root data
+    directory.
+
+    Overwrites any existing file if replace=True.
+
+    Parameters
+    ----------
+    replace : bool, default False
+        Whether to overwrite existing config file.
+
+    """
+    src = defaults.package_dir.joinpath("config", "settings-sample.yaml")
+    dst = defaults.root_dir.joinpath("settings.yaml")
+    if (not dst.exists()) or replace:
+        shutil.copy(src, dst)
+
+
+def setup_metadata(replace=False) -> None:
+    """Copy default metadata files to data directory.
+
+    Copies metadata files like schema.csv and info.csv from the
+    package metadata folder to the root data/metadata folder.
+
+    Overwrites any existing files if replace=True.
+
+    Parameters
+    ----------
+    replace : bool, default False
+        Whether to overwrite existing metadata files.
+
+    """
+    src_folder = defaults.package_dir.joinpath("metadata")
+    dst_folder = defaults.root_dir.joinpath("metadata")
+    if not dst_folder.exists():
+        dst_folder.mkdir()
+    for src in src_folder.iterdir():
+        dst = dst_folder.joinpath(src.name)
+        if (not dst.exists()) or replace:
+            shutil.copy(src, dst)

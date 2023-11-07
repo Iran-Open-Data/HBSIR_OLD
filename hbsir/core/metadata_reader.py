@@ -119,6 +119,9 @@ _Province = Literal[
 
 
 _Groupby = Literal["Urban_Rural", "Province", "County", "Decile", "Percentile"]
+_EquivalenceScale = Literal[
+    "Household", "Per_Capita", "OECD", "OECD_Modified", "Square_Root"
+]
 
 
 def open_yaml(
