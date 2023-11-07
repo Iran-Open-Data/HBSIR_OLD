@@ -1,4 +1,22 @@
 
+# Package Settings
+package_settings: "config/settings.yaml"
+
+# Local Settings
+local_settings: settings.yaml
+
+# Package Metadata
+package_metadata:
+  instruction: "metadata/_instruction.yaml"
+  tables: "metadata/tables.yaml"
+  maps: "metadata/maps.yaml"
+  household: "metadata/household.yaml"
+  commodities: "metadata/commodities.yaml"
+  occupations: "metadata/occupations.yaml"
+  schema: "metadata/schema.yaml"
+  other: "metadata/other.yaml"
+  external_data: "metadata/external_data.yaml"
+
 # Local Metadata
 local_metadata:
   instruction: "metadata/_instruction.yaml"
@@ -13,7 +31,7 @@ local_metadata:
 
 # Local Directory
 local_directory: Data
-in_root: true
+in_root: false
 
 # Online Directory
 online_directory: "https://s3.ir-tbz-sh1.arvanstorage.ir/sdac/HBSIR"
@@ -30,6 +48,30 @@ processed_data: processed_data
 external_data: external_data
 maps: maps
 cached_data: _cache
+
+# Map
+default_map: humandata
+
+# Functions
+functions_defaults:
+  # Load Table
+  load_table:
+    dataset: processed
+    on_missing: download
+    save_downloaded: true
+    redownload: false
+    save_created: true
+    recreate: false
+
+  # Load External Table
+  external_load_table:
+    dataset: processed
+    on_missing: download
+    save_downloaded: true
+    redownload: false
+    save_created: true
+    recreate: false
+
 
 # Columns
 columns:

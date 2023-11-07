@@ -18,5 +18,5 @@ fonts/*
 *.log
 *.png
 
-*settings.yaml
+settings.yaml
 *tokens.toml

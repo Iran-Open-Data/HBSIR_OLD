@@ -167,7 +167,7 @@ def flatten_dict(dictionary: dict) -> dict[tuple[Any, ...], Any]:
 
 
 def collect_settings() -> dict[tuple[Any, ...], Any]:
-    sample_settings_path = PACKAGE_DIRECTORY.joinpath("config", "settings-sample.yaml")
+    sample_settings_path = PACKAGE_DIRECTORY.joinpath("config", "default_settings.yaml")
     _settings = flatten_dict(open_yaml(sample_settings_path))
 
     package_settings_path = PACKAGE_DIRECTORY.joinpath(_settings[("package_settings",)])
