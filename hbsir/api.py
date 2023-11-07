@@ -7,23 +7,27 @@ The key functions provided are:
 
 - load_table: Load HBSIR data for a given table name and year range.
 
-- add_classification: Add commodity/occupation classification codes. 
+- add_classification: Add commodity/occupation classification codes.
 
-- add_attribute: Add household attributes like urban/rural status.
+- add_attribute: Add household attributes like urban/rural status. 
 
-- add_weight: Add sampling weights.  
+- add_weight: Add sampling weights.
 
 - add_cpi: Join CPI index data.
 
+- select: Filter table by urban/rural, province etc. 
+
 - adjust_by_cpi: Adjust monetary values for inflation using CPI.
 
-Sample usage:
+- adjust_by_equivalence_scale: Adjust by household composition.
 
-    import hbsir
-    
-    df = hbsir.load_table('Expenditures', years=[1399, 1400])
-    df = hbsir.add_classification(df, 'Durability')
-    df = hbsir.adjust_by_cpi(df)
+- create_table_with_schema: Create table from schema.
+
+- setup: Download, extract and process survey data.
+
+- setup_config: Copy default config files.
+
+- setup_metadata: Copy default metadata.
 
 See the API docstrings for more details.
 
@@ -33,15 +37,15 @@ See the API docstrings for more details.
 # pylint: disable=too-many-locals
 
 from typing import Iterable, Literal, overload
+import shutil
 
 import pandas as pd
 
 from .core import archive_handler, data_cleaner, data_engine, decoder, metadata_reader
-
 from . import external_data, utils
-
 from .core.metadata_reader import (
     metadata,
+    defaults,
     original_tables,
     _Attribute,
     _OriginalTable,
@@ -49,6 +53,7 @@ from .core.metadata_reader import (
     _Province,
     _Table,
     _Years,
+    _EquivalenceScale,
 )
 
 
@@ -255,7 +260,7 @@ def create_table_with_schema(
 def add_classification(
     table: pd.DataFrame,
     name: str = "original",
-    code_type: Literal["commodity", "industry", "occupation"] | None = None,
+    classification_type: Literal["commodity", "industry", "occupation"] | None = None,
     *,
     aspects: Iterable[str] | None = None,
     levels: Iterable[int] | int | None = None,
@@ -265,38 +270,43 @@ def add_classification(
     code_col: str | None = None,
     year_col: str | None = None,
 ) -> pd.DataFrame:
-    """Add classification to table.
+    """Add classification columns to table.
 
+    Classifies codes in the table using specified classification system.
+
+    Supported systems:
+
+    - 'commodity': Classifies commodity codes
+    - 'industry': Classifies industry codes
+    - 'occupation': Classifies occupation codes
 
     Parameters
     ----------
     table : DataFrame
-        DataFrame containing 'Code' column to classify.
-    name : str, optional
+        Table containing code column to classify.
+    name : str, default 'original'
         Name of classification to apply.
-    classification_type : {'commodity', 'occupation'}, optional
-        Type of classification system. Inferred if not specified.
-    labels : tuple of str, optional
-        Names of classification levels.
-    levels : tuple of int, optional
+    classification_type : str, optional
+        Type of classification system.
+    aspects : list, optional
+        Aspects of classification to add as columns.
+    levels : list of int, optional
         Number of digits for each classification level.
+    column_names: list of str, optional
+        Names of output columns.
     drop_value : bool, optional
         Whether to drop unclassified values.
-    output_column_names : tuple of str, optional
-        Names of output classification columns.
     missing_value_replacements : dict, optional
         Replacements for missing values in columns.
-    code_column_name : str, optional
-        Name of code column.
-    year_column_name : str, optional
-        Name of year column.
-    versioned_info : dict, optional
-        Versioning information for classifier.
+    code_col: str, optional
+        Name of the code column.
+    year_col: str, optional
+        Name of the year column.
 
     Returns
     -------
     DataFrame
-        Input DataFrame with added classification columns.
+        Table with added classification columns.
 
     """
     parameters = _extract_parameters(locals())
@@ -329,28 +339,28 @@ def add_attribute(
 ) -> pd.DataFrame:
     """Add household attributes to table based on ID.
 
-    Takes a DataFrame containing a household ID, and adds columns for the
-    specified household attribute such as urban/rural, province, or region.
+    Takes a DataFrame with a household ID column and adds columns
+    for the specified attribute such as urban/rural status or province.
 
-    Supported attribute names are:
+    Supported attributes:
 
-        - 'Urban_Rural': Urban or rural classification
-        - 'Province': Province name
-        - 'Region': Region name
+    - 'Urban_Rural': Urban or rural classification
+    - 'Province': Province name
+    - 'County': County name
 
     Parameters
     ----------
     table : DataFrame
-        DataFrame containing 'ID' column.
+        DataFrame containing ID column.
     name : str
         Name of attribute to add.
-    labels : tuple of str, optional
-        Names of attribute labels.
-    output_column_names : tuple of str, optional
-        Names of output columns.
-    id_column_name : str, optional
+    aspects: list of str, optional
+        Aspects of attribute to add as columns.
+    column_names: list of str, optional
+        Output column names.
+    id_col: str, optional
         Name of ID column.
-    year_column_name : str, optional
+    year_col: str, optional
         Name of year column.
 
     Returns
@@ -370,13 +380,13 @@ def select(
     *,
     urban_rural: Literal["Urban", "Rural"] | None = None,
     province: Iterable[_Province] | _Province | None = None,
-    region: Iterable[str] | str | None = None,
+    county: Iterable[str] | str | None = None,
 ) -> pd.DataFrame:
-    """Selects subset of table based on criteria.
+    """Select subset of table based on criteria.
 
-    Filters the input table based on provided selection criteria.
-    Decodes and adds attributes if needed to perform filtering.
-    Removes decoded columns before returning output table.
+    Filters table by urban/rural, province, or county.
+
+    Decodes IDs to attributes if needed and removes them after.
 
     Parameters
     ----------
@@ -384,13 +394,13 @@ def select(
         Input DataFrame to filter.
 
     urban_rural : Literal["Urban", "Rural"], optional
-        Keep only Urban or Rural households.
+        Keep only urban or rural households.
 
     province : Province, optional
-        Keep only given province.
+        Keep only given province(s).
 
-    region : str, optional
-        Keep only given region.
+    county : str or list, optional
+        Keep only given county/counties.
 
     Returns
     -------
@@ -404,13 +414,13 @@ def select(
             .query(f"Urban_Rural == '{urban_rural}'")
             .drop(columns="Urban_Rural")
         )
-    if region is not None:
-        if isinstance(region, str):
-            region = [region]
+    if county is not None:
+        if isinstance(county, str):
+            county = [county]
         table = (
-            table.pipe(add_attribute, "Region")
-            .query(f"Region in {region}")
-            .drop(columns="Region")
+            table.pipe(add_attribute, "County")
+            .query(f"County in {county}")
+            .drop(columns="County")
         )
     elif province is not None:
         if isinstance(province, str):
