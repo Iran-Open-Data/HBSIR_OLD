@@ -37,6 +37,12 @@ pdf2image = ">=1.16"
 [tool.poetry.group.development.dependencies]
 black = ">=23.7.0"
 
+
+[tool.poetry.group.dev.dependencies]
+sphinx = "^7.2.6"
+pydata-sphinx-theme = "^0.14.3"
+numpydoc = "^1.6.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
