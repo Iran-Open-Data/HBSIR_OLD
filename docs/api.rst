@@ -1,32 +1,20 @@
 API
 ==========
 
-Archive Handler
+Main Functions
 ---------------
 
-.. automodule:: hbsir.archive_handler
+.. automodule:: hbsir.api
    :members:
 
-Data Cleaner
+External Data Functions
 ------------
 
-.. automodule:: hbsir.data_cleaner
+.. automodule:: hbsir.external_data
    :members:
 
-Data Engine
+Calculator Functions
 -----------
 
-.. automodule:: hbsir.data_engine
-   :members:
-
-Utilities 
----------
-
-.. automodule:: hbsir.utils
-   :members:
-
-Metadata
---------
-
-.. automodule:: hbsir.metadata
+.. automodule:: hbsir.calculator
    :members:
