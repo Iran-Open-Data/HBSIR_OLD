@@ -149,7 +149,7 @@ food:
 
     - create_column:
         1363:
-          name: Price_System
+          name: Provision_Method
           type: categorical
           categories:
             Purchase: [Purchase_Free_Price, Purchase_Subsidised_Price]
