@@ -16,6 +16,8 @@ theme:
 
 nav:
   - Home: README.md
+  # - Usage: usage.md
+  - API Reference: api.md
   - Tables:
     - tables/README.md
     - Raw Tables:
@@ -54,6 +56,14 @@ nav:
 plugins:
   - search
   - autorefs
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [hbsir]
+          options:
+            docstring_style: numpy
+            show_source: false
   # - literate-nav:
   #     nav_file: index.md
   #     implicit_index: true
