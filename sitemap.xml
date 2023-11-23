@@ -6,6 +6,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://iran-open-data.github.io/HBSIR/api/</loc>
+         <lastmod>2023-11-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://iran-open-data.github.io/HBSIR/usage/</loc>
+         <lastmod>2023-11-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://iran-open-data.github.io/HBSIR/tables/</loc>
          <lastmod>2023-11-23</lastmod>
          <changefreq>daily</changefreq>

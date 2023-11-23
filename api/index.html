@@ -1,0 +1,3153 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://iran-open-data.github.io/HBSIR/api/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../tables/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.11">
+    
+    
+      
+        <title>API Reference - HBSIR</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.fad675c6.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="HBSIR" class="md-header__button md-logo" aria-label="HBSIR" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            HBSIR
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iran-Open-Data/HBSIR" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../tables/" class="md-tabs__link">
+          
+  
+    
+  
+  Tables
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="HBSIR" class="md-nav__button md-logo" aria-label="HBSIR" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    HBSIR
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iran-Open-Data/HBSIR" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api" class="md-nav__link">
+    <span class="md-ellipsis">
+      api
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.load_table" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_table()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.create_table_with_schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      create_table_with_schema()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.add_classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_classification()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.add_attribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_attribute()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.select" class="md-nav__link">
+    <span class="md-ellipsis">
+      select()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.add_weight" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_weight()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.add_cpi" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_cpi()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.adjust_by_cpi" class="md-nav__link">
+    <span class="md-ellipsis">
+      adjust_by_cpi()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.adjust_by_equivalence_scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      adjust_by_equivalence_scale()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      setup()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.setup_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      setup_config()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.setup_metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      setup_metadata()
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../tables/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Tables
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tables
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../tables/raw/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Raw Tables
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Raw Tables
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_2" id="__nav_3_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    General Tables
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            General Tables
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/household_information/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Household Information
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/members_properties/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Members Properties
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/house_specifications/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    House Specifications
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_3" id="__nav_3_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Expenditure Tables
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Expenditure Tables
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/food/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Food
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/tobacco/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tobacco
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/cloth/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cloth
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/home/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/furniture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Furniture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/medical/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Medical
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/transportation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Transportation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/communication/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Communication
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/entertainment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Entertainment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/education/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Education
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/hotel/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hotel
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/miscellaneous/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Miscellaneous
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/durable/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Durable
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/investment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Investment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_4" id="__nav_3_2_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Income Tables
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            Income Tables
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/employment_income/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Employment Income
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/self_employed_income/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Self Employed Income
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/other_income/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other Incomes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/subsidy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Subsidy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/public_employment_income/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Employment Income (Old, Public)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/private_employment_income/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Employment Income (Old, Private)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/agricultural_self_employed_income/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Self Employed Income (Old, Agricultural)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/non_agricultural_self_employed_income/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Self Employed Income (Old, Non-Agricultural)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tables/raw/old_other_income/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other Income (Old)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api" class="md-nav__link">
+    <span class="md-ellipsis">
+      api
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.load_table" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_table()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.create_table_with_schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      create_table_with_schema()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.add_classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_classification()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.add_attribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_attribute()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.select" class="md-nav__link">
+    <span class="md-ellipsis">
+      select()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.add_weight" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_weight()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.add_cpi" class="md-nav__link">
+    <span class="md-ellipsis">
+      add_cpi()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.adjust_by_cpi" class="md-nav__link">
+    <span class="md-ellipsis">
+      adjust_by_cpi()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.adjust_by_equivalence_scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      adjust_by_equivalence_scale()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      setup()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.setup_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      setup_config()
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hbsir.api.setup_metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      setup_metadata()
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="api-reference">API Reference</h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="hbsir.api"></a>
+  <div class="doc doc-contents first">
+  
+      <p>HBSIR - Iran Household Budget Survey Data API.</p>
+<p>This module provides an API for loading, processing, and analyzing
+Iran's Household Budget Survey (HBSIR) data.</p>
+<p>The key functions provided are:</p>
+<ul>
+<li>
+<p>load_table: Load HBSIR data for a given table name and year range.</p>
+</li>
+<li>
+<p>add_classification: Add commodity/occupation classification codes.</p>
+</li>
+<li>
+<p>add_attribute: Add household attributes like urban/rural status. </p>
+</li>
+<li>
+<p>add_weight: Add sampling weights.</p>
+</li>
+<li>
+<p>add_cpi: Join CPI index data.</p>
+</li>
+<li>
+<p>select: Filter table by urban/rural, province etc. </p>
+</li>
+<li>
+<p>adjust_by_cpi: Adjust monetary values for inflation using CPI.</p>
+</li>
+<li>
+<p>adjust_by_equivalence_scale: Adjust by household composition.</p>
+</li>
+<li>
+<p>create_table_with_schema: Create table from schema.</p>
+</li>
+<li>
+<p>setup: Download, extract and process survey data.</p>
+</li>
+<li>
+<p>setup_config: Copy default config files.</p>
+</li>
+<li>
+<p>setup_metadata: Copy default metadata.</p>
+</li>
+</ul>
+<p>See the API docstrings for more details.</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.load_table" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">load_table</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">load_table</span><span class="p">(</span>
+    <span class="n">table_name</span><span class="p">,</span>
+    <span class="n">years</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>
+    <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">on_missing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">redownload</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">save_downloaded</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">recreate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">save_created</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Load a table for the given table name and year(s).</p>
+<p>This function loads original and standard tables.
+Original tables are survey tables and available in three types:
+original, cleaned and processed.</p>
+<ul>
+<li>The 'raw' dataset contains the raw data, identical to the
+survey data, without any modifications.</li>
+<li>The 'cleaned' dataset contains the raw data with added column
+labels, data types, and removal of irrelevant values, but no
+changes to actual data values.</li>
+<li>The 'processed' dataset applies operations like adding columns,
+calculating durations, and standardizing tables across years.</li>
+</ul>
+<p>Standard tables are defined in this package to facilitate
+working with the data and are only available in processed form.</p>
+<p>For more information about available tables check the
+<a href="https://github.com/Iran-Open-Data/HBSIR/wiki/Tables">tables wiki page</a>.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>table_name</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of the table to load.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>years</code></td>
+          <td>
+                <code><span title="hbsir.core.metadata_reader._Years">_Years</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Year or list of years to load data for.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;last&#34;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>dataset</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Which dataset to load from - 'processed', 'cleaned', or 'original'.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;processed&#34;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>on_missing</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Action if data is missing - 'error', 'download', or 'create'</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;download&#34;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>recreate</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to recreate the data instead of loading it</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>redownload</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to re-download the data instead of loading it</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>save_downloaded</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to save downloaded data</p>
+            </div>
+          </td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>save_created</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to save newly created data</p>
+            </div>
+          </td>
+          <td>
+                <code>True</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Loaded data for the specified table and years.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hbsir</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">hbsir</span><span class="o">.</span><span class="n">load_table</span><span class="p">(</span><span class="s1">&#39;food&#39;</span><span class="p">)</span>
+<span class="go"># Loads processed &#39;food&#39; table from original survey tables for</span>
+<span class="go">    latest available year</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">hbsir</span><span class="o">.</span><span class="n">load_table</span><span class="p">(</span><span class="s1">&#39;Expenditures&#39;</span><span class="p">,</span> <span class="s1">&#39;1399-1401&#39;</span><span class="p">)</span>
+<span class="go"># Loads standard &#39;Expenditures&#39; table for years 1399 - 1401</span>
+</code></pre></div>
+
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>FileNotFoundError</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If data is missing and on_missing='error'.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.create_table_with_schema" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">create_table_with_schema</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">create_table_with_schema</span><span class="p">(</span>
+    <span class="n">schema</span><span class="p">,</span>
+    <span class="n">years</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">on_missing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">redownload</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">save_downloaded</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">recreate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">save_created</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Create and load table based on input schema.</p>
+<p>This function can be used in two ways:</p>
+<p>1) If a schema dictionary is passed, it will generate a DataFrame
+by loading or creating data that matches the schema.</p>
+<p>2) If a string table name is passed, it will load the table with
+that name from the external schema.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>schema</code></td>
+          <td>
+                <code>dict or str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Dictionary defining schema or string table name.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>years</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Year(s) to load.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;last&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>on_missing</code></td>
+          <td>
+                <code>(error, download, create)</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Action if data is missing.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;error&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>save_downloaded</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to save downloaded data.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>save_created</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to save newly created data.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Loaded or created DataFrame.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;table_list&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;food&#39;</span><span class="p">,</span> <span class="s1">&#39;tobacco&#39;</span><span class="p">],</span> <span class="s1">&#39;years&#39;</span><span class="p">:</span><span class="s1">&#39;1398-1400&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">create_table_with_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+</code></pre></div>
+    <div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">table_name</span> <span class="o">=</span> <span class="s1">&#39;User_Defined_Table&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">create_table_with_schema</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+</code></pre></div>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.add_classification" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">add_classification</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">add_classification</span><span class="p">(</span>
+    <span class="n">table</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;original&quot;</span><span class="p">,</span>
+    <span class="n">classification_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">aspects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">levels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">column_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">drop_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">missing_value_replacements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">code_col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">year_col</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Add classification columns to table.</p>
+<p>Classifies codes in the table using specified classification system.</p>
+<p>Supported systems:</p>
+<ul>
+<li>'commodity': Classifies commodity codes</li>
+<li>'industry': Classifies industry codes</li>
+<li>'occupation': Classifies occupation codes</li>
+</ul>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>table</code></td>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Table containing code column to classify.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of classification to apply.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#39;original&#39;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>classification_type</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Type of classification system.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>aspects</code></td>
+          <td>
+                <code>list</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Aspects of classification to add as columns.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>levels</code></td>
+          <td>
+                <code>list of int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Number of digits for each classification level.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>column_names</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[str] | str | None</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Names of output columns.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>drop_value</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to drop unclassified values.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>missing_value_replacements</code></td>
+          <td>
+                <code>dict</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Replacements for missing values in columns.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>code_col</code></td>
+          <td>
+                <code>str | None</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of the code column.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>year_col</code></td>
+          <td>
+                <code>str | None</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of the year column.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Table with added classification columns.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.add_attribute" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">add_attribute</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">add_attribute</span><span class="p">(</span>
+    <span class="n">table</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">aspects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">column_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">id_col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">year_col</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Add household attributes to table based on ID.</p>
+<p>Takes a DataFrame with a household ID column and adds columns
+for the specified attribute such as urban/rural status or province.</p>
+<p>Supported attributes:</p>
+<ul>
+<li>'Urban_Rural': Urban or rural classification</li>
+<li>'Province': Province name</li>
+<li>'County': County name</li>
+</ul>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>table</code></td>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>DataFrame containing ID column.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>name</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of attribute to add.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>aspects</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[str] | str | None</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Aspects of attribute to add as columns.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>column_names</code></td>
+          <td>
+                <code><span title="typing.Iterable">Iterable</span>[str] | str | None</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Output column names.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>id_col</code></td>
+          <td>
+                <code>str | None</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of ID column.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>year_col</code></td>
+          <td>
+                <code>str | None</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of year column.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Input DataFrame with added attribute columns.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.select" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">select</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">select</span><span class="p">(</span>
+    <span class="n">table</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">urban_rural</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">province</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">county</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Select subset of table based on criteria.</p>
+<p>Filters table by urban/rural, province, or county.</p>
+<p>Decodes IDs to attributes if needed and removes them after.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>table</code></td>
+          <td>
+                <code><span title="pandas.DataFrame">DataFrame</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Input DataFrame to filter.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p>urban_rural : Literal["Urban", "Rural"], optional
+    Keep only urban or rural households.</p>
+<p>province : Province, optional
+    Keep only given province(s).</p>
+<p>county : str or list, optional
+    Keep only given county/counties.</p>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="pandas.DataFrame">DataFrame</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Subset of input table meeting criteria.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.add_weight" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">add_weight</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">add_weight</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">adjust_for_household_size</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Add sampling weights to the table.</p>
+<p>Loads appropriate sample weights for each year in the table and merges
+them onto the table. Sample weights can optionally be adjusted
+for household size.</p>
+<p>Weights for years prior to 1395 are loaded from external parquet data,
+while weights for 1395 onward come from the household_information table.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>table</code></td>
+          <td>
+                <code><span title="pandas.DataFrame">DataFrame</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Input data table, containing a column of year values</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>adjust_for_household_size</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to adjust weights by household size</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>year_column_name</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Name of column in <code>table</code> that contains the year</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;Year&#34;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>table</code></td>          <td>
+                <code><span title="pandas.DataFrame">DataFrame</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Input <code>table</code> with 'Weight' column added</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.add_cpi" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">add_cpi</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">add_cpi</span><span class="p">(</span>
+    <span class="n">table</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">data_source</span><span class="o">=</span><span class="s2">&quot;SCI&quot;</span><span class="p">,</span>
+    <span class="n">base_year</span><span class="o">=</span><span class="mi">1400</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;Annual&quot;</span><span class="p">,</span>
+    <span class="n">separate_by</span><span class="o">=</span><span class="s2">&quot;Urban_Rural&quot;</span>
+<span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Add CPI values to the table</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>table</code></td>
+          <td>
+                <code><span title="pandas.DataFrame">DataFrame</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Input DataFrame to add CPI values to.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>data_source</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Source of CPI data, either "SCI" or "CBS".</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;SCI&#34;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>base_year</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Base year for CPI.</p>
+            </div>
+          </td>
+          <td>
+                <code>1400</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>frequency</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Frequency of CPI data, either "Annual" or "Monthly".</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;Annual&#34;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>separate_by</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Column to separate CPI by, either "Urban_Rural" or None.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;Urban_Rural&#34;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Input <code>table</code> with 'CPI' column added.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.adjust_by_cpi" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">adjust_by_cpi</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">adjust_by_cpi</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Adjust columns in the table by the CPI</p>
+<p>Divides the specified columns of the DataFrame by the CPI column.
+If no columns specified, divides common monetary value columns
+like 'Expenditure', 'Income' etc.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>table</code></td>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>DataFrame containing a "CPI" column.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>columns</code></td>
+          <td>
+                <code>List[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>List of columns names to divide by CPI.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>**kwargs</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Additional keyword arguments passed to add_cpi.</p>
+            </div>
+          </td>
+          <td>
+                <code>{}</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Input <code>table</code> with <code>columns</code> divided by 'CPI'.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.adjust_by_equivalence_scale" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">adjust_by_equivalence_scale</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">adjust_by_equivalence_scale</span><span class="p">(</span>
+    <span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">equivalence_scale</span><span class="o">=</span><span class="s2">&quot;Per_Capita&quot;</span>
+<span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Adjust columns by household equivalence scale.</p>
+<p>Divides specified columns by household equivalence scale
+to account for household size and composition.</p>
+<p>Supported scales are:
+    - Household: No adjustment (household total)
+    - Per_Capita: Divide by household size
+    - OECD: OECD equivalence scale
+    - OECD_Modified: Modified OECD scale
+    - Square_Root: Square root of household size</p>
+<p>Loads equivalence scales from Equivalence_Scale table.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>table</code></td>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Input DataFrame with household ID.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>columns</code></td>
+          <td>
+                <code>List[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Columns to adjust.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>equivalence_scale</code></td>
+          <td>
+                <code><span title="hbsir.core.metadata_reader._EquivalenceScale">_EquivalenceScale</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Equivalence scale to use.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;Per_Capita&#34;</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>DataFrame</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Table with adjusted columns.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.setup" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">setup</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">setup</span><span class="p">(</span>
+    <span class="n">years</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;create&quot;</span><span class="p">,</span>
+    <span class="n">table_names</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Download, extract, and process HBSIR data.</p>
+<p>Handles downloading and extracting the HBSIR data files,
+saving them locally, and processing tables.</p>
+<p>This sets up the raw data for further analysis. It:</p>
+<ul>
+<li>Downloads and extracts archive files using archive_handler.</li>
+<li>Cleans tables and saves as Parquet using data_cleaner.</li>
+</ul>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>years</code></td>
+          <td>
+                <code>str / list / int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Year(s) to download and process.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;last&#34;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>method</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>"create" to process raw tables or
+"download" to download processed tables.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;create&#34;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>table_names</code></td>
+          <td>
+                <code>str / list</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Tables to process. "all" for all tables.</p>
+            </div>
+          </td>
+          <td>
+                <code>&#34;all&#34;</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>replace</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to overwrite existing files.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+<p><strong>Examples:</strong></p>
+    <p>setup(1399)
+    Process data for 1399.</p>
+<p>setup([1390,1400], table_names=['food'])
+    Process food table for 1390 and 1400.</p>
+<p>setup('1380-1390', method='download')
+    Download processed tables for 1380-1390.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.setup_config" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">setup_config</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">setup_config</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Copy default config file to data directory.</p>
+<p>Copies the default config file 'settings-sample.yaml' from
+the package directory to 'settings.yaml' in the root data
+directory.</p>
+<p>Overwrites any existing file if replace=True.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>replace</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to overwrite existing config file.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h2 id="hbsir.api.setup_metadata" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">setup_metadata</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">setup_metadata</span><span class="p">(</span><span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Copy default metadata files to data directory.</p>
+<p>Copies metadata files like schema.csv and info.csv from the
+package metadata folder to the root data/metadata folder.</p>
+<p>Overwrites any existing files if replace=True.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>replace</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to overwrite existing metadata files.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.indexes"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.6c14ae12.min.js"></script>
+      
+    
+  </body>
+</html>
