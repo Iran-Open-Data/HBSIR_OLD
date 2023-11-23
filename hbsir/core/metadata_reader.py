@@ -129,17 +129,25 @@ def open_yaml(
     location: Literal["package", "root"] = "package",
     interpreter: Callable[[str], str] | None = None,
 ):
-    """
-    Read the contents of a YAML file relative to the root directory and return it as a dictionary.
+    """Open and parse a YAML file from package or root directory.
 
-    :param path: The path to the YAML file, relative to the root directory.
-    :type path: str
+    Handles locating the YAML file based on provided path and
+    directory location. Runs an optional string interpreter
+    function before loading the YAML.
 
-    :return: The contents of the YAML file as a dictionary.
-    :rtype: dict
+    Parameters
+    ----------
+    path : Path or str
+        Path to YAML file.
+    location : str, default "package"
+        "package" or "root" directory location.
+    interpreter : callable, optional
+        Function to preprocess YAML string before loading.
 
-    :raises yaml.YAMLError: If there is an error parsing the YAML file.
-
+    Returns
+    -------
+    dict
+        Parsed YAML contents as a dictionary.
     """
     path = Path(path) if isinstance(path, str) else path
     if path.is_absolute():
@@ -158,6 +166,42 @@ def open_yaml(
 
 
 def flatten_dict(dictionary: dict) -> dict[tuple[Any, ...], Any]:
+    """Flatten a nested dictionary into a flattened dictionary.
+
+    Converts a nested dictionary into a flattened version where the keys
+    are tuples that preserve the structure of the original nested keys.
+
+    For example:
+
+        {
+            'a': 1,
+            'b': {
+                'c': 2,
+                'd': {
+                    'e': 3
+                }
+            }
+        }
+
+    would flatten to:
+
+        {
+            ('a',): 1,
+            ('b','c'): 2,
+            ('b','d','e'): 3
+        }
+
+    Parameters
+    ----------
+    dictionary : dict
+        Nested dictionary to flatten.
+
+    Returns
+    -------
+    dict
+        Flattened dictionary.
+
+    """
     flattened_dict = {}
     for key, value in dictionary.items():
         if isinstance(value, dict):
@@ -170,6 +214,23 @@ def flatten_dict(dictionary: dict) -> dict[tuple[Any, ...], Any]:
 
 
 def collect_settings() -> dict[tuple[Any, ...], Any]:
+    """Collect and merge settings from package and root directories.
+
+    Loads default settings YAML from package directory.
+    Checks for package override YAML in package dir.
+    Checks for root override YAML in root dir.
+    Merges everything into a single flattened settings dict.
+
+    Precedence is:
+
+    root dir overrides > package dir overrides > default
+
+    Returns
+    -------
+    dict
+        Flattened dictionary of collected settings.
+
+    """
     sample_settings_path = PACKAGE_DIRECTORY.joinpath("config", "default_settings.yaml")
     _settings = flatten_dict(open_yaml(sample_settings_path))
 
