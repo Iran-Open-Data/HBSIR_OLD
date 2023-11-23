@@ -12,6 +12,7 @@ hbsir/Data/*
 hbsir/7-Zip/*
 temp/*
 fonts/*
+site/*
 
 *.xlsx
 *.pdf
