@@ -10,7 +10,7 @@ def create_geoseries(area: str, map_name: str) -> gpd.GeoSeries:
     path = defaults.maps.joinpath(map_name, file_name)
     column_name = metadata.maps[map_name][area]["code_column"]
     codes = metadata.maps[map_name][area]["code"]
-    area_names = metadata.household[area]["names"]
+    area_names = metadata.household[area]["name"]
     codes = {value: area_names[key] for key, value in codes.items()}
     if not path.exists():
         utils.download_map(map_name)
