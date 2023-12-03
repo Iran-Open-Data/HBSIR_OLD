@@ -25,11 +25,13 @@
 
 #### Availability
 
-| Table                 | 1363 - 1386 | 1387  - 1401 |
-| --------------------- | ----------- | ------------ |
-| household_information | ❌           | ✅            |
-| members_properties    | ✅           | ✅            |
-| house_specifications  | ✅           | ✅            |
+| Table                          | 1363 - 1368 | 1369 - 1386 | 1387  - 1401 |
+| ------------------------------ | ----------- | ----------- | ------------ |
+| household_information          | ❌           | ❌           | ✅            |
+| members_properties             | ✅           | ✅           | ✅            |
+| house_specifications           | ❌           | ✅           | ✅            |
+| old_rural_house_specifications | ✅           | ❌           | ❌            |
+| old_urban_house_specifications | ✅           | ❌           | ❌            |
 
 ### Expenditure Tables
 
@@ -131,39 +133,42 @@
 ([raw](raw/subsidy.md), 
 [cleaned](cleaned/subsidy.md),
 [processed](processed/subsidy.md))
-* public_employment_income
-([raw](raw/public_employment_income.md), 
-[cleaned](cleaned/public_employment_income.md),
-[processed](processed/public_employment_income.md))
-* private_employment_income
-([raw](raw/private_employment_income.md), 
-[cleaned](cleaned/private_employment_income.md),
-[processed](processed/private_employment_income.md))
-* agricultural_self_employed_income
-([raw](raw/agricultural_self_employed_income.md), 
-[cleaned](cleaned/agricultural_self_employed_income.md),
-[processed](processed/agricultural_self_employed_income.md))
-* non_agricultural_self_employed_income
-([raw](raw/non_agricultural_self_employed_income.md), 
-[cleaned](cleaned/non_agricultural_self_employed_income.md), 
-[processed](processed/non_agricultural_self_employed_income.md))
+* old_rural_public_employment_income
+([raw](raw/old_rural_public_employment_income.md), 
+[cleaned](cleaned/old_rural_public_employment_income.md))
+* old_urban_public_employment_income
+([raw](raw/old_urban_public_employment_income.md), 
+[cleaned](cleaned/old_urban_public_employment_income.md))
+* old_rural_private_employment_income
+([raw](raw/old_rural_private_employment_income.md), 
+[cleaned](cleaned/old_rural_private_employment_income.md))
+* old_urban_private_employment_income
+([raw](raw/old_urban_private_employment_income.md), 
+[cleaned](cleaned/old_urban_private_employment_income.md))
+* old_agricultural_self_employed_income
+([raw](raw/old_agricultural_self_employed_income.md), 
+[cleaned](cleaned/old_agricultural_self_employed_income.md))
+* old_non_agricultural_self_employed_income
+([raw](raw/old_non_agricultural_self_employed_income.md), 
+[cleaned](cleaned/old_non_agricultural_self_employed_income.md))
 * old_other_income
 ([raw](raw/old_other_income.md), 
-[cleaned](cleaned/old_other_income.md), 
-[processed](processed/old_other_income.md))
+[cleaned](cleaned/old_other_income.md))
 
 #### Availability
 
-| Table                                 | 1363 - 1368 | 1369 - 1389 | 1390 - 1401 |
-| ------------------------------------- | ----------- | ----------- | ----------- |
-| employment_income                     | ❌           | ✅           | ✅           |
-| self_employed_income                  | ❌           | ✅           | ✅           |
-| other_income                          | ❌           | ✅           | ✅           |
-| subsidy                               | ❌           | ❌           | ✅           |
-| public_employment_income              | ✅           | ❌           | ❌           |
-| private_employment_income             | ✅           | ❌           | ❌           |
-| agricultural_self_employed_income     | ✅           | ❌           | ❌           |
-| non_agricultural_self_employed_income | ✅           | ❌           | ❌           |
-| old_other_income                      | ✅           | ❌           | ❌           |
+| Table                                     | 1363 - 1368 | 1369 - 1389 | 1390 - 1401 |
+| ----------------------------------------- | ----------- | ----------- | ----------- |
+| employment_income                         | ❌           | ✅           | ✅           |
+| self_employed_income                      | ❌           | ✅           | ✅           |
+| other_income                              | ❌           | ✅           | ✅           |
+| subsidy                                   | ❌           | ❌           | ✅           |
+| old_rural_public_employment_income        | ✅           | ❌           | ❌           |
+| old_urban_public_employment_income        | ✅           | ❌           | ❌           |
+| old_rural_private_employment_income       | ✅           | ❌           | ❌           |
+| old_urban_private_employment_income       | ✅           | ❌           | ❌           |
+| old_agricultural_self_employed_income     | ✅           | ❌           | ❌           |
+| old_non_agricultural_self_employed_income | ✅           | ❌           | ❌           |
+| old_other_income                          | ✅           | ❌           | ❌           |
 
 ## Standard Tables
